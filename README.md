@@ -4,7 +4,7 @@ A simple, elegant screenshot studio for creating App Store screenshots.
 
 ## Features
 
-- **Multiple device formats**: iPhone (6.7", 6.5", 5.5"), iPad (12.9", 11"), Mac
+- **Multiple device formats**: iPhone (6.9", 6.7", 6.5", 5.5"), iPad (13", 12.9", 11"), Mac
 - **Position presets**: Top, Center, Bottom layouts
 - **Customizable text**: Title and subtitle with color picker
 - **Background colors**: Fully customizable
@@ -20,7 +20,7 @@ A simple, elegant screenshot studio for creating App Store screenshots.
 2. Select a position preset (Top, Center, Bottom)
 3. Customize title, subtitle, and colors
 4. Choose which device formats to export
-5. Click "Exporter" to download a ZIP with all formats
+5. Click "Export" to download a ZIP with all formats
 
 ## Tech Stack
 

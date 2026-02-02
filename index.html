@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +10,7 @@
 </head>
 <body>
     <div class="app">
-        <!-- Sidebar gauche -->
+        <!-- Left Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <span class="app-name">Screan.app</span>
@@ -107,12 +107,12 @@
                         <polyline points="7 10 12 15 17 10"/>
                         <line x1="12" y1="15" x2="12" y2="3"/>
                     </svg>
-                    Exporter
+                    Export
                 </button>
             </div>
         </aside>
 
-        <!-- Zone principale -->
+        <!-- Main Area -->
         <main class="main-content">
             <!-- Toolbar -->
             <header class="main-toolbar">
@@ -137,7 +137,7 @@
             <!-- Zone des previews multiples -->
             <div class="previews-wrapper">
                 <div class="previews-container" id="previewsContainer">
-                    <!-- Les canvas seront générés dynamiquement -->
+                    <!-- Canvases will be generated dynamically -->
                     <div class="empty-state" id="emptyState">
                         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
@@ -150,7 +150,7 @@
             </div>
         </main>
 
-        <!-- Panneau de droite -->
+        <!-- Right Panel -->
         <aside class="settings-panel">
             <div class="settings-scroll">
                 <!-- Device Position -->
@@ -160,20 +160,20 @@
                     </div>
                     <div class="section-content">
                         <div class="position-buttons">
-                            <button class="position-btn-new active" data-preset="top" title="Screenshot en bas, texte en haut">
+                            <button class="position-btn-new active" data-preset="top" title="Screenshot at bottom, text at top">
                                 <div class="position-preview">
                                     <div class="position-text-area top"></div>
                                     <div class="position-screenshot-area bottom"></div>
                                 </div>
                                 <span>Top</span>
                             </button>
-                            <button class="position-btn-new" data-preset="center" title="Screenshot centré">
+                            <button class="position-btn-new" data-preset="center" title="Centered screenshot">
                                 <div class="position-preview">
                                     <div class="position-screenshot-area centered"></div>
                                 </div>
                                 <span>Center</span>
                             </button>
-                            <button class="position-btn-new" data-preset="bottom" title="Screenshot en haut, texte en bas">
+                            <button class="position-btn-new" data-preset="bottom" title="Screenshot at top, text at bottom">
                                 <div class="position-preview">
                                     <div class="position-screenshot-area top"></div>
                                     <div class="position-text-area bottom"></div>
@@ -271,7 +271,7 @@
         </aside>
     </div>
 
-    <!-- Modal de progression -->
+    <!-- Progress Modal -->
     <div class="modal-overlay" id="progressModal">
         <div class="modal-content">
             <div class="spinner"></div>

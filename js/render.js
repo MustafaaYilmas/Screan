@@ -1,5 +1,5 @@
 // ============================================
-// Fonctions de rendu
+// Rendering Functions
 // ============================================
 
 var App = window.App || {};
@@ -9,7 +9,7 @@ App.renderAllPreviews = function() {
     var wrapper = document.querySelector('.previews-wrapper');
     var emptyState = document.getElementById('emptyState');
 
-    // Sauvegarder la position de scroll
+    // Save scroll position
     var scrollLeft = wrapper.scrollLeft;
 
     container.querySelectorAll('.preview-item').forEach(function(el) { el.remove(); });
@@ -57,7 +57,7 @@ App.renderAllPreviews = function() {
         App.renderCanvas(canvas, screenshot);
     });
 
-    // Restaurer la position de scroll
+    // Restore scroll position
     wrapper.scrollLeft = scrollLeft;
 };
 
@@ -207,7 +207,7 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
 };
 
 App.drawText = function(ctx, canvasW, canvasH, preset, settings, format) {
-    // Calculer les tailles de police
+    // Calculate font sizes
     var headlineFontSize, subheadlineFontSize;
     if (format.fontSize) {
         headlineFontSize = format.fontSize[0];
@@ -218,7 +218,7 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format) {
     }
     var lineSpacing = headlineFontSize * 0.35;
 
-    // Calculer la hauteur totale du bloc de texte
+    // Calculate total text block height
     var totalTextHeight = 0;
     if (settings.headline) {
         totalTextHeight += headlineFontSize;
@@ -230,15 +230,15 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format) {
         totalTextHeight += subheadlineFontSize;
     }
 
-    // Déterminer la zone disponible pour le texte et centrer verticalement
+    // Determine available text zone and center vertically
     var textZoneStart, textZoneEnd;
     if (preset.cropBottom) {
-        // Preset "top" : texte en haut
+        // Preset "top": text at top
         var topZone = format.textZoneTop || [0.03, 0.22];
         textZoneStart = canvasH * topZone[0];
         textZoneEnd = canvasH * topZone[1];
     } else if (preset.cropTop) {
-        // Preset "bottom" : texte en bas
+        // Preset "bottom": text at bottom
         var bottomZone = format.textZoneBottom || [0.78, 0.97];
         textZoneStart = canvasH * bottomZone[0];
         textZoneEnd = canvasH * bottomZone[1];

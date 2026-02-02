@@ -1,5 +1,5 @@
 // ============================================
-// Gestion des screenshots
+// Screenshot Management
 // ============================================
 
 var App = window.App || {};

@@ -1,5 +1,5 @@
 // ============================================
-// Configuration & Constantes
+// Configuration & Constants
 // ============================================
 
 var App = window.App || {};

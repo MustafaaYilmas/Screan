@@ -1,5 +1,5 @@
 // ============================================
-// Screenshot Studio - Point d'entrée
+// Screenshot Studio - Entry Point
 // ============================================
 
 // Theme management
