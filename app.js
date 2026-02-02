@@ -33,4 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
     App.renderAllPreviews();
 });
 
-window.addEventListener('resize', function() { App.renderAllPreviews(); });
+// Throttled resize handler for better performance
+window.addEventListener('resize', App.throttle(function() {
+    App.scheduleRender();
+}, 100));

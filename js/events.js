@@ -4,6 +4,65 @@
 
 var App = window.App || {};
 
+// Debounce utility for input events
+App.debounce = function(fn, delay) {
+    var timeoutId;
+    return function() {
+        var context = this;
+        var args = arguments;
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(function() {
+            fn.apply(context, args);
+        }, delay);
+    };
+};
+
+// Throttle utility for resize events
+App.throttle = function(fn, delay) {
+    var lastCall = 0;
+    var timeoutId;
+    return function() {
+        var context = this;
+        var args = arguments;
+        var now = Date.now();
+        var remaining = delay - (now - lastCall);
+
+        clearTimeout(timeoutId);
+
+        if (remaining <= 0) {
+            lastCall = now;
+            fn.apply(context, args);
+        } else {
+            timeoutId = setTimeout(function() {
+                lastCall = Date.now();
+                fn.apply(context, args);
+            }, remaining);
+        }
+    };
+};
+
+// Schedule render using requestAnimationFrame to avoid blocking
+App._renderScheduled = false;
+App.scheduleRender = function() {
+    if (App._renderScheduled) return;
+    App._renderScheduled = true;
+    requestAnimationFrame(function() {
+        App._renderScheduled = false;
+        App.renderAllPreviews();
+    });
+};
+
+// Debounced render for text inputs (300ms delay)
+App.debouncedRender = App.debounce(function() {
+    App.scheduleRender();
+}, 300);
+
+// Debounced render for color hex inputs (200ms delay)
+App.debouncedColorRender = App.debounce(function() {
+    App.scheduleRender();
+    App.updateApplyToAllButton();
+}, 200);
+
 App.normalizeHex = function(value) {
     var hex = value.trim().toUpperCase();
     if (!hex.startsWith('#')) {
@@ -30,15 +89,15 @@ App.initEventListeners = function() {
     // Format select
     document.getElementById('formatSelect').addEventListener('change', function(e) {
         App.setCurrentFormat(e.target.value);
-        App.renderAllPreviews();
+        App.scheduleRender();
     });
 
-    // Text inputs
+    // Text inputs (debounced for better INP)
     document.getElementById('headline').addEventListener('input', function(e) {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.headline = e.target.value;
-            App.renderAllPreviews();
+            App.debouncedRender();
         }
     });
 
@@ -46,7 +105,7 @@ App.initEventListeners = function() {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.subheadline = e.target.value;
-            App.renderAllPreviews();
+            App.debouncedRender();
         }
     });
 
@@ -55,7 +114,7 @@ App.initEventListeners = function() {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.titleFont = e.target.value;
-            App.renderAllPreviews();
+            App.scheduleRender();
             App.updateApplyToAllButton();
         }
     });
@@ -65,7 +124,7 @@ App.initEventListeners = function() {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.bodyFont = e.target.value;
-            App.renderAllPreviews();
+            App.scheduleRender();
             App.updateApplyToAllButton();
         }
     });
@@ -92,18 +151,18 @@ App.initEventListeners = function() {
                 settings.bodySize = size;
             }
 
-            App.renderAllPreviews();
+            App.scheduleRender();
             App.updateApplyToAllButton();
         });
     });
 
-    // Colors - color picker
+    // Colors - color picker (use scheduleRender for smoother dragging)
     document.getElementById('textColor').addEventListener('input', function(e) {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.textColor = e.target.value;
             document.getElementById('textColorHex').value = e.target.value.toUpperCase();
-            App.renderAllPreviews();
+            App.scheduleRender();
             App.updateApplyToAllButton();
         }
     });
@@ -113,12 +172,12 @@ App.initEventListeners = function() {
         if (settings) {
             settings.bgColor = e.target.value;
             document.getElementById('bgColor1Hex').value = e.target.value.toUpperCase();
-            App.renderAllPreviews();
+            App.scheduleRender();
             App.updateApplyToAllButton();
         }
     });
 
-    // Colors - hex input
+    // Colors - hex input (debounced for better INP)
     document.getElementById('textColorHex').addEventListener('input', function(e) {
         var settings = App.getActiveSettings();
         if (settings) {
@@ -126,8 +185,7 @@ App.initEventListeners = function() {
             if (hex) {
                 settings.textColor = hex;
                 document.getElementById('textColor').value = hex;
-                App.renderAllPreviews();
-                App.updateApplyToAllButton();
+                App.debouncedColorRender();
             }
         }
     });
@@ -139,8 +197,7 @@ App.initEventListeners = function() {
             if (hex) {
                 settings.bgColor = hex;
                 document.getElementById('bgColor1').value = hex;
-                App.renderAllPreviews();
-                App.updateApplyToAllButton();
+                App.debouncedColorRender();
             }
         }
     });
@@ -152,8 +209,7 @@ App.initEventListeners = function() {
             if (hex) {
                 settings.deviceFrameColor = hex;
                 document.getElementById('deviceFrameColor').value = hex;
-                App.renderAllPreviews();
-                App.updateApplyToAllButton();
+                App.debouncedColorRender();
             }
         }
     });
@@ -163,7 +219,7 @@ App.initEventListeners = function() {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.addShadow = e.target.checked;
-            App.renderAllPreviews();
+            App.scheduleRender();
             App.updateApplyToAllButton();
         }
     });
@@ -174,18 +230,18 @@ App.initEventListeners = function() {
         if (settings) {
             settings.addDeviceFrame = e.target.checked;
             document.getElementById('deviceFrameColorRow').style.display = e.target.checked ? 'flex' : 'none';
-            App.renderAllPreviews();
+            App.scheduleRender();
             App.updateApplyToAllButton();
         }
     });
 
-    // Device frame color
+    // Device frame color (use scheduleRender for smoother dragging)
     document.getElementById('deviceFrameColor').addEventListener('input', function(e) {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.deviceFrameColor = e.target.value;
             document.getElementById('deviceFrameColorHex').value = e.target.value.toUpperCase();
-            App.renderAllPreviews();
+            App.scheduleRender();
             App.updateApplyToAllButton();
         }
     });
@@ -199,7 +255,7 @@ App.initEventListeners = function() {
                 btn.classList.add('active');
                 settings.preset = btn.dataset.preset;
                 App.updateTextFieldsState();
-                App.renderAllPreviews();
+                App.scheduleRender();
                 App.updateApplyToAllButton();
             }
         });

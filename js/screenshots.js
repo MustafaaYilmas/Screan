@@ -25,7 +25,7 @@ App.handleScreenshots = function(files) {
                     platformData.activeIndex = 0;
                 }
                 App.updateSettingsUI();
-                App.renderAllPreviews();
+                App.scheduleRender();
                 App.updateExportButton();
                 App.updateSidebarCounts();
             };
@@ -42,7 +42,7 @@ App.removeScreenshot = function(index) {
         platformData.activeIndex = Math.max(0, platformData.screenshots.length - 1);
     }
     App.updateSettingsUI();
-    App.renderAllPreviews();
+    App.scheduleRender();
     App.updateExportButton();
     App.updateSidebarCounts();
 };
@@ -50,7 +50,7 @@ App.removeScreenshot = function(index) {
 App.selectScreenshot = function(index) {
     App.setActiveIndex(index);
     App.updateSettingsUI();
-    App.renderAllPreviews();
+    App.scheduleRender();
 };
 
 App.updateSettingsUI = function() {
@@ -163,6 +163,6 @@ App.applySettingsToAll = function() {
         Object.assign(screenshot.settings, settingsToApply);
     });
 
-    App.renderAllPreviews();
+    App.scheduleRender();
     App.updateSettingsUI();
 };
