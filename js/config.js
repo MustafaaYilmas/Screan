@@ -5,9 +5,11 @@
 var App = window.App || {};
 
 App.FORMATS = {
+    'iphone-6.9': { width: 1260, height: 2736, name: 'iPhone 6.9"' },
     'iphone-6.7': { width: 1290, height: 2796, name: 'iPhone 6.7"' },
     'iphone-6.5': { width: 1284, height: 2778, name: 'iPhone 6.5"' },
     'iphone-5.5': { width: 1242, height: 2208, name: 'iPhone 5.5"' },
+    'ipad-13': { width: 2064, height: 2752, name: 'iPad 13"' },
     'ipad-12.9': { width: 2048, height: 2732, name: 'iPad 12.9"' },
     'ipad-11': { width: 1668, height: 2388, name: 'iPad 11"' },
     'mac': { width: 1280, height: 800, name: 'Mac' }

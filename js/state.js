@@ -7,10 +7,10 @@ var App = window.App || {};
 App.state = {
     screenshots: [],
     activeIndex: 0,
-    exportFormats: ['iphone-6.7', 'iphone-6.5', 'ipad-12.9']
+    exportFormats: ['iphone-6.9', 'ipad-13']
 };
 
-App.currentFormat = 'iphone-6.7';
+App.currentFormat = 'iphone-6.9';
 
 App.setCurrentFormat = function(format) {
     App.currentFormat = format;
