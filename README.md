@@ -37,8 +37,6 @@ This is an alpha release. Known limitations:
 - Large batch exports may be slow
 - Some edge cases in image sizing
 
-Contributions and bug reports are welcome!
-
 ## License
 
 MIT
