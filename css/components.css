@@ -1,0 +1,339 @@
+/* ============================================
+   Position Buttons
+   ============================================ */
+
+.position-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.position-btn-new {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 8px;
+    background: var(--input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.position-btn-new:hover {
+    background: var(--muted);
+    border-color: var(--ring);
+}
+
+.position-btn-new.active {
+    border-color: var(--foreground);
+    background: var(--muted);
+}
+
+.position-btn-new span {
+    font-size: 12px;
+    color: var(--foreground-muted);
+}
+
+.position-btn-new.active span {
+    color: var(--foreground);
+}
+
+.position-preview {
+    width: 36px;
+    height: 52px;
+    background: var(--background);
+    border-radius: var(--radius-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.position-text-area {
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    height: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.position-text-area::before,
+.position-text-area::after {
+    content: '';
+    height: 3px;
+    background: var(--foreground-muted);
+    border-radius: 1px;
+    opacity: 0.3;
+}
+
+.position-text-area::before {
+    width: 80%;
+}
+
+.position-text-area::after {
+    width: 55%;
+}
+
+.position-text-area.top { top: 4px; }
+.position-text-area.bottom { bottom: 4px; }
+
+.position-screenshot-area {
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    background: var(--foreground-muted);
+    border-radius: 2px;
+    opacity: 0.4;
+}
+
+.position-screenshot-area.top {
+    top: 4px;
+    bottom: 16px;
+}
+
+.position-screenshot-area.bottom {
+    top: 16px;
+    bottom: -4px;
+}
+
+.position-screenshot-area.centered {
+    top: 50%;
+    transform: translateY(-50%);
+    height: 28px;
+}
+
+.position-btn-new.active .position-screenshot-area {
+    background: var(--foreground);
+    opacity: 0.9;
+}
+
+.position-btn-new.active .position-text-area::before,
+.position-btn-new.active .position-text-area::after {
+    background: var(--foreground);
+    opacity: 0.6;
+}
+
+/* ============================================
+   Text Input
+   ============================================ */
+
+.text-input {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--input);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius);
+    color: var(--foreground);
+    font-size: 14px;
+    transition: all var(--transition-fast);
+}
+
+.text-input:hover {
+    border-color: var(--ring);
+}
+
+.text-input:focus {
+    outline: none;
+    border-color: var(--ring);
+    box-shadow: 0 0 0 3px rgba(63, 63, 70, 0.3);
+}
+
+.text-input::placeholder {
+    color: var(--foreground-muted);
+}
+
+/* ============================================
+   Color Controls
+   ============================================ */
+
+.color-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.color-row:last-child {
+    margin-bottom: 0;
+}
+
+.color-label {
+    font-size: 13px;
+    color: var(--foreground-muted);
+}
+
+.color-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.color-input-wrap input[type="color"] {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    background: transparent;
+}
+
+.color-input-wrap input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 2px;
+}
+
+.color-input-wrap input[type="color"]::-webkit-color-swatch {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+}
+
+.color-hex {
+    font-size: 12px;
+    font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+    color: var(--foreground-muted);
+    min-width: 60px;
+}
+
+.color-presets {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.color-preset-btn {
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.color-preset-btn:hover {
+    transform: scale(1.05);
+    border-color: var(--ring);
+}
+
+/* ============================================
+   Slider
+   ============================================ */
+
+.slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.slider {
+    flex: 1;
+    height: 4px;
+    background: var(--input);
+    border-radius: 2px;
+    appearance: none;
+    cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: var(--foreground);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform var(--transition-fast);
+}
+
+.slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+.slider-value {
+    min-width: 40px;
+    font-size: 13px;
+    color: var(--foreground-muted);
+    text-align: right;
+}
+
+/* ============================================
+   Toggle
+   ============================================ */
+
+.toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+}
+
+.toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: var(--input);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.toggle-slider::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    background: var(--foreground-muted);
+    border-radius: 50%;
+    transition: all var(--transition-base);
+}
+
+.toggle input:checked + .toggle-slider {
+    background: var(--foreground);
+    border-color: var(--foreground);
+}
+
+.toggle input:checked + .toggle-slider::before {
+    transform: translateX(20px);
+    background: var(--background);
+}
+
+/* ============================================
+   Button Row
+   ============================================ */
+
+.button-row {
+    display: flex;
+    gap: 6px;
+}
+
+.option-btn {
+    flex: 1;
+    padding: 8px 10px;
+    background: var(--input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--foreground-muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.option-btn:hover {
+    background: var(--muted);
+    color: var(--foreground);
+    border-color: var(--ring);
+}
+
+.option-btn.active {
+    background: var(--foreground);
+    color: var(--background);
+    border-color: var(--foreground);
+}

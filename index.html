@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screan</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar gauche -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="app-name">Screan</span>
+                <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Plateformes</div>
+                    <label class="nav-item">
+                        <input type="checkbox" data-format="iphone-6.7" checked>
+                        <span>iPhone 6.7"</span>
+                    </label>
+                    <label class="nav-item">
+                        <input type="checkbox" data-format="iphone-6.5" checked>
+                        <span>iPhone 6.5"</span>
+                    </label>
+                    <label class="nav-item">
+                        <input type="checkbox" data-format="iphone-5.5">
+                        <span>iPhone 5.5"</span>
+                    </label>
+                    <label class="nav-item">
+                        <input type="checkbox" data-format="ipad-12.9" checked>
+                        <span>iPad 12.9"</span>
+                    </label>
+                    <label class="nav-item">
+                        <input type="checkbox" data-format="ipad-11">
+                        <span>iPad 11"</span>
+                    </label>
+                    <label class="nav-item">
+                        <input type="checkbox" data-format="mac">
+                        <span>Mac</span>
+                    </label>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="btn-export" id="exportBtn" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Exporter
+                </button>
+            </div>
+        </aside>
+
+        <!-- Zone principale -->
+        <main class="main-content">
+            <!-- Toolbar -->
+            <header class="main-toolbar">
+                <div class="toolbar-left">
+                    <button class="add-screenshot-btn" id="addScreenshotBtn">
+                        <input type="file" id="screenshotInput" multiple accept="image/*" hidden>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Add Screenshots
+                    </button>
+                </div>
+                <div class="toolbar-right">
+                    <span class="preview-label">Preview:</span>
+                    <select id="formatSelect" class="format-select">
+                        <option value="iphone-6.7">iPhone 6.7"</option>
+                        <option value="iphone-6.5">iPhone 6.5"</option>
+                        <option value="iphone-5.5">iPhone 5.5"</option>
+                        <option value="ipad-12.9">iPad 12.9"</option>
+                        <option value="ipad-11">iPad 11"</option>
+                        <option value="mac">Mac</option>
+                    </select>
+                </div>
+            </header>
+
+            <!-- Zone des previews multiples -->
+            <div class="previews-wrapper">
+                <div class="previews-container" id="previewsContainer">
+                    <!-- Les canvas seront générés dynamiquement -->
+                    <div class="empty-state" id="emptyState">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                        <p>Drag & drop screenshots here</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Panneau de droite -->
+        <aside class="settings-panel">
+            <div class="settings-scroll">
+                <!-- Device Position -->
+                <section class="settings-section">
+                    <div class="section-header">
+                        <span class="section-title">Position</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="position-buttons">
+                            <button class="position-btn-new active" data-preset="top" title="Screenshot en bas, texte en haut">
+                                <div class="position-preview">
+                                    <div class="position-text-area top"></div>
+                                    <div class="position-screenshot-area bottom"></div>
+                                </div>
+                                <span>Top</span>
+                            </button>
+                            <button class="position-btn-new" data-preset="center" title="Screenshot centré">
+                                <div class="position-preview">
+                                    <div class="position-screenshot-area centered"></div>
+                                </div>
+                                <span>Center</span>
+                            </button>
+                            <button class="position-btn-new" data-preset="bottom" title="Screenshot en haut, texte en bas">
+                                <div class="position-preview">
+                                    <div class="position-screenshot-area top"></div>
+                                    <div class="position-text-area bottom"></div>
+                                </div>
+                                <span>Bottom</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Title -->
+                <section class="settings-section">
+                    <div class="section-header">
+                        <span class="section-title">Title</span>
+                    </div>
+                    <div class="section-content">
+                        <input type="text" id="headline" class="text-input" placeholder="Enter title...">
+                    </div>
+                </section>
+
+                <!-- Body -->
+                <section class="settings-section">
+                    <div class="section-header">
+                        <span class="section-title">Body</span>
+                    </div>
+                    <div class="section-content">
+                        <input type="text" id="subheadline" class="text-input" placeholder="Enter subtitle...">
+                    </div>
+                </section>
+
+                <!-- Text & Background Colors -->
+                <section class="settings-section">
+                    <div class="section-header">
+                        <span class="section-title">Colors</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="color-row">
+                            <label class="color-label">Text</label>
+                            <div class="color-input-wrap">
+                                <input type="color" id="textColor" value="#ffffff">
+                                <span class="color-hex" id="textColorHex">#FFFFFF</span>
+                            </div>
+                        </div>
+                        <div class="color-row">
+                            <label class="color-label">Background</label>
+                            <div class="color-input-wrap">
+                                <input type="color" id="bgColor1" value="#75B7E7">
+                                <span class="color-hex" id="bgColor1Hex">#75B7E7</span>
+                            </div>
+                        </div>
+                        <div class="color-row" id="deviceFrameColorRow" style="display: none;">
+                            <label class="color-label">Device</label>
+                            <div class="color-input-wrap">
+                                <input type="color" id="deviceFrameColor" value="#000000">
+                                <span class="color-hex" id="deviceFrameColorHex">#000000</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Device Frame -->
+                <section class="settings-section">
+                    <div class="section-header">
+                        <span class="section-title">Device Frame</span>
+                        <label class="toggle">
+                            <input type="checkbox" id="addDeviceFrame">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- Shadow -->
+                <section class="settings-section">
+                    <div class="section-header">
+                        <span class="section-title">Shadow</span>
+                        <label class="toggle">
+                            <input type="checkbox" id="addShadow">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Delete Button -->
+            <div class="settings-footer">
+                <button class="btn-delete" id="deleteScreenshotBtn" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6h18"/>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                    </svg>
+                    Delete Screenshot
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Modal de progression -->
+    <div class="modal-overlay" id="progressModal">
+        <div class="modal-content">
+            <div class="spinner"></div>
+            <p class="modal-text" id="progressText">Exporting...</p>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/render.js"></script>
+    <script src="js/screenshots.js"></script>
+    <script src="js/dragdrop.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/events.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

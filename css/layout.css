@@ -1,0 +1,89 @@
+/* ============================================
+   App Layout
+   ============================================ */
+
+.app {
+    display: flex;
+    height: 100vh;
+}
+
+/* ============================================
+   Main Content
+   ============================================ */
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--background);
+    min-width: 0;
+}
+
+/* Main Toolbar */
+.main-toolbar {
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    box-sizing: border-box;
+}
+
+.toolbar-left, .toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.add-screenshot-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    background: var(--primary);
+    border: none;
+    border-radius: var(--radius);
+    color: var(--primary-foreground);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity var(--transition-fast);
+    transform: translateY(-1px);
+}
+
+.add-screenshot-btn:hover {
+    opacity: 0.9;
+}
+
+.add-screenshot-btn:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+}
+
+.preview-label {
+    font-size: 14px;
+    color: var(--foreground-muted);
+}
+
+.format-select {
+    padding: 8px 12px;
+    background: var(--input);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius);
+    color: var(--foreground);
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color var(--transition-fast);
+}
+
+.format-select:hover {
+    border-color: var(--ring);
+}
+
+.format-select:focus {
+    outline: none;
+    border-color: var(--ring);
+    box-shadow: 0 0 0 3px rgba(63, 63, 70, 0.3);
+}
