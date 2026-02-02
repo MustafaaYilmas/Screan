@@ -72,7 +72,7 @@ App.DEFAULT_SETTINGS = {
     subheadline: 'The best way to do things',
     textColor: '#ffffff',
     bgColor: '#75B7E7',
-    addShadow: false,
+    addShadow: true,
     addDeviceFrame: true,
     deviceFrameColor: '#000000',
     preset: 'top',
