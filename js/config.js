@@ -41,7 +41,7 @@ App.DEFAULT_SETTINGS = {
     textColor: '#ffffff',
     bgColor: '#75B7E7',
     addShadow: false,
-    addDeviceFrame: false,
+    addDeviceFrame: true,
     deviceFrameColor: '#000000',
     preset: 'top'
 };
