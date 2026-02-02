@@ -36,7 +36,7 @@ App.exportAll = async function() {
             for (var j = 0; j < platform.screenshots.length; j++) {
                 progressText.textContent = 'Exporting ' + format.name + ' - ' + (j + 1) + '/' + platform.screenshots.length;
 
-                App.renderCanvasForExport(tempCanvas, tempCtx, platform.screenshots[j], format);
+                App.renderCanvasForExport(tempCanvas, tempCtx, platform.screenshots[j], format, formatKey);
 
                 await new Promise(function(r) { setTimeout(r, 50); });
 
@@ -66,7 +66,7 @@ App.exportAll = async function() {
     modal.classList.remove('show');
 };
 
-App.renderCanvasForExport = function(canvas, ctx, screenshot, format) {
+App.renderCanvasForExport = function(canvas, ctx, screenshot, format, formatKey) {
     var settings = screenshot.settings;
     var preset = App.PRESETS[settings.preset];
     var w = format.width;
@@ -80,6 +80,6 @@ App.renderCanvasForExport = function(canvas, ctx, screenshot, format) {
     App.drawScreenshot(ctx, screenshot, w, h, preset, settings, format);
 
     if (!preset.noText && (settings.headline || settings.subheadline)) {
-        App.drawText(ctx, w, h, preset, settings, format);
+        App.drawText(ctx, w, h, preset, settings, format, formatKey);
     }
 };

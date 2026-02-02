@@ -5,6 +5,7 @@
 var App = window.App || {};
 
 App.FORMATS = {
+    // iOS - App Store
     'iphone-6.9': { width: 1260, height: 2736, name: 'iPhone 6.9"', cornerRadius: 0.10 },
     'iphone-6.7': { width: 1290, height: 2796, name: 'iPhone 6.7"', cornerRadius: 0.10 },
     'iphone-6.5': { width: 1284, height: 2778, name: 'iPhone 6.5"', cornerRadius: 0.10 },
@@ -12,7 +13,13 @@ App.FORMATS = {
     'ipad-13': { width: 2064, height: 2752, name: 'iPad 13"', cornerRadius: 0.04, textZoneTop: [0.02, 0.18], textZoneBottom: [0.80, 0.96] },
     'ipad-12.9': { width: 2048, height: 2732, name: 'iPad 12.9"', cornerRadius: 0.04, textZoneTop: [0.02, 0.18], textZoneBottom: [0.80, 0.96] },
     'ipad-11': { width: 1668, height: 2388, name: 'iPad 11"', cornerRadius: 0.04, textZoneTop: [0.02, 0.18], textZoneBottom: [0.80, 0.96] },
-    'mac': { width: 1280, height: 800, name: 'Mac', cornerRadius: 0.02 }
+    'mac-1280': { width: 1280, height: 800, name: 'Mac 1280', cornerRadius: 0.02 },
+    'mac-2880': { width: 2880, height: 1800, name: 'Mac 2880', cornerRadius: 0.02 },
+    // Android - Google Play Store
+    'android-phone-1080': { width: 1080, height: 1920, name: 'Phone FHD', cornerRadius: 0.06 },
+    'android-phone-1440': { width: 1440, height: 2560, name: 'Phone QHD', cornerRadius: 0.06 },
+    'android-tablet-7': { width: 1200, height: 1920, name: 'Tablet 7"', cornerRadius: 0.04, textZoneTop: [0.02, 0.18], textZoneBottom: [0.80, 0.96] },
+    'android-tablet-10': { width: 1600, height: 2560, name: 'Tablet 10"', cornerRadius: 0.04, textZoneTop: [0.02, 0.18], textZoneBottom: [0.80, 0.96] }
 };
 
 // Font sizes: [title, body] for each size variant
@@ -36,6 +43,26 @@ App.FONT_SIZES = {
         small:  [38, 22],
         medium: [48, 28],
         large:  [58, 34]
+    },
+    'mac-2880': {
+        small:  [86, 50],
+        medium: [108, 63],
+        large:  [130, 76]
+    },
+    'android-phone': {
+        small:  [72, 48],
+        medium: [96, 58],
+        large:  [108, 66]
+    },
+    'android-tablet': {
+        small:  [100, 56],
+        medium: [124, 70],
+        large:  [148, 84]
+    },
+    'android-tablet-7': {
+        small:  [80, 46],
+        medium: [100, 58],
+        large:  [120, 70]
     }
 };
 
@@ -101,7 +128,17 @@ App.PLATFORM_FAMILIES = {
     },
     'mac': {
         name: 'Mac',
-        formats: ['mac'],
-        defaultExport: ['mac']
+        formats: ['mac-2880', 'mac-1280'],
+        defaultExport: ['mac-2880']
+    },
+    'android-phone': {
+        name: 'Phone',
+        formats: ['android-phone-1080', 'android-phone-1440'],
+        defaultExport: ['android-phone-1080']
+    },
+    'android-tablet': {
+        name: 'Tablet',
+        formats: ['android-tablet-7', 'android-tablet-10'],
+        defaultExport: ['android-tablet-7']
     }
 };

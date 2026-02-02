@@ -90,7 +90,7 @@ App.renderCanvas = function(canvas, screenshot) {
     App.drawScreenshot(ctx, screenshot, w, h, preset, settings, format);
 
     if (!preset.noText && (settings.headline || settings.subheadline)) {
-        App.drawText(ctx, w, h, preset, settings, format);
+        App.drawText(ctx, w, h, preset, settings, format, App.currentFormat);
     }
 };
 
@@ -219,11 +219,29 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
     }
 };
 
-App.drawText = function(ctx, canvasW, canvasH, preset, settings, format) {
+App.getFontSizeKey = function(formatKey) {
+    if (formatKey.startsWith('iphone')) {
+        return 'iphone';
+    } else if (formatKey === 'ipad-11') {
+        return 'ipad-11';
+    } else if (formatKey.startsWith('ipad')) {
+        return 'ipad';
+    } else if (formatKey.startsWith('android-phone')) {
+        return 'android-phone';
+    } else if (formatKey === 'android-tablet-7') {
+        return 'android-tablet-7';
+    } else if (formatKey.startsWith('android-tablet')) {
+        return 'android-tablet';
+    } else if (formatKey === 'mac-2880') {
+        return 'mac-2880';
+    } else {
+        return 'mac';
+    }
+};
+
+App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatKey) {
     // Determine font size category based on format
-    var fontSizeKey = App.currentFormat.startsWith('iphone') ? 'iphone' :
-                      App.currentFormat === 'ipad-11' ? 'ipad-11' :
-                      App.currentFormat.startsWith('ipad') ? 'ipad' : 'mac';
+    var fontSizeKey = App.getFontSizeKey(formatKey || App.currentFormat);
 
     var titleSize = settings.titleSize || 'medium';
     var bodySize = settings.bodySize || 'medium';

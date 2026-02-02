@@ -20,7 +20,17 @@ App.state = {
         'mac': {
             screenshots: [],
             activeIndex: 0,
-            exportFormats: ['mac']
+            exportFormats: ['mac-2880']
+        },
+        'android-phone': {
+            screenshots: [],
+            activeIndex: 0,
+            exportFormats: ['android-phone-1080']
+        },
+        'android-tablet': {
+            screenshots: [],
+            activeIndex: 0,
+            exportFormats: ['android-tablet-7']
         }
     }
 };

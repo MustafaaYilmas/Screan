@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Screan - App Store Screenshot Studio</title>
-    <meta name="description" content="Create beautiful App Store screenshots for iPhone, iPad, and Mac. Add titles, customize colors, and export all formats at once.">
-    <meta name="keywords" content="App Store, screenshots, iPhone, iPad, Mac, marketing, ASO">
+    <title>Screan - App Store & Google Play Screenshot Studio</title>
+    <meta name="description" content="Create beautiful screenshots for App Store and Google Play. iPhone, iPad, Mac, and Android. Add titles, customize colors, and export all formats at once.">
+    <meta name="keywords" content="App Store, Google Play, screenshots, iPhone, iPad, Mac, Android, marketing, ASO">
     <meta name="author" content="Screan">
     <meta name="robots" content="index, follow">
 
     <!-- Open Graph / Social -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Screan - App Store Screenshot Studio">
-    <meta property="og:description" content="Create beautiful App Store screenshots for iPhone, iPad, and Mac.">
+    <meta property="og:title" content="Screan - App Store & Google Play Screenshot Studio">
+    <meta property="og:description" content="Create beautiful screenshots for App Store and Google Play. iPhone, iPad, Mac, and Android.">
     <meta property="og:site_name" content="Screan">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Screan - App Store Screenshot Studio">
-    <meta name="twitter:description" content="Create beautiful App Store screenshots for iPhone, iPad, and Mac.">
+    <meta name="twitter:title" content="Screan - App Store & Google Play Screenshot Studio">
+    <meta name="twitter:description" content="Create beautiful screenshots for App Store and Google Play. iPhone, iPad, Mac, and Android.">
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -55,8 +55,9 @@
             </div>
 
             <nav class="sidebar-nav">
+                <!-- Apple App Store -->
                 <div class="nav-section">
-                    <div class="nav-section-title">Platforms</div>
+                    <div class="nav-section-title">App Store</div>
 
                     <!-- iPhone -->
                     <div class="platform-item active" data-platform="iphone">
@@ -114,8 +115,53 @@
                         </div>
                         <div class="platform-sizes">
                             <label class="size-item">
-                                <input type="checkbox" data-platform="mac" data-format="mac" checked>
-                                <span>Mac</span>
+                                <input type="checkbox" data-platform="mac" data-format="mac-2880" checked>
+                                <span>2880</span>
+                            </label>
+                            <label class="size-item">
+                                <input type="checkbox" data-platform="mac" data-format="mac-1280">
+                                <span>1280</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Google Play Store -->
+                <div class="nav-section">
+                    <div class="nav-section-title">Google Play</div>
+
+                    <!-- Android Phone -->
+                    <div class="platform-item" data-platform="android-phone">
+                        <div class="platform-header">
+                            <span class="platform-name">Phone</span>
+                            <span class="screenshot-count" style="display: none;">(0)</span>
+                        </div>
+                        <div class="platform-sizes">
+                            <label class="size-item">
+                                <input type="checkbox" data-platform="android-phone" data-format="android-phone-1080" checked>
+                                <span>1080p</span>
+                            </label>
+                            <label class="size-item">
+                                <input type="checkbox" data-platform="android-phone" data-format="android-phone-1440">
+                                <span>1440p</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Android Tablet -->
+                    <div class="platform-item" data-platform="android-tablet">
+                        <div class="platform-header">
+                            <span class="platform-name">Tablet</span>
+                            <span class="screenshot-count" style="display: none;">(0)</span>
+                        </div>
+                        <div class="platform-sizes">
+                            <label class="size-item">
+                                <input type="checkbox" data-platform="android-tablet" data-format="android-tablet-7" checked>
+                                <span>7"</span>
+                            </label>
+                            <label class="size-item">
+                                <input type="checkbox" data-platform="android-tablet" data-format="android-tablet-10">
+                                <span>10"</span>
                             </label>
                         </div>
                     </div>
