@@ -82,6 +82,18 @@ App.updateSettingsUI = function() {
     document.getElementById('deviceFrameColorHex').textContent = settings.deviceFrameColor.toUpperCase();
     document.getElementById('deviceFrameColorRow').style.display = settings.addDeviceFrame ? 'flex' : 'none';
 
+    // Title font and size
+    document.getElementById('titleFont').value = settings.titleFont || 'sf-pro';
+    document.querySelectorAll('.size-btn[data-target="title"]').forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.size === (settings.titleSize || 'medium'));
+    });
+
+    // Body font and size
+    document.getElementById('bodyFont').value = settings.bodyFont || 'sf-pro';
+    document.querySelectorAll('.size-btn[data-target="body"]').forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.size === (settings.bodySize || 'medium'));
+    });
+
     document.querySelectorAll('.position-btn-new').forEach(function(btn) {
         btn.classList.toggle('active', btn.dataset.preset === settings.preset);
     });
@@ -99,4 +111,10 @@ App.updateTextFieldsState = function() {
     document.getElementById('headline').disabled = isDisabled;
     document.getElementById('subheadline').disabled = isDisabled;
     document.getElementById('textColor').disabled = isDisabled;
+    document.getElementById('titleFont').disabled = isDisabled;
+    document.getElementById('bodyFont').disabled = isDisabled;
+
+    document.querySelectorAll('.size-btn').forEach(function(btn) {
+        btn.disabled = isDisabled;
+    });
 };

@@ -34,6 +34,50 @@ App.initEventListeners = function() {
         }
     });
 
+    // Title font
+    document.getElementById('titleFont').addEventListener('change', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            settings.titleFont = e.target.value;
+            App.renderAllPreviews();
+        }
+    });
+
+    // Body font
+    document.getElementById('bodyFont').addEventListener('change', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            settings.bodyFont = e.target.value;
+            App.renderAllPreviews();
+        }
+    });
+
+    // Size buttons
+    document.querySelectorAll('.size-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var settings = App.getActiveSettings();
+            if (!settings) return;
+
+            var target = btn.dataset.target;
+            var size = btn.dataset.size;
+
+            // Update active state
+            document.querySelectorAll('.size-btn[data-target="' + target + '"]').forEach(function(b) {
+                b.classList.remove('active');
+            });
+            btn.classList.add('active');
+
+            // Update settings
+            if (target === 'title') {
+                settings.titleSize = size;
+            } else if (target === 'body') {
+                settings.bodySize = size;
+            }
+
+            App.renderAllPreviews();
+        });
+    });
+
     // Colors
     document.getElementById('textColor').addEventListener('input', function(e) {
         var settings = App.getActiveSettings();

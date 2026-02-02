@@ -146,6 +146,91 @@
 }
 
 /* ============================================
+   Text Options Row (Font + Size)
+   ============================================ */
+
+.text-options-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    align-items: center;
+}
+
+.font-select {
+    flex: 1;
+    height: 34px;
+    padding: 0 10px;
+    background: var(--input);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius);
+    color: var(--foreground);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.font-select:hover {
+    border-color: var(--ring);
+}
+
+.font-select:focus {
+    outline: none;
+    border-color: var(--ring);
+}
+
+.size-buttons {
+    display: flex;
+    gap: 2px;
+    height: 34px;
+    background: var(--input);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius);
+    padding: 2px;
+    box-sizing: border-box;
+}
+
+.size-btn {
+    width: 28px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: calc(var(--radius) - 2px);
+    color: var(--foreground-muted);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.size-btn:hover {
+    color: var(--foreground);
+    background: var(--muted);
+}
+
+.size-btn.active {
+    background: var(--foreground);
+    color: var(--background);
+}
+
+.size-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.size-btn:disabled:hover {
+    background: transparent;
+    color: var(--foreground-muted);
+}
+
+.size-btn:disabled.active {
+    background: var(--foreground);
+    color: var(--background);
+}
+
+/* ============================================
    Color Controls
    ============================================ */
 

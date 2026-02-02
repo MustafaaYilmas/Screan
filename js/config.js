@@ -15,6 +15,14 @@ App.FORMATS = {
     'mac': { width: 1280, height: 800, name: 'Mac', cornerRadius: 0.02, fontSize: [48, 28] }
 };
 
+App.FONTS = {
+    'sf-pro': { name: 'SF Pro', family: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif' },
+    'sf-rounded': { name: 'SF Rounded', family: 'ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, sans-serif' },
+    'sf-mono': { name: 'SF Mono', family: 'ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco, monospace' },
+    'new-york': { name: 'New York', family: 'ui-serif, "New York", Georgia, serif' },
+    'inter': { name: 'Inter', family: 'Inter, -apple-system, sans-serif' }
+};
+
 App.PRESETS = {
     'top': {
         screenshotY: 0.24,
@@ -43,7 +51,17 @@ App.DEFAULT_SETTINGS = {
     addShadow: false,
     addDeviceFrame: true,
     deviceFrameColor: '#000000',
-    preset: 'top'
+    preset: 'top',
+    titleFont: 'sf-pro',
+    titleSize: 'medium',
+    bodyFont: 'sf-pro',
+    bodySize: 'medium'
+};
+
+App.SIZE_MULTIPLIERS = {
+    small: 0.8,
+    medium: 1.0,
+    large: 1.2
 };
 
 App.PLATFORM_FAMILIES = {

@@ -5,48 +5,48 @@
 /* Dark theme (default) - Tailwind Neutral */
 :root {
     /* Background */
-    --background: #0a0a0a;       /* neutral-950 */
-    --background-subtle: #0a0a0a;
+    --background: #141414;       /* between neutral-900 and 950 */
+    --background-subtle: #171717; /* neutral-900 */
 
     /* Card/Surface */
-    --card: #0a0a0a;             /* neutral-950 */
+    --card: #1a1a1a;             /* slightly lighter than neutral-900 */
     --card-foreground: #fafafa;  /* neutral-50 */
 
     /* Muted */
-    --muted: #171717;            /* neutral-900 */
+    --muted: #262626;            /* neutral-800 */
     --muted-foreground: #a3a3a3; /* neutral-400 */
 
     /* Border */
-    --border: #262626;           /* neutral-800 */
-    --border-subtle: #171717;    /* neutral-900 */
+    --border: #303030;           /* between neutral-800 and 700 */
+    --border-subtle: #262626;    /* neutral-800 */
 
     /* Input */
-    --input: #171717;            /* neutral-900 */
-    --input-border: #262626;     /* neutral-800 */
+    --input: #1f1f1f;            /* between neutral-900 and 800 */
+    --input-border: #353535;     /* between neutral-800 and 700 */
 
     /* Ring (focus) */
-    --ring: #404040;             /* neutral-700 */
-    --ring-offset: #0a0a0a;      /* neutral-950 */
+    --ring: #525252;             /* neutral-600 */
+    --ring-offset: #141414;
 
     /* Primary */
     --primary: #fafafa;          /* neutral-50 */
     --primary-foreground: #171717; /* neutral-900 */
 
     /* Secondary */
-    --secondary: #262626;        /* neutral-800 */
+    --secondary: #2a2a2a;        /* between neutral-800 and 900 */
     --secondary-foreground: #fafafa; /* neutral-50 */
 
     /* Accent */
-    --accent: #262626;           /* neutral-800 */
+    --accent: #2a2a2a;           /* between neutral-800 and 900 */
     --accent-foreground: #fafafa; /* neutral-50 */
 
     /* Destructive */
-    --destructive: #7f1d1d;
+    --destructive: #991b1b;      /* red-800, slightly brighter */
     --destructive-foreground: #fafafa;
 
     /* Text */
     --foreground: #fafafa;       /* neutral-50 */
-    --foreground-muted: #737373; /* neutral-500 */
+    --foreground-muted: #858585; /* between neutral-500 and 400, more visible */
 
     /* Radius */
     --radius-sm: 4px;
@@ -65,27 +65,27 @@
 /* Light theme - Tailwind Neutral */
 :root.light {
     /* Background */
-    --background: #ffffff;       /* white */
-    --background-subtle: #fafafa; /* neutral-50 */
+    --background: #f7f7f7;       /* slightly off-white */
+    --background-subtle: #f0f0f0; /* neutral-100 area */
 
     /* Card/Surface */
-    --card: #ffffff;             /* white */
+    --card: #ffffff;             /* white - keep for cards */
     --card-foreground: #0a0a0a;  /* neutral-950 */
 
     /* Muted */
-    --muted: #f5f5f5;            /* neutral-100 */
-    --muted-foreground: #737373; /* neutral-500 */
+    --muted: #ebebeb;            /* between neutral-100 and 200 */
+    --muted-foreground: #636363; /* between neutral-500 and 600, darker */
 
     /* Border */
-    --border: #e5e5e5;           /* neutral-200 */
-    --border-subtle: #f5f5f5;    /* neutral-100 */
+    --border: #d4d4d4;           /* neutral-300, more visible */
+    --border-subtle: #e5e5e5;    /* neutral-200 */
 
     /* Input */
-    --input: #ffffff;            /* white */
-    --input-border: #e5e5e5;     /* neutral-200 */
+    --input: #ffffff;            /* white - keep for inputs */
+    --input-border: #d4d4d4;     /* neutral-300, more visible */
 
     /* Ring (focus) */
-    --ring: #a3a3a3;             /* neutral-400 */
+    --ring: #737373;             /* neutral-500, more visible */
     --ring-offset: #ffffff;      /* white */
 
     /* Primary */
@@ -93,11 +93,11 @@
     --primary-foreground: #fafafa; /* neutral-50 */
 
     /* Secondary */
-    --secondary: #f5f5f5;        /* neutral-100 */
+    --secondary: #ebebeb;        /* between neutral-100 and 200 */
     --secondary-foreground: #171717; /* neutral-900 */
 
     /* Accent */
-    --accent: #f5f5f5;           /* neutral-100 */
+    --accent: #e5e5e5;           /* neutral-200 */
     --accent-foreground: #171717; /* neutral-900 */
 
     /* Destructive */
@@ -106,5 +106,5 @@
 
     /* Text */
     --foreground: #0a0a0a;       /* neutral-950 */
-    --foreground-muted: #737373; /* neutral-500 */
+    --foreground-muted: #525252; /* neutral-600, darker for better readability */
 }

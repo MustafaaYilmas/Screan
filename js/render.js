@@ -207,16 +207,32 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
 };
 
 App.drawText = function(ctx, canvasW, canvasH, preset, settings, format) {
-    // Calculate font sizes
-    var headlineFontSize, subheadlineFontSize;
+    // Calculate base font sizes
+    var baseHeadlineSize, baseSubheadlineSize;
     if (format.fontSize) {
-        headlineFontSize = format.fontSize[0];
-        subheadlineFontSize = format.fontSize[1];
+        baseHeadlineSize = format.fontSize[0];
+        baseSubheadlineSize = format.fontSize[1];
     } else {
-        headlineFontSize = format.width > 2000 ? 140 : format.width > 1500 ? 110 : 90;
-        subheadlineFontSize = format.width > 2000 ? 80 : format.width > 1500 ? 64 : 54;
+        baseHeadlineSize = format.width > 2000 ? 140 : format.width > 1500 ? 110 : 90;
+        baseSubheadlineSize = format.width > 2000 ? 80 : format.width > 1500 ? 64 : 54;
     }
+
+    // Apply size multipliers
+    var titleMultiplier = App.SIZE_MULTIPLIERS[settings.titleSize || 'medium'] || 1.0;
+    var bodyMultiplier = App.SIZE_MULTIPLIERS[settings.bodySize || 'medium'] || 1.0;
+
+    var headlineFontSize = Math.round(baseHeadlineSize * titleMultiplier);
+    var subheadlineFontSize = Math.round(baseSubheadlineSize * bodyMultiplier);
+
     var lineSpacing = headlineFontSize * 0.35;
+
+    // Get font families
+    var titleFontKey = settings.titleFont || 'sf-pro';
+    var bodyFontKey = settings.bodyFont || 'sf-pro';
+    var titleFontConfig = App.FONTS[titleFontKey] || App.FONTS['sf-pro'];
+    var bodyFontConfig = App.FONTS[bodyFontKey] || App.FONTS['sf-pro'];
+    var titleFontFamily = titleFontConfig.family;
+    var bodyFontFamily = bodyFontConfig.family;
 
     // Calculate total text block height
     var totalTextHeight = 0;
@@ -256,14 +272,14 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format) {
     ctx.textBaseline = 'top';
 
     if (settings.headline) {
-        ctx.font = '700 ' + headlineFontSize + 'px Inter, -apple-system, sans-serif';
+        ctx.font = '700 ' + headlineFontSize + 'px ' + titleFontFamily;
         ctx.fillText(settings.headline, canvasW / 2, startY);
         startY += headlineFontSize + lineSpacing;
     }
 
     if (settings.subheadline) {
         ctx.globalAlpha = 0.9;
-        ctx.font = '500 ' + subheadlineFontSize + 'px Inter, -apple-system, sans-serif';
+        ctx.font = '500 ' + subheadlineFontSize + 'px ' + bodyFontFamily;
         ctx.fillText(settings.subheadline, canvasW / 2, startY);
         ctx.globalAlpha = 1;
     }
