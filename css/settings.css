@@ -20,16 +20,16 @@
     border-top: 1px solid var(--border);
 }
 
-.btn-delete {
+.btn-apply-all {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     padding: 10px 16px;
-    background: transparent;
-    color: var(--foreground-muted);
-    border: 1px solid var(--border);
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border: 1px solid var(--primary);
     border-radius: var(--radius);
     font-size: 14px;
     font-weight: 500;
@@ -37,13 +37,11 @@
     transition: all var(--transition-fast);
 }
 
-.btn-delete:hover:not(:disabled) {
-    background: var(--destructive);
-    border-color: var(--destructive);
-    color: var(--destructive-foreground);
+.btn-apply-all:hover:not(:disabled) {
+    opacity: 0.9;
 }
 
-.btn-delete:disabled {
+.btn-apply-all:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }

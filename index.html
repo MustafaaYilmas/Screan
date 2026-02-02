@@ -207,7 +207,7 @@
                 </section>
 
                 <!-- Title -->
-                <section class="settings-section">
+                <section class="settings-section" id="titleSection">
                     <div class="section-header">
                         <span class="section-title">Title</span>
                     </div>
@@ -231,7 +231,7 @@
                 </section>
 
                 <!-- Body -->
-                <section class="settings-section">
+                <section class="settings-section" id="bodySection">
                     <div class="section-header">
                         <span class="section-title">Body</span>
                     </div>
@@ -260,25 +260,25 @@
                         <span class="section-title">Colors</span>
                     </div>
                     <div class="section-content">
-                        <div class="color-row">
+                        <div class="color-row" id="textColorRow">
                             <label class="color-label">Text</label>
                             <div class="color-input-wrap">
                                 <input type="color" id="textColor" value="#ffffff">
-                                <span class="color-hex" id="textColorHex">#FFFFFF</span>
+                                <input type="text" class="color-hex-input" id="textColorHex" value="#FFFFFF" maxlength="7">
                             </div>
                         </div>
                         <div class="color-row">
                             <label class="color-label">Background</label>
                             <div class="color-input-wrap">
                                 <input type="color" id="bgColor1" value="#75B7E7">
-                                <span class="color-hex" id="bgColor1Hex">#75B7E7</span>
+                                <input type="text" class="color-hex-input" id="bgColor1Hex" value="#75B7E7" maxlength="7">
                             </div>
                         </div>
                         <div class="color-row" id="deviceFrameColorRow">
                             <label class="color-label">Device</label>
                             <div class="color-input-wrap">
                                 <input type="color" id="deviceFrameColor" value="#000000">
-                                <span class="color-hex" id="deviceFrameColorHex">#000000</span>
+                                <input type="text" class="color-hex-input" id="deviceFrameColorHex" value="#000000" maxlength="7">
                             </div>
                         </div>
                     </div>
@@ -307,15 +307,14 @@
                 </section>
             </div>
 
-            <!-- Delete Button -->
-            <div class="settings-footer">
-                <button class="btn-delete" id="deleteScreenshotBtn" disabled>
+            <!-- Apply to All Button -->
+            <div class="settings-footer" id="settingsFooter" style="display: none;">
+                <button class="btn-apply-all" id="applyToAllBtn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 6h18"/>
-                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
-                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                        <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"/>
+                        <path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/>
                     </svg>
-                    Delete Screenshot
+                    Apply to All
                 </button>
             </div>
         </aside>

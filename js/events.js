@@ -4,6 +4,22 @@
 
 var App = window.App || {};
 
+App.normalizeHex = function(value) {
+    var hex = value.trim().toUpperCase();
+    if (!hex.startsWith('#')) {
+        hex = '#' + hex;
+    }
+    // Validate hex format
+    if (/^#[0-9A-F]{6}$/.test(hex)) {
+        return hex.toLowerCase();
+    }
+    // Support 3-char hex
+    if (/^#[0-9A-F]{3}$/.test(hex)) {
+        return '#' + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
+    }
+    return null;
+};
+
 App.initEventListeners = function() {
     // Add screenshot
     var addBtn = document.getElementById('addScreenshotBtn');
@@ -40,6 +56,7 @@ App.initEventListeners = function() {
         if (settings) {
             settings.titleFont = e.target.value;
             App.renderAllPreviews();
+            App.updateApplyToAllButton();
         }
     });
 
@@ -49,6 +66,7 @@ App.initEventListeners = function() {
         if (settings) {
             settings.bodyFont = e.target.value;
             App.renderAllPreviews();
+            App.updateApplyToAllButton();
         }
     });
 
@@ -75,16 +93,18 @@ App.initEventListeners = function() {
             }
 
             App.renderAllPreviews();
+            App.updateApplyToAllButton();
         });
     });
 
-    // Colors
+    // Colors - color picker
     document.getElementById('textColor').addEventListener('input', function(e) {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.textColor = e.target.value;
-            document.getElementById('textColorHex').textContent = e.target.value.toUpperCase();
+            document.getElementById('textColorHex').value = e.target.value.toUpperCase();
             App.renderAllPreviews();
+            App.updateApplyToAllButton();
         }
     });
 
@@ -92,8 +112,49 @@ App.initEventListeners = function() {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.bgColor = e.target.value;
-            document.getElementById('bgColor1Hex').textContent = e.target.value.toUpperCase();
+            document.getElementById('bgColor1Hex').value = e.target.value.toUpperCase();
             App.renderAllPreviews();
+            App.updateApplyToAllButton();
+        }
+    });
+
+    // Colors - hex input
+    document.getElementById('textColorHex').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            var hex = App.normalizeHex(e.target.value);
+            if (hex) {
+                settings.textColor = hex;
+                document.getElementById('textColor').value = hex;
+                App.renderAllPreviews();
+                App.updateApplyToAllButton();
+            }
+        }
+    });
+
+    document.getElementById('bgColor1Hex').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            var hex = App.normalizeHex(e.target.value);
+            if (hex) {
+                settings.bgColor = hex;
+                document.getElementById('bgColor1').value = hex;
+                App.renderAllPreviews();
+                App.updateApplyToAllButton();
+            }
+        }
+    });
+
+    document.getElementById('deviceFrameColorHex').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            var hex = App.normalizeHex(e.target.value);
+            if (hex) {
+                settings.deviceFrameColor = hex;
+                document.getElementById('deviceFrameColor').value = hex;
+                App.renderAllPreviews();
+                App.updateApplyToAllButton();
+            }
         }
     });
 
@@ -103,6 +164,7 @@ App.initEventListeners = function() {
         if (settings) {
             settings.addShadow = e.target.checked;
             App.renderAllPreviews();
+            App.updateApplyToAllButton();
         }
     });
 
@@ -113,6 +175,7 @@ App.initEventListeners = function() {
             settings.addDeviceFrame = e.target.checked;
             document.getElementById('deviceFrameColorRow').style.display = e.target.checked ? 'flex' : 'none';
             App.renderAllPreviews();
+            App.updateApplyToAllButton();
         }
     });
 
@@ -121,8 +184,9 @@ App.initEventListeners = function() {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.deviceFrameColor = e.target.value;
-            document.getElementById('deviceFrameColorHex').textContent = e.target.value.toUpperCase();
+            document.getElementById('deviceFrameColorHex').value = e.target.value.toUpperCase();
             App.renderAllPreviews();
+            App.updateApplyToAllButton();
         }
     });
 
@@ -136,6 +200,7 @@ App.initEventListeners = function() {
                 settings.preset = btn.dataset.preset;
                 App.updateTextFieldsState();
                 App.renderAllPreviews();
+                App.updateApplyToAllButton();
             }
         });
     });
@@ -179,11 +244,8 @@ App.initEventListeners = function() {
     // Export
     document.getElementById('exportBtn').addEventListener('click', App.exportAll);
 
-    // Delete screenshot
-    document.getElementById('deleteScreenshotBtn').addEventListener('click', function() {
-        var screenshots = App.getActiveScreenshots();
-        if (screenshots.length > 0) {
-            App.removeScreenshot(App.getActiveIndex());
-        }
+    // Apply to All
+    document.getElementById('applyToAllBtn').addEventListener('click', function() {
+        App.applySettingsToAll();
     });
 };

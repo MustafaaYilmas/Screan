@@ -62,24 +62,20 @@ App.updateSettingsUI = function() {
         el.disabled = !hasSelection;
     });
 
-    // Update delete button state
-    var deleteBtn = document.getElementById('deleteScreenshotBtn');
-    if (deleteBtn) {
-        deleteBtn.disabled = !hasSelection;
-    }
+    App.updateApplyToAllButton();
 
     if (!hasSelection) return;
 
     document.getElementById('headline').value = settings.headline;
     document.getElementById('subheadline').value = settings.subheadline;
     document.getElementById('textColor').value = settings.textColor;
-    document.getElementById('textColorHex').textContent = settings.textColor.toUpperCase();
+    document.getElementById('textColorHex').value = settings.textColor.toUpperCase();
     document.getElementById('bgColor1').value = settings.bgColor;
-    document.getElementById('bgColor1Hex').textContent = settings.bgColor.toUpperCase();
+    document.getElementById('bgColor1Hex').value = settings.bgColor.toUpperCase();
     document.getElementById('addShadow').checked = settings.addShadow;
     document.getElementById('addDeviceFrame').checked = settings.addDeviceFrame;
     document.getElementById('deviceFrameColor').value = settings.deviceFrameColor;
-    document.getElementById('deviceFrameColorHex').textContent = settings.deviceFrameColor.toUpperCase();
+    document.getElementById('deviceFrameColorHex').value = settings.deviceFrameColor.toUpperCase();
     document.getElementById('deviceFrameColorRow').style.display = settings.addDeviceFrame ? 'flex' : 'none';
 
     // Title font and size
@@ -106,15 +102,67 @@ App.updateTextFieldsState = function() {
     if (!settings) return;
 
     var preset = App.PRESETS[settings.preset];
-    var isDisabled = preset.noText === true;
+    var hideText = preset.noText === true;
 
-    document.getElementById('headline').disabled = isDisabled;
-    document.getElementById('subheadline').disabled = isDisabled;
-    document.getElementById('textColor').disabled = isDisabled;
-    document.getElementById('titleFont').disabled = isDisabled;
-    document.getElementById('bodyFont').disabled = isDisabled;
+    document.getElementById('titleSection').style.display = hideText ? 'none' : 'block';
+    document.getElementById('bodySection').style.display = hideText ? 'none' : 'block';
+    document.getElementById('textColorRow').style.display = hideText ? 'none' : 'flex';
+};
 
-    document.querySelectorAll('.size-btn').forEach(function(btn) {
-        btn.disabled = isDisabled;
+App.updateApplyToAllButton = function() {
+    var screenshots = App.getActiveScreenshots();
+    var settingsFooter = document.getElementById('settingsFooter');
+    if (settingsFooter) {
+        var showButton = screenshots.length >= 2 && !App.allSettingsMatch(screenshots);
+        settingsFooter.style.display = showButton ? 'block' : 'none';
+    }
+};
+
+App.allSettingsMatch = function(screenshots) {
+    if (screenshots.length < 2) return true;
+
+    var visualKeys = [
+        'textColor', 'bgColor', 'addShadow', 'addDeviceFrame',
+        'deviceFrameColor', 'preset', 'titleFont', 'titleSize',
+        'bodyFont', 'bodySize'
+    ];
+
+    var first = screenshots[0].settings;
+    for (var i = 1; i < screenshots.length; i++) {
+        var current = screenshots[i].settings;
+        for (var j = 0; j < visualKeys.length; j++) {
+            var key = visualKeys[j];
+            if (first[key] !== current[key]) {
+                return false;
+            }
+        }
+    }
+    return true;
+};
+
+App.applySettingsToAll = function() {
+    var screenshots = App.getActiveScreenshots();
+    var currentSettings = App.getActiveSettings();
+    if (!currentSettings || screenshots.length < 2) return;
+
+    // Settings to apply (excluding text content)
+    var settingsToApply = {
+        textColor: currentSettings.textColor,
+        bgColor: currentSettings.bgColor,
+        addShadow: currentSettings.addShadow,
+        addDeviceFrame: currentSettings.addDeviceFrame,
+        deviceFrameColor: currentSettings.deviceFrameColor,
+        preset: currentSettings.preset,
+        titleFont: currentSettings.titleFont,
+        titleSize: currentSettings.titleSize,
+        bodyFont: currentSettings.bodyFont,
+        bodySize: currentSettings.bodySize
+    };
+
+    screenshots.forEach(function(screenshot) {
+        Object.assign(screenshot.settings, settingsToApply);
     });
+
+    App.renderAllPreviews();
+    App.updateSettingsUI();
 };

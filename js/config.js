@@ -12,7 +12,31 @@ App.FORMATS = {
     'ipad-13': { width: 2064, height: 2752, name: 'iPad 13"', cornerRadius: 0.04, textZoneTop: [0.02, 0.18], textZoneBottom: [0.80, 0.96] },
     'ipad-12.9': { width: 2048, height: 2732, name: 'iPad 12.9"', cornerRadius: 0.04, textZoneTop: [0.02, 0.18], textZoneBottom: [0.80, 0.96] },
     'ipad-11': { width: 1668, height: 2388, name: 'iPad 11"', cornerRadius: 0.04, textZoneTop: [0.02, 0.18], textZoneBottom: [0.80, 0.96] },
-    'mac': { width: 1280, height: 800, name: 'Mac', cornerRadius: 0.02, fontSize: [48, 28] }
+    'mac': { width: 1280, height: 800, name: 'Mac', cornerRadius: 0.02 }
+};
+
+// Font sizes: [title, body] for each size variant
+App.FONT_SIZES = {
+    'iphone': {
+        small:  [90, 60],
+        medium: [120, 72],
+        large:  [132, 80]
+    },
+    'ipad': {
+        small:  [112, 64],
+        medium: [140, 80],
+        large:  [168, 96]
+    },
+    'ipad-11': {
+        small:  [88, 52],
+        medium: [110, 64],
+        large:  [132, 76]
+    },
+    'mac': {
+        small:  [38, 22],
+        medium: [48, 28],
+        large:  [58, 34]
+    }
 };
 
 App.FONTS = {
@@ -52,9 +76,9 @@ App.DEFAULT_SETTINGS = {
     addDeviceFrame: true,
     deviceFrameColor: '#000000',
     preset: 'top',
-    titleFont: 'sf-pro',
+    titleFont: 'sf-rounded',
     titleSize: 'medium',
-    bodyFont: 'sf-pro',
+    bodyFont: 'sf-rounded',
     bodySize: 'medium'
 };
 

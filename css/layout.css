@@ -68,7 +68,8 @@
 }
 
 .format-select {
-    padding: 8px 12px;
+    height: 34px;
+    padding: 0 12px;
     background: var(--input);
     border: 1px solid var(--input-border);
     border-radius: var(--radius);

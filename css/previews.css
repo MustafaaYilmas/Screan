@@ -48,6 +48,36 @@
     border-radius: 16px;
 }
 
+/* Delete button on preview */
+.preview-delete-btn {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--foreground-muted);
+    cursor: pointer;
+    opacity: 0;
+    transition: all var(--transition-fast);
+}
+
+.preview-item:hover .preview-delete-btn {
+    opacity: 1;
+}
+
+.preview-delete-btn:hover {
+    background: var(--destructive);
+    border-color: var(--destructive);
+    color: var(--destructive-foreground);
+}
+
 /* Empty State */
 .empty-state {
     display: flex;

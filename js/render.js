@@ -45,13 +45,26 @@ App.renderAllPreviews = function() {
         canvas.style.width = (format.width * zoom) + 'px';
         canvas.style.height = (format.height * zoom) + 'px';
 
+        // Delete button
+        var deleteBtn = document.createElement('button');
+        deleteBtn.className = 'preview-delete-btn';
+        deleteBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>';
+        deleteBtn.title = 'Delete';
+
         (function(idx) {
-            item.addEventListener('click', function() {
-                App.selectScreenshot(idx);
+            item.addEventListener('click', function(e) {
+                if (!e.target.closest('.preview-delete-btn')) {
+                    App.selectScreenshot(idx);
+                }
+            });
+            deleteBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                App.removeScreenshot(idx);
             });
         })(index);
 
         item.appendChild(canvas);
+        item.appendChild(deleteBtn);
         container.appendChild(item);
 
         App.renderCanvas(canvas, screenshot);
@@ -207,22 +220,16 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
 };
 
 App.drawText = function(ctx, canvasW, canvasH, preset, settings, format) {
-    // Calculate base font sizes
-    var baseHeadlineSize, baseSubheadlineSize;
-    if (format.fontSize) {
-        baseHeadlineSize = format.fontSize[0];
-        baseSubheadlineSize = format.fontSize[1];
-    } else {
-        baseHeadlineSize = format.width > 2000 ? 140 : format.width > 1500 ? 110 : 90;
-        baseSubheadlineSize = format.width > 2000 ? 80 : format.width > 1500 ? 64 : 54;
-    }
+    // Determine font size category based on format
+    var fontSizeKey = App.currentFormat.startsWith('iphone') ? 'iphone' :
+                      App.currentFormat === 'ipad-11' ? 'ipad-11' :
+                      App.currentFormat.startsWith('ipad') ? 'ipad' : 'mac';
 
-    // Apply size multipliers
-    var titleMultiplier = App.SIZE_MULTIPLIERS[settings.titleSize || 'medium'] || 1.0;
-    var bodyMultiplier = App.SIZE_MULTIPLIERS[settings.bodySize || 'medium'] || 1.0;
+    var titleSize = settings.titleSize || 'medium';
+    var bodySize = settings.bodySize || 'medium';
 
-    var headlineFontSize = Math.round(baseHeadlineSize * titleMultiplier);
-    var subheadlineFontSize = Math.round(baseSubheadlineSize * bodyMultiplier);
+    var headlineFontSize = App.FONT_SIZES[fontSizeKey][titleSize][0];
+    var subheadlineFontSize = App.FONT_SIZES[fontSizeKey][bodySize][1];
 
     var lineSpacing = headlineFontSize * 0.35;
 

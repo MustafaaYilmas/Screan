@@ -122,12 +122,14 @@
 
 .text-input {
     width: 100%;
-    padding: 10px 12px;
+    height: 34px;
+    padding: 0 12px;
     background: var(--input);
     border: 1px solid var(--input-border);
     border-radius: var(--radius);
     color: var(--foreground);
     font-size: 14px;
+    box-sizing: border-box;
     transition: all var(--transition-fast);
 }
 
@@ -257,8 +259,8 @@
 }
 
 .color-input-wrap input[type="color"] {
-    width: 28px;
-    height: 28px;
+    width: 34px;
+    height: 34px;
     padding: 0;
     border: none;
     border-radius: var(--radius);
@@ -275,11 +277,23 @@
     border-radius: var(--radius-sm);
 }
 
-.color-hex {
+.color-hex-input {
+    width: 72px;
+    height: 34px;
+    padding: 0 8px;
     font-size: 12px;
     font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
-    color: var(--foreground-muted);
-    min-width: 60px;
+    color: var(--foreground);
+    background: var(--input);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius);
+    text-transform: uppercase;
+    box-sizing: border-box;
+}
+
+.color-hex-input:focus {
+    outline: none;
+    border-color: var(--ring);
 }
 
 .color-presets {
