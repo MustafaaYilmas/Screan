@@ -5,14 +5,16 @@
 var App = window.App || {};
 
 App.handleScreenshots = function(files) {
+    var platformData = App.getActivePlatformData();
+
     Array.from(files).forEach(function(file) {
         if (!file.type.startsWith('image/')) return;
         var reader = new FileReader();
         reader.onload = function(e) {
             var img = new Image();
             img.onload = function() {
-                var isFirst = App.state.screenshots.length === 0;
-                App.state.screenshots.push({
+                var isFirst = platformData.screenshots.length === 0;
+                platformData.screenshots.push({
                     src: e.target.result,
                     image: img,
                     width: img.width,
@@ -20,11 +22,12 @@ App.handleScreenshots = function(files) {
                     settings: Object.assign({}, App.DEFAULT_SETTINGS)
                 });
                 if (isFirst) {
-                    App.state.activeIndex = 0;
+                    platformData.activeIndex = 0;
                 }
                 App.updateSettingsUI();
                 App.renderAllPreviews();
                 App.updateExportButton();
+                App.updateSidebarCounts();
             };
             img.src = e.target.result;
         };
@@ -33,24 +36,27 @@ App.handleScreenshots = function(files) {
 };
 
 App.removeScreenshot = function(index) {
-    App.state.screenshots.splice(index, 1);
-    if (App.state.activeIndex >= App.state.screenshots.length) {
-        App.state.activeIndex = Math.max(0, App.state.screenshots.length - 1);
+    var platformData = App.getActivePlatformData();
+    platformData.screenshots.splice(index, 1);
+    if (platformData.activeIndex >= platformData.screenshots.length) {
+        platformData.activeIndex = Math.max(0, platformData.screenshots.length - 1);
     }
     App.updateSettingsUI();
     App.renderAllPreviews();
     App.updateExportButton();
+    App.updateSidebarCounts();
 };
 
 App.selectScreenshot = function(index) {
-    App.state.activeIndex = index;
+    App.setActiveIndex(index);
     App.updateSettingsUI();
     App.renderAllPreviews();
 };
 
 App.updateSettingsUI = function() {
     var settings = App.getActiveSettings();
-    var hasSelection = App.state.screenshots.length > 0;
+    var screenshots = App.getActiveScreenshots();
+    var hasSelection = screenshots.length > 0;
 
     document.querySelectorAll('.settings-section input, .settings-section button, .settings-section select').forEach(function(el) {
         el.disabled = !hasSelection;

@@ -96,11 +96,39 @@ App.initEventListeners = function() {
         });
     });
 
-    // Export formats
-    document.querySelectorAll('[data-format]').forEach(function(cb) {
+    // Platform selection
+    document.querySelectorAll('.platform-header').forEach(function(header) {
+        header.addEventListener('click', function() {
+            var platformItem = header.closest('.platform-item');
+            var platformKey = platformItem.dataset.platform;
+            App.selectPlatform(platformKey);
+        });
+    });
+
+    // Export format checkboxes (per platform)
+    document.querySelectorAll('.size-item input[type="checkbox"]').forEach(function(cb) {
         cb.addEventListener('change', function() {
-            App.state.exportFormats = Array.from(document.querySelectorAll('[data-format]:checked')).map(function(c) { return c.dataset.format; });
+            var platformKey = cb.dataset.platform;
+            var platform = App.state.platforms[platformKey];
+
+            // Update exportFormats for this platform
+            platform.exportFormats = Array.from(
+                document.querySelectorAll('.size-item input[data-platform="' + platformKey + '"]:checked')
+            ).map(function(c) { return c.dataset.format; });
+
             App.updateExportButton();
+        });
+
+        // Prevent click from bubbling to platform header
+        cb.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    });
+
+    // Prevent label clicks from selecting platform
+    document.querySelectorAll('.size-item').forEach(function(label) {
+        label.addEventListener('click', function(e) {
+            e.stopPropagation();
         });
     });
 
@@ -109,8 +137,9 @@ App.initEventListeners = function() {
 
     // Delete screenshot
     document.getElementById('deleteScreenshotBtn').addEventListener('click', function() {
-        if (App.state.screenshots.length > 0) {
-            App.removeScreenshot(App.state.activeIndex);
+        var screenshots = App.getActiveScreenshots();
+        if (screenshots.length > 0) {
+            App.removeScreenshot(App.getActiveIndex());
         }
     });
 };

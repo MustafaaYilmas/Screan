@@ -24,6 +24,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Theme toggle
     document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
+    // Initialize format dropdown for default platform
+    App.updateFormatDropdown();
+
     App.initEventListeners();
     App.initDragDrop();
     App.updateSettingsUI();

@@ -14,7 +14,10 @@ App.renderAllPreviews = function() {
 
     container.querySelectorAll('.preview-item').forEach(function(el) { el.remove(); });
 
-    if (App.state.screenshots.length === 0) {
+    var screenshots = App.getActiveScreenshots();
+    var activeIndex = App.getActiveIndex();
+
+    if (screenshots.length === 0) {
         if (emptyState) emptyState.style.display = 'flex';
         return;
     }
@@ -23,12 +26,18 @@ App.renderAllPreviews = function() {
 
     var format = App.FORMATS[App.currentFormat];
     var wrapperHeight = wrapper.clientHeight;
+    var wrapperWidth = wrapper.clientWidth;
     var maxCanvasHeight = wrapperHeight - 80;
-    var zoom = Math.min(maxCanvasHeight / format.height, 0.3);
+    var maxCanvasWidth = wrapperWidth - 100;
 
-    App.state.screenshots.forEach(function(screenshot, index) {
+    // Calculate zoom based on both dimensions
+    var zoomByHeight = maxCanvasHeight / format.height;
+    var zoomByWidth = maxCanvasWidth / format.width;
+    var zoom = Math.min(zoomByHeight, zoomByWidth, 0.8);
+
+    screenshots.forEach(function(screenshot, index) {
         var item = document.createElement('div');
-        item.className = 'preview-item' + (index === App.state.activeIndex ? ' active' : '');
+        item.className = 'preview-item' + (index === activeIndex ? ' active' : '');
 
         var canvas = document.createElement('canvas');
         canvas.width = format.width;
@@ -73,21 +82,13 @@ App.renderCanvas = function(canvas, screenshot) {
 };
 
 App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, settings, format) {
-    var presetScale = preset.screenshotScale || 0.75;
+    // Fixed horizontal margin (4% on each side = 92% width)
+    var horizontalMargin = format.horizontalMargin || 0.87;
+    var imgW = canvasW * horizontalMargin;
 
-    var maxW = canvasW * 0.92;
-    var maxH = canvasH * presetScale;
-
+    // Calculate height based on screenshot ratio
     var imgRatio = screenshot.width / screenshot.height;
-    var imgW, imgH;
-
-    if (imgRatio > maxW / maxH) {
-        imgW = maxW;
-        imgH = maxW / imgRatio;
-    } else {
-        imgH = maxH;
-        imgW = maxH * imgRatio;
-    }
+    var imgH = imgW / imgRatio;
 
     var imgX = (canvasW - imgW) / 2;
     var imgY;
@@ -97,7 +98,7 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
         imgY = canvasH * preset.screenshotY;
     }
 
-    var radius = imgW * App.CORNER_RADIUS_RATIO;
+    var radius = imgW * (format.cornerRadius || 0.1);
 
     ctx.save();
 
@@ -167,10 +168,11 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
 
     ctx.restore();
 
-    // Device frame
+    // Device frame (completely outside the image)
     if (settings.addDeviceFrame) {
         var frameWidth = Math.max(8, imgW * 0.02);
-        var frameRadius = radius + frameWidth;
+        var frameOffset = frameWidth / 2;
+        var frameRadius = radius + frameOffset;
 
         ctx.save();
         ctx.strokeStyle = settings.deviceFrameColor;
@@ -180,24 +182,24 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
         if (preset.cropTop) {
             // Frame pour bottom preset (crop top)
             var bottomRadius = Math.min(radius, imgH);
-            ctx.moveTo(imgX - frameWidth/2, imgY);
-            ctx.lineTo(imgX - frameWidth/2, imgY + imgH - bottomRadius);
-            ctx.quadraticCurveTo(imgX - frameWidth/2, imgY + imgH + frameWidth/2, imgX + bottomRadius, imgY + imgH + frameWidth/2);
-            ctx.lineTo(imgX + imgW - bottomRadius, imgY + imgH + frameWidth/2);
-            ctx.quadraticCurveTo(imgX + imgW + frameWidth/2, imgY + imgH + frameWidth/2, imgX + imgW + frameWidth/2, imgY + imgH - bottomRadius);
-            ctx.lineTo(imgX + imgW + frameWidth/2, imgY);
+            ctx.moveTo(imgX - frameOffset, imgY);
+            ctx.lineTo(imgX - frameOffset, imgY + imgH - bottomRadius);
+            ctx.quadraticCurveTo(imgX - frameOffset, imgY + imgH + frameOffset, imgX + bottomRadius, imgY + imgH + frameOffset);
+            ctx.lineTo(imgX + imgW - bottomRadius, imgY + imgH + frameOffset);
+            ctx.quadraticCurveTo(imgX + imgW + frameOffset, imgY + imgH + frameOffset, imgX + imgW + frameOffset, imgY + imgH - bottomRadius);
+            ctx.lineTo(imgX + imgW + frameOffset, imgY);
         } else if (preset.cropBottom) {
             // Frame pour top preset (crop bottom)
             var topRadius = Math.min(radius, imgH);
-            ctx.moveTo(imgX - frameWidth/2, canvasH);
-            ctx.lineTo(imgX - frameWidth/2, imgY + topRadius);
-            ctx.quadraticCurveTo(imgX - frameWidth/2, imgY - frameWidth/2, imgX + topRadius, imgY - frameWidth/2);
-            ctx.lineTo(imgX + imgW - topRadius, imgY - frameWidth/2);
-            ctx.quadraticCurveTo(imgX + imgW + frameWidth/2, imgY - frameWidth/2, imgX + imgW + frameWidth/2, imgY + topRadius);
-            ctx.lineTo(imgX + imgW + frameWidth/2, canvasH);
+            ctx.moveTo(imgX - frameOffset, canvasH);
+            ctx.lineTo(imgX - frameOffset, imgY + topRadius);
+            ctx.quadraticCurveTo(imgX - frameOffset, imgY - frameOffset, imgX + topRadius, imgY - frameOffset);
+            ctx.lineTo(imgX + imgW - topRadius, imgY - frameOffset);
+            ctx.quadraticCurveTo(imgX + imgW + frameOffset, imgY - frameOffset, imgX + imgW + frameOffset, imgY + topRadius);
+            ctx.lineTo(imgX + imgW + frameOffset, canvasH);
         } else {
             // Frame complet pour center
-            ctx.roundRect(imgX - frameWidth/2, imgY - frameWidth/2, imgW + frameWidth, imgH + frameWidth, frameRadius);
+            ctx.roundRect(imgX - frameOffset, imgY - frameOffset, imgW + frameWidth, imgH + frameWidth, frameRadius);
         }
         ctx.stroke();
         ctx.restore();
@@ -206,8 +208,14 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
 
 App.drawText = function(ctx, canvasW, canvasH, preset, settings, format) {
     // Calculer les tailles de police
-    var headlineFontSize = format.width > 2000 ? 140 : format.width > 1500 ? 110 : 90;
-    var subheadlineFontSize = format.width > 2000 ? 80 : format.width > 1500 ? 64 : 54;
+    var headlineFontSize, subheadlineFontSize;
+    if (format.fontSize) {
+        headlineFontSize = format.fontSize[0];
+        subheadlineFontSize = format.fontSize[1];
+    } else {
+        headlineFontSize = format.width > 2000 ? 140 : format.width > 1500 ? 110 : 90;
+        subheadlineFontSize = format.width > 2000 ? 80 : format.width > 1500 ? 64 : 54;
+    }
     var lineSpacing = headlineFontSize * 0.35;
 
     // Calculer la hauteur totale du bloc de texte
@@ -226,12 +234,14 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format) {
     var textZoneStart, textZoneEnd;
     if (preset.cropBottom) {
         // Preset "top" : texte en haut
-        textZoneStart = canvasH * 0.03;
-        textZoneEnd = canvasH * 0.22;
+        var topZone = format.textZoneTop || [0.03, 0.22];
+        textZoneStart = canvasH * topZone[0];
+        textZoneEnd = canvasH * topZone[1];
     } else if (preset.cropTop) {
         // Preset "bottom" : texte en bas
-        textZoneStart = canvasH * 0.78;
-        textZoneEnd = canvasH * 0.97;
+        var bottomZone = format.textZoneBottom || [0.78, 0.97];
+        textZoneStart = canvasH * bottomZone[0];
+        textZoneEnd = canvasH * bottomZone[1];
     } else {
         // Fallback
         textZoneStart = canvasH * preset.textY;

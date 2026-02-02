@@ -13,7 +13,7 @@
         <!-- Sidebar gauche -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <span class="app-name">Screan</span>
+                <span class="app-name">Screan.app</span>
                 <button class="theme-toggle" id="themeToggle" title="Toggle theme">
                     <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
@@ -34,39 +34,69 @@
 
             <nav class="sidebar-nav">
                 <div class="nav-section">
-                    <div class="nav-section-title">Plateformes</div>
-                    <label class="nav-item">
-                        <input type="checkbox" data-format="iphone-6.9" checked>
-                        <span>iPhone 6.9"</span>
-                    </label>
-                    <label class="nav-item">
-                        <input type="checkbox" data-format="iphone-6.7">
-                        <span>iPhone 6.7"</span>
-                    </label>
-                    <label class="nav-item">
-                        <input type="checkbox" data-format="iphone-6.5">
-                        <span>iPhone 6.5"</span>
-                    </label>
-                    <label class="nav-item">
-                        <input type="checkbox" data-format="iphone-5.5">
-                        <span>iPhone 5.5"</span>
-                    </label>
-                    <label class="nav-item">
-                        <input type="checkbox" data-format="ipad-13" checked>
-                        <span>iPad 13"</span>
-                    </label>
-                    <label class="nav-item">
-                        <input type="checkbox" data-format="ipad-12.9">
-                        <span>iPad 12.9"</span>
-                    </label>
-                    <label class="nav-item">
-                        <input type="checkbox" data-format="ipad-11">
-                        <span>iPad 11"</span>
-                    </label>
-                    <label class="nav-item">
-                        <input type="checkbox" data-format="mac">
-                        <span>Mac</span>
-                    </label>
+                    <div class="nav-section-title">Platforms</div>
+
+                    <!-- iPhone -->
+                    <div class="platform-item active" data-platform="iphone">
+                        <div class="platform-header">
+                            <span class="platform-name">iPhone</span>
+                            <span class="screenshot-count" style="display: none;">(0)</span>
+                        </div>
+                        <div class="platform-sizes">
+                            <label class="size-item">
+                                <input type="checkbox" data-platform="iphone" data-format="iphone-6.9" checked>
+                                <span>6.9"</span>
+                            </label>
+                            <label class="size-item">
+                                <input type="checkbox" data-platform="iphone" data-format="iphone-6.7" checked>
+                                <span>6.7"</span>
+                            </label>
+                            <label class="size-item">
+                                <input type="checkbox" data-platform="iphone" data-format="iphone-6.5">
+                                <span>6.5"</span>
+                            </label>
+                            <label class="size-item">
+                                <input type="checkbox" data-platform="iphone" data-format="iphone-5.5">
+                                <span>5.5"</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- iPad -->
+                    <div class="platform-item" data-platform="ipad">
+                        <div class="platform-header">
+                            <span class="platform-name">iPad</span>
+                            <span class="screenshot-count" style="display: none;">(0)</span>
+                        </div>
+                        <div class="platform-sizes">
+                            <label class="size-item">
+                                <input type="checkbox" data-platform="ipad" data-format="ipad-13" checked>
+                                <span>13"</span>
+                            </label>
+                            <label class="size-item">
+                                <input type="checkbox" data-platform="ipad" data-format="ipad-12.9">
+                                <span>12.9"</span>
+                            </label>
+                            <label class="size-item">
+                                <input type="checkbox" data-platform="ipad" data-format="ipad-11">
+                                <span>11"</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Mac -->
+                    <div class="platform-item" data-platform="mac">
+                        <div class="platform-header">
+                            <span class="platform-name">Mac</span>
+                            <span class="screenshot-count" style="display: none;">(0)</span>
+                        </div>
+                        <div class="platform-sizes">
+                            <label class="size-item">
+                                <input type="checkbox" data-platform="mac" data-format="mac" checked>
+                                <span>Mac</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </nav>
 
@@ -99,14 +129,7 @@
                 <div class="toolbar-right">
                     <span class="preview-label">Preview:</span>
                     <select id="formatSelect" class="format-select">
-                        <option value="iphone-6.9">iPhone 6.9"</option>
-                        <option value="iphone-6.7">iPhone 6.7"</option>
-                        <option value="iphone-6.5">iPhone 6.5"</option>
-                        <option value="iphone-5.5">iPhone 5.5"</option>
-                        <option value="ipad-13">iPad 13"</option>
-                        <option value="ipad-12.9">iPad 12.9"</option>
-                        <option value="ipad-11">iPad 11"</option>
-                        <option value="mac">Mac</option>
+                        <!-- Options generated dynamically based on active platform -->
                     </select>
                 </div>
             </header>
@@ -121,7 +144,7 @@
                             <circle cx="8.5" cy="8.5" r="1.5"/>
                             <polyline points="21 15 16 10 5 21"/>
                         </svg>
-                        <p>Drag & drop screenshots here</p>
+                        <p id="emptyStateText">Drag & drop iPhone screenshots here</p>
                     </div>
                 </div>
             </div>

@@ -14,26 +14,35 @@ App.exportAll = async function() {
     var tempCanvas = document.createElement('canvas');
     var tempCtx = tempCanvas.getContext('2d');
 
-    for (var i = 0; i < App.state.exportFormats.length; i++) {
-        var formatKey = App.state.exportFormats[i];
-        var format = App.FORMATS[formatKey];
-        tempCanvas.width = format.width;
-        tempCanvas.height = format.height;
+    // Loop through all platforms
+    var platformKeys = Object.keys(App.state.platforms);
 
-        for (var j = 0; j < App.state.screenshots.length; j++) {
-            progressText.textContent = 'Exporting ' + format.name + ' - ' + (j + 1) + '/' + App.state.screenshots.length;
+    for (var p = 0; p < platformKeys.length; p++) {
+        var platformKey = platformKeys[p];
+        var platform = App.state.platforms[platformKey];
 
-            var origFormat = App.currentFormat;
-            App.setCurrentFormat(formatKey);
+        // Skip platforms with no screenshots or no export formats
+        if (platform.screenshots.length === 0 || platform.exportFormats.length === 0) {
+            continue;
+        }
 
-            App.renderCanvasForExport(tempCanvas, tempCtx, App.state.screenshots[j], format);
+        // Export each format for this platform
+        for (var i = 0; i < platform.exportFormats.length; i++) {
+            var formatKey = platform.exportFormats[i];
+            var format = App.FORMATS[formatKey];
+            tempCanvas.width = format.width;
+            tempCanvas.height = format.height;
 
-            App.setCurrentFormat(origFormat);
+            for (var j = 0; j < platform.screenshots.length; j++) {
+                progressText.textContent = 'Exporting ' + format.name + ' - ' + (j + 1) + '/' + platform.screenshots.length;
 
-            await new Promise(function(r) { setTimeout(r, 50); });
+                App.renderCanvasForExport(tempCanvas, tempCtx, platform.screenshots[j], format);
 
-            var blob = await new Promise(function(resolve) { tempCanvas.toBlob(resolve, 'image/png'); });
-            files.push({ blob: blob, filename: formatKey + '_' + (j + 1) + '.png' });
+                await new Promise(function(r) { setTimeout(r, 50); });
+
+                var blob = await new Promise(function(resolve) { tempCanvas.toBlob(resolve, 'image/png'); });
+                files.push({ blob: blob, filename: formatKey + '_' + (j + 1) + '.png' });
+            }
         }
     }
 
