@@ -28,6 +28,34 @@
     transform: translateY(-1px);
 }
 
+/* Header Actions */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.help-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: var(--foreground-muted);
+    border-radius: var(--radius);
+    transition: all var(--transition-fast);
+}
+
+.help-link:hover {
+    background: var(--muted);
+    color: var(--foreground);
+}
+
+.help-link svg {
+    width: 16px;
+    height: 16px;
+}
+
 /* Theme Toggle */
 .theme-toggle {
     display: flex;
