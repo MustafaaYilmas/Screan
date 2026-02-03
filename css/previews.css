@@ -7,9 +7,6 @@
     overflow-x: auto;
     overflow-y: hidden;
     background: var(--background-subtle);
-    background-image:
-        radial-gradient(circle at 1px 1px, var(--border-subtle) 1px, transparent 0);
-    background-size: 24px 24px;
     position: relative;
 }
 

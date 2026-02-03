@@ -5,48 +5,48 @@
 /* Dark theme (default) - Tailwind Neutral */
 :root {
     /* Background */
-    --background: #141414;       /* between neutral-900 and 950 */
-    --background-subtle: #171717; /* neutral-900 */
+    --background: #171717;       /* neutral-900 */
+    --background-subtle: #1a1a1a; /* slightly lighter */
 
     /* Card/Surface */
-    --card: #1a1a1a;             /* slightly lighter than neutral-900 */
+    --card: #262626;             /* neutral-800, lighter for better contrast */
     --card-foreground: #fafafa;  /* neutral-50 */
 
     /* Muted */
-    --muted: #262626;            /* neutral-800 */
+    --muted: #2f2f2f;            /* between neutral-800 and 700 */
     --muted-foreground: #a3a3a3; /* neutral-400 */
 
     /* Border */
-    --border: #303030;           /* between neutral-800 and 700 */
-    --border-subtle: #262626;    /* neutral-800 */
+    --border: #404040;           /* neutral-700 */
+    --border-subtle: #303030;    /* between neutral-800 and 700 */
 
     /* Input */
-    --input: #262626;            /* neutral-800 */
+    --input: #2f2f2f;            /* matches muted */
     --input-border: transparent;
 
     /* Ring (focus) */
     --ring: #525252;             /* neutral-600 */
-    --ring-offset: #141414;
+    --ring-offset: #171717;
 
     /* Primary */
     --primary: #fafafa;          /* neutral-50 */
     --primary-foreground: #171717; /* neutral-900 */
 
     /* Secondary */
-    --secondary: #2a2a2a;        /* between neutral-800 and 900 */
+    --secondary: #404040;        /* neutral-700 */
     --secondary-foreground: #fafafa; /* neutral-50 */
 
     /* Accent */
-    --accent: #2a2a2a;           /* between neutral-800 and 900 */
+    --accent: #404040;           /* neutral-700 */
     --accent-foreground: #fafafa; /* neutral-50 */
 
     /* Destructive */
-    --destructive: #991b1b;      /* red-800, slightly brighter */
+    --destructive: #dc2626;      /* red-600, brighter */
     --destructive-foreground: #fafafa;
 
     /* Text */
     --foreground: #fafafa;       /* neutral-50 */
-    --foreground-muted: #858585; /* between neutral-500 and 400, more visible */
+    --foreground-muted: #a3a3a3; /* neutral-400, more visible */
 
     /* Radius */
     --radius-sm: 4px;

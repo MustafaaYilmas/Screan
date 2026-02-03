@@ -12,6 +12,38 @@
     box-sizing: border-box;
 }
 
+/* Toggle panels hidden state */
+.panels-hidden .sidebar,
+.panels-hidden .settings-panel {
+    display: none;
+}
+
+.panels-hidden .mini-sidebar {
+    border-right: 1px solid var(--border-subtle);
+}
+
+/* Mobile: panels hidden by default */
+@media (max-width: 768px) {
+    .sidebar,
+    .settings-panel {
+        display: none;
+    }
+
+    .mini-sidebar {
+        border-right: none;
+    }
+
+    /* Show panels when toggle is active on mobile */
+    .panels-visible .sidebar,
+    .panels-visible .settings-panel {
+        display: flex;
+    }
+
+    .panels-visible .mini-sidebar {
+        border-right: 1px solid var(--border-subtle);
+    }
+}
+
 .mini-sidebar-top {
     display: flex;
     flex-direction: column;
