@@ -66,29 +66,44 @@ App.updateSettingsUI = function() {
 
     if (!hasSelection) return;
 
+    // Text content
     document.getElementById('headline').value = settings.headline;
     document.getElementById('subheadline').value = settings.subheadline;
-    document.getElementById('textColor').value = settings.textColor;
-    document.getElementById('textColorHex').value = settings.textColor.toUpperCase();
-    document.getElementById('bgColor1').value = settings.bgColor;
-    document.getElementById('bgColor1Hex').value = settings.bgColor.toUpperCase();
-    document.getElementById('addShadow').checked = settings.addShadow;
-    document.getElementById('addDeviceFrame').checked = settings.addDeviceFrame;
-    document.getElementById('deviceFrameColor').value = settings.deviceFrameColor;
-    document.getElementById('deviceFrameColorHex').value = settings.deviceFrameColor.toUpperCase();
-    document.getElementById('deviceFrameColorRow').style.display = settings.addDeviceFrame ? 'flex' : 'none';
 
-    // Title font and size
-    document.getElementById('titleFont').value = settings.titleFont || 'sf-pro';
+    // Title settings
+    document.getElementById('titleFont').value = settings.titleFont || 'sf-rounded';
     document.querySelectorAll('.size-btn[data-target="title"]').forEach(function(btn) {
         btn.classList.toggle('active', btn.dataset.size === (settings.titleSize || 'medium'));
     });
+    document.getElementById('titleColor').value = settings.titleColor || '#ffffff';
+    document.getElementById('titleColorHex').value = (settings.titleColor || '#ffffff').toUpperCase();
+    document.getElementById('titleWeight').value = settings.titleWeight || 'bold';
 
-    // Body font and size
-    document.getElementById('bodyFont').value = settings.bodyFont || 'sf-pro';
+    // Body settings
+    document.getElementById('bodyFont').value = settings.bodyFont || 'sf-rounded';
     document.querySelectorAll('.size-btn[data-target="body"]').forEach(function(btn) {
         btn.classList.toggle('active', btn.dataset.size === (settings.bodySize || 'medium'));
     });
+    document.getElementById('bodyColor').value = settings.bodyColor || '#ffffff';
+    document.getElementById('bodyColorHex').value = (settings.bodyColor || '#ffffff').toUpperCase();
+    document.getElementById('bodyWeight').value = settings.bodyWeight || 'medium';
+
+    // Background settings
+    document.getElementById('bgColor1').value = settings.bgColor;
+    document.getElementById('bgColor1Hex').value = settings.bgColor.toUpperCase();
+    document.getElementById('bgGradient').checked = settings.bgGradient || false;
+    document.getElementById('gradientColorRow').style.display = settings.bgGradient ? 'flex' : 'none';
+    document.getElementById('bgGradientColor').value = settings.bgGradientColor || '#4A90D9';
+    document.getElementById('bgGradientColorHex').value = (settings.bgGradientColor || '#4A90D9').toUpperCase();
+
+    // Device frame settings
+    document.getElementById('addDeviceFrame').checked = settings.addDeviceFrame;
+    document.getElementById('deviceFrameContent').style.display = settings.addDeviceFrame ? 'block' : 'none';
+    document.getElementById('deviceFrameColor').value = settings.deviceFrameColor;
+    document.getElementById('deviceFrameColorHex').value = settings.deviceFrameColor.toUpperCase();
+
+    // Other settings
+    document.getElementById('addShadow').checked = settings.addShadow;
 
     document.querySelectorAll('.position-btn-new').forEach(function(btn) {
         btn.classList.toggle('active', btn.dataset.preset === settings.preset);
@@ -106,7 +121,6 @@ App.updateTextFieldsState = function() {
 
     document.getElementById('titleSection').style.display = hideText ? 'none' : 'block';
     document.getElementById('bodySection').style.display = hideText ? 'none' : 'block';
-    document.getElementById('textColorRow').style.display = hideText ? 'none' : 'flex';
 };
 
 App.updateApplyToAllButton = function() {
@@ -122,9 +136,16 @@ App.allSettingsMatch = function(screenshots) {
     if (screenshots.length < 2) return true;
 
     var visualKeys = [
-        'textColor', 'bgColor', 'addShadow', 'addDeviceFrame',
-        'deviceFrameColor', 'preset', 'titleFont', 'titleSize',
-        'bodyFont', 'bodySize'
+        // Title settings
+        'titleFont', 'titleSize', 'titleColor', 'titleWeight',
+        // Body settings
+        'bodyFont', 'bodySize', 'bodyColor', 'bodyWeight',
+        // Background settings
+        'bgColor', 'bgGradient', 'bgGradientColor', 'bgGradientAngle',
+        // Device frame settings
+        'addDeviceFrame', 'deviceFrameColor',
+        // Other settings
+        'addShadow', 'preset'
     ];
 
     var first = screenshots[0].settings;
@@ -145,18 +166,29 @@ App.applySettingsToAll = function() {
     var currentSettings = App.getActiveSettings();
     if (!currentSettings || screenshots.length < 2) return;
 
-    // Settings to apply (excluding text content)
+    // Settings to apply (excluding text content: headline, subheadline)
     var settingsToApply = {
-        textColor: currentSettings.textColor,
-        bgColor: currentSettings.bgColor,
-        addShadow: currentSettings.addShadow,
-        addDeviceFrame: currentSettings.addDeviceFrame,
-        deviceFrameColor: currentSettings.deviceFrameColor,
-        preset: currentSettings.preset,
+        // Title settings
         titleFont: currentSettings.titleFont,
         titleSize: currentSettings.titleSize,
+        titleColor: currentSettings.titleColor,
+        titleWeight: currentSettings.titleWeight,
+        // Body settings
         bodyFont: currentSettings.bodyFont,
-        bodySize: currentSettings.bodySize
+        bodySize: currentSettings.bodySize,
+        bodyColor: currentSettings.bodyColor,
+        bodyWeight: currentSettings.bodyWeight,
+        // Background settings
+        bgColor: currentSettings.bgColor,
+        bgGradient: currentSettings.bgGradient,
+        bgGradientColor: currentSettings.bgGradientColor,
+        bgGradientAngle: currentSettings.bgGradientAngle,
+        // Device frame settings
+        addDeviceFrame: currentSettings.addDeviceFrame,
+        deviceFrameColor: currentSettings.deviceFrameColor,
+        // Other settings
+        addShadow: currentSettings.addShadow,
+        preset: currentSettings.preset
     };
 
     screenshots.forEach(function(screenshot) {

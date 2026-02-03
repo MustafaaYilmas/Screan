@@ -97,16 +97,35 @@ App.PRESETS = {
 App.DEFAULT_SETTINGS = {
     headline: 'Your Amazing App',
     subheadline: 'The best way to do things',
-    textColor: '#ffffff',
-    bgColor: '#75B7E7',
-    addShadow: true,
-    addDeviceFrame: true,
-    deviceFrameColor: '#000000',
-    preset: 'top',
+    // Title settings
     titleFont: 'sf-rounded',
     titleSize: 'medium',
+    titleColor: '#ffffff',
+    titleWeight: 'bold',
+    // Body settings
     bodyFont: 'sf-rounded',
-    bodySize: 'medium'
+    bodySize: 'medium',
+    bodyColor: '#ffffff',
+    bodyWeight: 'medium',
+    // Background settings
+    bgColor: '#75B7E7',
+    bgGradient: false,
+    bgGradientColor: '#4A90D9',
+    bgGradientAngle: 180,
+    // Device frame settings
+    addDeviceFrame: true,
+    deviceFrameColor: '#000000',
+    // Other settings
+    addShadow: true,
+    preset: 'top'
+};
+
+App.FONT_WEIGHTS = {
+    'thin': { name: 'Thin', value: 100 },
+    'regular': { name: 'Regular', value: 400 },
+    'medium': { name: 'Medium', value: 500 },
+    'semibold': { name: 'Semi-bold', value: 600 },
+    'bold': { name: 'Bold', value: 700 }
 };
 
 App.SIZE_MULTIPLIERS = {

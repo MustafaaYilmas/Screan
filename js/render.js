@@ -84,7 +84,16 @@ App.renderCanvas = function(canvas, screenshot) {
 
     ctx.clearRect(0, 0, w, h);
 
-    ctx.fillStyle = settings.bgColor;
+    // Draw background (solid or gradient)
+    if (settings.bgGradient) {
+        // Gradient from top (bgColor) to bottom (bgGradientColor)
+        var gradient = ctx.createLinearGradient(0, 0, 0, h);
+        gradient.addColorStop(0, settings.bgColor);
+        gradient.addColorStop(1, settings.bgGradientColor || '#4A90D9');
+        ctx.fillStyle = gradient;
+    } else {
+        ctx.fillStyle = settings.bgColor;
+    }
     ctx.fillRect(0, 0, w, h);
 
     App.drawScreenshot(ctx, screenshot, w, h, preset, settings, format);
@@ -292,19 +301,26 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatK
     var textZoneHeight = textZoneEnd - textZoneStart;
     var startY = textZoneStart + (textZoneHeight - totalTextHeight) / 2;
 
-    ctx.fillStyle = settings.textColor;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
 
+    // Get font weights
+    var titleWeightKey = settings.titleWeight || 'bold';
+    var bodyWeightKey = settings.bodyWeight || 'medium';
+    var titleWeightValue = App.FONT_WEIGHTS[titleWeightKey] ? App.FONT_WEIGHTS[titleWeightKey].value : 700;
+    var bodyWeightValue = App.FONT_WEIGHTS[bodyWeightKey] ? App.FONT_WEIGHTS[bodyWeightKey].value : 500;
+
     if (settings.headline) {
-        ctx.font = '700 ' + headlineFontSize + 'px ' + titleFontFamily;
+        ctx.fillStyle = settings.titleColor || '#ffffff';
+        ctx.font = titleWeightValue + ' ' + headlineFontSize + 'px ' + titleFontFamily;
         ctx.fillText(settings.headline, canvasW / 2, startY);
         startY += headlineFontSize + lineSpacing;
     }
 
     if (settings.subheadline) {
         ctx.globalAlpha = 0.9;
-        ctx.font = '500 ' + subheadlineFontSize + 'px ' + bodyFontFamily;
+        ctx.fillStyle = settings.bodyColor || '#ffffff';
+        ctx.font = bodyWeightValue + ' ' + subheadlineFontSize + 'px ' + bodyFontFamily;
         ctx.fillText(settings.subheadline, canvasW / 2, startY);
         ctx.globalAlpha = 1;
     }

@@ -13,6 +13,12 @@
 .settings-scroll {
     flex: 1;
     overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+.settings-scroll::-webkit-scrollbar {
+    display: none; /* Chrome/Safari/Opera */
 }
 
 .settings-footer {
@@ -58,10 +64,11 @@
 }
 
 .section-title {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--foreground);
-    letter-spacing: -0.01em;
+    font-size: 11px;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--foreground-muted) 70%, transparent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .section-content {

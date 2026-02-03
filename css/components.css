@@ -255,21 +255,24 @@
 .color-input-wrap {
     display: flex;
     align-items: center;
-    gap: 10px;
+    position: relative;
 }
 
 .color-input-wrap input[type="color"] {
-    width: 34px;
-    height: 34px;
+    position: absolute;
+    left: 6px;
+    width: 22px;
+    height: 22px;
     padding: 0;
     border: none;
-    border-radius: var(--radius);
+    border-radius: var(--radius-sm);
     cursor: pointer;
     background: transparent;
+    z-index: 1;
 }
 
 .color-input-wrap input[type="color"]::-webkit-color-swatch-wrapper {
-    padding: 2px;
+    padding: 0;
 }
 
 .color-input-wrap input[type="color"]::-webkit-color-swatch {
@@ -278,9 +281,9 @@
 }
 
 .color-hex-input {
-    width: 72px;
+    width: 100px;
     height: 34px;
-    padding: 0 8px;
+    padding: 0 8px 0 34px;
     font-size: 12px;
     font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
     color: var(--foreground);

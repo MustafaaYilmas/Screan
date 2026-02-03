@@ -156,17 +156,75 @@ App.initEventListeners = function() {
         });
     });
 
-    // Colors - color picker (use scheduleRender for smoother dragging)
-    document.getElementById('textColor').addEventListener('input', function(e) {
+    // Title color - color picker
+    document.getElementById('titleColor').addEventListener('input', function(e) {
         var settings = App.getActiveSettings();
         if (settings) {
-            settings.textColor = e.target.value;
-            document.getElementById('textColorHex').value = e.target.value.toUpperCase();
+            settings.titleColor = e.target.value;
+            document.getElementById('titleColorHex').value = e.target.value.toUpperCase();
             App.scheduleRender();
             App.updateApplyToAllButton();
         }
     });
 
+    // Title color - hex input
+    document.getElementById('titleColorHex').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            var hex = App.normalizeHex(e.target.value);
+            if (hex) {
+                settings.titleColor = hex;
+                document.getElementById('titleColor').value = hex;
+                App.debouncedColorRender();
+            }
+        }
+    });
+
+    // Title weight
+    document.getElementById('titleWeight').addEventListener('change', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            settings.titleWeight = e.target.value;
+            App.scheduleRender();
+            App.updateApplyToAllButton();
+        }
+    });
+
+    // Body color - color picker
+    document.getElementById('bodyColor').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            settings.bodyColor = e.target.value;
+            document.getElementById('bodyColorHex').value = e.target.value.toUpperCase();
+            App.scheduleRender();
+            App.updateApplyToAllButton();
+        }
+    });
+
+    // Body color - hex input
+    document.getElementById('bodyColorHex').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            var hex = App.normalizeHex(e.target.value);
+            if (hex) {
+                settings.bodyColor = hex;
+                document.getElementById('bodyColor').value = hex;
+                App.debouncedColorRender();
+            }
+        }
+    });
+
+    // Body weight
+    document.getElementById('bodyWeight').addEventListener('change', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            settings.bodyWeight = e.target.value;
+            App.scheduleRender();
+            App.updateApplyToAllButton();
+        }
+    });
+
+    // Background color - color picker
     document.getElementById('bgColor1').addEventListener('input', function(e) {
         var settings = App.getActiveSettings();
         if (settings) {
@@ -177,19 +235,7 @@ App.initEventListeners = function() {
         }
     });
 
-    // Colors - hex input (debounced for better INP)
-    document.getElementById('textColorHex').addEventListener('input', function(e) {
-        var settings = App.getActiveSettings();
-        if (settings) {
-            var hex = App.normalizeHex(e.target.value);
-            if (hex) {
-                settings.textColor = hex;
-                document.getElementById('textColor').value = hex;
-                App.debouncedColorRender();
-            }
-        }
-    });
-
+    // Background color - hex input
     document.getElementById('bgColor1Hex').addEventListener('input', function(e) {
         var settings = App.getActiveSettings();
         if (settings) {
@@ -202,6 +248,53 @@ App.initEventListeners = function() {
         }
     });
 
+    // Background gradient toggle
+    document.getElementById('bgGradient').addEventListener('change', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            settings.bgGradient = e.target.checked;
+            document.getElementById('gradientColorRow').style.display = e.target.checked ? 'flex' : 'none';
+            App.scheduleRender();
+            App.updateApplyToAllButton();
+        }
+    });
+
+    // Gradient end color - color picker
+    document.getElementById('bgGradientColor').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            settings.bgGradientColor = e.target.value;
+            document.getElementById('bgGradientColorHex').value = e.target.value.toUpperCase();
+            App.scheduleRender();
+            App.updateApplyToAllButton();
+        }
+    });
+
+    // Gradient end color - hex input
+    document.getElementById('bgGradientColorHex').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            var hex = App.normalizeHex(e.target.value);
+            if (hex) {
+                settings.bgGradientColor = hex;
+                document.getElementById('bgGradientColor').value = hex;
+                App.debouncedColorRender();
+            }
+        }
+    });
+
+    // Device frame color - color picker
+    document.getElementById('deviceFrameColor').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            settings.deviceFrameColor = e.target.value;
+            document.getElementById('deviceFrameColorHex').value = e.target.value.toUpperCase();
+            App.scheduleRender();
+            App.updateApplyToAllButton();
+        }
+    });
+
+    // Device frame color - hex input
     document.getElementById('deviceFrameColorHex').addEventListener('input', function(e) {
         var settings = App.getActiveSettings();
         if (settings) {
@@ -229,18 +322,7 @@ App.initEventListeners = function() {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.addDeviceFrame = e.target.checked;
-            document.getElementById('deviceFrameColorRow').style.display = e.target.checked ? 'flex' : 'none';
-            App.scheduleRender();
-            App.updateApplyToAllButton();
-        }
-    });
-
-    // Device frame color (use scheduleRender for smoother dragging)
-    document.getElementById('deviceFrameColor').addEventListener('input', function(e) {
-        var settings = App.getActiveSettings();
-        if (settings) {
-            settings.deviceFrameColor = e.target.value;
-            document.getElementById('deviceFrameColorHex').value = e.target.value.toUpperCase();
+            document.getElementById('deviceFrameContent').style.display = e.target.checked ? 'block' : 'none';
             App.scheduleRender();
             App.updateApplyToAllButton();
         }

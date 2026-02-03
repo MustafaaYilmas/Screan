@@ -281,6 +281,19 @@
                                 <button class="size-btn" data-size="large" data-target="title">L</button>
                             </div>
                         </div>
+                        <div class="text-options-row">
+                            <select id="titleWeight" class="font-select">
+                                <option value="thin">Thin</option>
+                                <option value="regular">Regular</option>
+                                <option value="medium">Medium</option>
+                                <option value="semibold">Semi-bold</option>
+                                <option value="bold" selected>Bold</option>
+                            </select>
+                            <div class="color-input-wrap">
+                                <input type="color" id="titleColor" value="#ffffff">
+                                <input type="text" class="color-hex-input" id="titleColorHex" value="#FFFFFF" maxlength="7">
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -305,47 +318,69 @@
                                 <button class="size-btn" data-size="large" data-target="body">L</button>
                             </div>
                         </div>
+                        <div class="text-options-row">
+                            <select id="bodyWeight" class="font-select">
+                                <option value="thin">Thin</option>
+                                <option value="regular">Regular</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="semibold">Semi-bold</option>
+                                <option value="bold">Bold</option>
+                            </select>
+                            <div class="color-input-wrap">
+                                <input type="color" id="bodyColor" value="#ffffff">
+                                <input type="text" class="color-hex-input" id="bodyColorHex" value="#FFFFFF" maxlength="7">
+                            </div>
+                        </div>
                     </div>
                 </section>
 
-                <!-- Text & Background Colors -->
-                <section class="settings-section">
+                <!-- Background -->
+                <section class="settings-section" id="backgroundSection">
                     <div class="section-header">
-                        <span class="section-title">Colors</span>
+                        <span class="section-title">Background</span>
                     </div>
                     <div class="section-content">
-                        <div class="color-row" id="textColorRow">
-                            <label class="color-label">Text</label>
-                            <div class="color-input-wrap">
-                                <input type="color" id="textColor" value="#ffffff">
-                                <input type="text" class="color-hex-input" id="textColorHex" value="#FFFFFF" maxlength="7">
-                            </div>
-                        </div>
                         <div class="color-row">
-                            <label class="color-label">Background</label>
+                            <label class="color-label">Color</label>
                             <div class="color-input-wrap">
                                 <input type="color" id="bgColor1" value="#75B7E7">
                                 <input type="text" class="color-hex-input" id="bgColor1Hex" value="#75B7E7" maxlength="7">
                             </div>
                         </div>
-                        <div class="color-row" id="deviceFrameColorRow">
-                            <label class="color-label">Device</label>
+                        <div class="color-row" id="gradientColorRow" style="display: none;">
+                            <label class="color-label">End color</label>
                             <div class="color-input-wrap">
-                                <input type="color" id="deviceFrameColor" value="#000000">
-                                <input type="text" class="color-hex-input" id="deviceFrameColorHex" value="#000000" maxlength="7">
+                                <input type="color" id="bgGradientColor" value="#4A90D9">
+                                <input type="text" class="color-hex-input" id="bgGradientColorHex" value="#4A90D9" maxlength="7">
                             </div>
+                        </div>
+                        <div class="color-row">
+                            <label class="color-label">Gradient</label>
+                            <label class="toggle">
+                                <input type="checkbox" id="bgGradient">
+                                <span class="toggle-slider"></span>
+                            </label>
                         </div>
                     </div>
                 </section>
 
                 <!-- Device Frame -->
-                <section class="settings-section">
+                <section class="settings-section" id="deviceFrameSection">
                     <div class="section-header">
                         <span class="section-title">Device Frame</span>
                         <label class="toggle">
                             <input type="checkbox" id="addDeviceFrame" checked>
                             <span class="toggle-slider"></span>
                         </label>
+                    </div>
+                    <div class="section-content" id="deviceFrameContent">
+                        <div class="color-row">
+                            <label class="color-label">Color</label>
+                            <div class="color-input-wrap">
+                                <input type="color" id="deviceFrameColor" value="#000000">
+                                <input type="text" class="color-hex-input" id="deviceFrameColorHex" value="#000000" maxlength="7">
+                            </div>
+                        </div>
                     </div>
                 </section>
 
