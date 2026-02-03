@@ -55,13 +55,22 @@ App.scheduleRender = function() {
 // Debounced render for text inputs (300ms delay)
 App.debouncedRender = App.debounce(function() {
     App.scheduleRender();
+    App.Storage.scheduleSave();
 }, 300);
 
 // Debounced render for color hex inputs (200ms delay)
 App.debouncedColorRender = App.debounce(function() {
     App.scheduleRender();
     App.updateApplyToAllButton();
+    App.Storage.scheduleSave();
 }, 200);
+
+// Helper to render and save after settings change
+App.renderAndSave = function() {
+    App.scheduleRender();
+    App.updateApplyToAllButton();
+    App.Storage.scheduleSave();
+};
 
 App.normalizeHex = function(value) {
     var hex = value.trim().toUpperCase();
@@ -114,8 +123,7 @@ App.initEventListeners = function() {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.titleFont = e.target.value;
-            App.scheduleRender();
-            App.updateApplyToAllButton();
+            App.renderAndSave();
         }
     });
 
@@ -124,8 +132,7 @@ App.initEventListeners = function() {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.bodyFont = e.target.value;
-            App.scheduleRender();
-            App.updateApplyToAllButton();
+            App.renderAndSave();
         }
     });
 
@@ -151,8 +158,7 @@ App.initEventListeners = function() {
                 settings.bodySize = size;
             }
 
-            App.scheduleRender();
-            App.updateApplyToAllButton();
+            App.renderAndSave();
         });
     });
 
@@ -162,8 +168,7 @@ App.initEventListeners = function() {
         if (settings) {
             settings.titleColor = e.target.value;
             document.getElementById('titleColorHex').value = e.target.value.toUpperCase();
-            App.scheduleRender();
-            App.updateApplyToAllButton();
+            App.renderAndSave();
         }
     });
 
@@ -185,8 +190,7 @@ App.initEventListeners = function() {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.titleWeight = e.target.value;
-            App.scheduleRender();
-            App.updateApplyToAllButton();
+            App.renderAndSave();
         }
     });
 
@@ -196,8 +200,7 @@ App.initEventListeners = function() {
         if (settings) {
             settings.bodyColor = e.target.value;
             document.getElementById('bodyColorHex').value = e.target.value.toUpperCase();
-            App.scheduleRender();
-            App.updateApplyToAllButton();
+            App.renderAndSave();
         }
     });
 
@@ -219,8 +222,7 @@ App.initEventListeners = function() {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.bodyWeight = e.target.value;
-            App.scheduleRender();
-            App.updateApplyToAllButton();
+            App.renderAndSave();
         }
     });
 
@@ -230,8 +232,7 @@ App.initEventListeners = function() {
         if (settings) {
             settings.bgColor = e.target.value;
             document.getElementById('bgColor1Hex').value = e.target.value.toUpperCase();
-            App.scheduleRender();
-            App.updateApplyToAllButton();
+            App.renderAndSave();
         }
     });
 
@@ -254,8 +255,7 @@ App.initEventListeners = function() {
         if (settings) {
             settings.bgGradient = e.target.checked;
             document.getElementById('gradientColorRow').style.display = e.target.checked ? 'flex' : 'none';
-            App.scheduleRender();
-            App.updateApplyToAllButton();
+            App.renderAndSave();
         }
     });
 
@@ -265,8 +265,7 @@ App.initEventListeners = function() {
         if (settings) {
             settings.bgGradientColor = e.target.value;
             document.getElementById('bgGradientColorHex').value = e.target.value.toUpperCase();
-            App.scheduleRender();
-            App.updateApplyToAllButton();
+            App.renderAndSave();
         }
     });
 
@@ -289,8 +288,7 @@ App.initEventListeners = function() {
         if (settings) {
             settings.deviceFrameColor = e.target.value;
             document.getElementById('deviceFrameColorHex').value = e.target.value.toUpperCase();
-            App.scheduleRender();
-            App.updateApplyToAllButton();
+            App.renderAndSave();
         }
     });
 
@@ -312,8 +310,7 @@ App.initEventListeners = function() {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.addShadow = e.target.checked;
-            App.scheduleRender();
-            App.updateApplyToAllButton();
+            App.renderAndSave();
         }
     });
 
@@ -323,8 +320,7 @@ App.initEventListeners = function() {
         if (settings) {
             settings.addDeviceFrame = e.target.checked;
             document.getElementById('deviceFrameContent').style.display = e.target.checked ? 'block' : 'none';
-            App.scheduleRender();
-            App.updateApplyToAllButton();
+            App.renderAndSave();
         }
     });
 
@@ -337,8 +333,7 @@ App.initEventListeners = function() {
                 btn.classList.add('active');
                 settings.preset = btn.dataset.preset;
                 App.updateTextFieldsState();
-                App.scheduleRender();
-                App.updateApplyToAllButton();
+                App.renderAndSave();
             }
         });
     });
@@ -352,8 +347,7 @@ App.initEventListeners = function() {
             document.querySelectorAll('.spacing-btn').forEach(function(b) { b.classList.remove('active'); });
             btn.classList.add('active');
             settings.textSpacing = btn.dataset.spacing;
-            App.scheduleRender();
-            App.updateApplyToAllButton();
+            App.renderAndSave();
         });
     });
 
@@ -365,8 +359,7 @@ App.initEventListeners = function() {
                 document.querySelectorAll('.align-btn').forEach(function(b) { b.classList.remove('active'); });
                 btn.classList.add('active');
                 settings.textAlign = btn.dataset.align;
-                App.scheduleRender();
-                App.updateApplyToAllButton();
+                App.renderAndSave();
             }
         });
     });
@@ -392,6 +385,7 @@ App.initEventListeners = function() {
             ).map(function(c) { return c.dataset.format; });
 
             App.updateExportButton();
+            App.Storage.scheduleSave();
         });
 
         // Prevent click from bubbling to platform header

@@ -105,6 +105,7 @@ App.selectPlatform = function(platformKey) {
     // Update settings UI and render
     App.updateSettingsUI();
     App.scheduleRender();
+    App.Storage.scheduleSave();
 };
 
 App.updateEmptyStateText = function() {

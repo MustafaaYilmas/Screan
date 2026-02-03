@@ -20,7 +20,7 @@ function toggleTheme() {
 // Initialize theme before DOM ready to avoid flash
 initTheme();
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     // Initialize Lucide icons
     lucide.createIcons();
 
@@ -32,6 +32,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     App.initEventListeners();
     App.initDragDrop();
+
+    // Load persisted data from IndexedDB
+    await App.Storage.init();
+    await App.Storage.loadAll();
+
     App.updateSettingsUI();
     App.renderAllPreviews();
 });

@@ -28,6 +28,7 @@ App.handleScreenshots = function(files) {
                 App.scheduleRender();
                 App.updateExportButton();
                 App.updateSidebarCounts();
+                App.Storage.scheduleSave();
             };
             img.src = e.target.result;
         };
@@ -45,6 +46,7 @@ App.removeScreenshot = function(index) {
     App.scheduleRender();
     App.updateExportButton();
     App.updateSidebarCounts();
+    App.Storage.scheduleSave();
 };
 
 App.selectScreenshot = function(index) {
@@ -203,4 +205,5 @@ App.applySettingsToAll = function() {
 
     App.scheduleRender();
     App.updateSettingsUI();
+    App.Storage.scheduleSave();
 };
