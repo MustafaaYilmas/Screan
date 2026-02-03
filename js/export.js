@@ -74,12 +74,20 @@ App.renderCanvasForExport = function(canvas, ctx, screenshot, format, formatKey)
 
     ctx.clearRect(0, 0, w, h);
 
-    ctx.fillStyle = settings.bgColor;
+    // Draw background (solid or gradient)
+    if (settings.bgGradient) {
+        var gradient = ctx.createLinearGradient(0, 0, 0, h);
+        gradient.addColorStop(0, settings.bgColor);
+        gradient.addColorStop(1, settings.bgGradientColor || '#ffffff');
+        ctx.fillStyle = gradient;
+    } else {
+        ctx.fillStyle = settings.bgColor;
+    }
     ctx.fillRect(0, 0, w, h);
 
-    App.drawScreenshot(ctx, screenshot, w, h, preset, settings, format);
+    var screenshotInfo = App.drawScreenshot(ctx, screenshot, w, h, preset, settings, format);
 
     if (!preset.noText && (settings.headline || settings.subheadline)) {
-        App.drawText(ctx, w, h, preset, settings, format, formatKey);
+        App.drawText(ctx, w, h, preset, settings, format, formatKey, screenshotInfo);
     }
 };

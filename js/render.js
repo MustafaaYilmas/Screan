@@ -254,6 +254,40 @@ App.getFontSizeKey = function(formatKey) {
     }
 };
 
+// Word wrap helper function
+App.wrapText = function(ctx, text, maxWidth) {
+    var lines = [];
+    var paragraphs = text.split('\n');
+
+    for (var p = 0; p < paragraphs.length; p++) {
+        var paragraph = paragraphs[p];
+        if (paragraph === '') {
+            lines.push('');
+            continue;
+        }
+
+        var words = paragraph.split(' ');
+        var currentLine = '';
+
+        for (var i = 0; i < words.length; i++) {
+            var testLine = currentLine ? currentLine + ' ' + words[i] : words[i];
+            var metrics = ctx.measureText(testLine);
+
+            if (metrics.width > maxWidth && currentLine) {
+                lines.push(currentLine);
+                currentLine = words[i];
+            } else {
+                currentLine = testLine;
+            }
+        }
+        if (currentLine) {
+            lines.push(currentLine);
+        }
+    }
+
+    return lines;
+};
+
 App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatKey, screenshotInfo) {
     // Determine font size category based on format
     var fontSizeKey = App.getFontSizeKey(formatKey || App.currentFormat);
@@ -274,16 +308,32 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatK
     var titleFontFamily = titleFontConfig.family;
     var bodyFontFamily = bodyFontConfig.family;
 
+    // Calculate max width for text wrapping
+    var horizontalPadding = canvasW * 0.065;
+    var maxTextWidth = canvasW - (horizontalPadding * 2);
+
+    // Get font weights
+    var titleWeightKey = settings.titleWeight || 'bold';
+    var bodyWeightKey = settings.bodyWeight || 'medium';
+    var titleWeightValue = App.FONT_WEIGHTS[titleWeightKey] ? App.FONT_WEIGHTS[titleWeightKey].value : 700;
+    var bodyWeightValue = App.FONT_WEIGHTS[bodyWeightKey] ? App.FONT_WEIGHTS[bodyWeightKey].value : 500;
+
+    // Wrap subheadline text
+    ctx.font = bodyWeightValue + ' ' + subheadlineFontSize + 'px ' + bodyFontFamily;
+    var subheadlineLines = settings.subheadline ? App.wrapText(ctx, settings.subheadline, maxTextWidth) : [];
+    var bodyLineSpacing = subheadlineFontSize * 0.3;
+
     // Calculate total text block height
     var totalTextHeight = 0;
     if (settings.headline) {
         totalTextHeight += headlineFontSize;
     }
-    if (settings.headline && settings.subheadline) {
+    if (settings.headline && subheadlineLines.length > 0) {
         totalTextHeight += lineSpacing;
     }
-    if (settings.subheadline) {
-        totalTextHeight += subheadlineFontSize;
+    if (subheadlineLines.length > 0) {
+        totalTextHeight += subheadlineFontSize * subheadlineLines.length;
+        totalTextHeight += bodyLineSpacing * (subheadlineLines.length - 1);
     }
 
     // Determine text start position (centered in available space)
@@ -310,7 +360,6 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatK
 
     // Calculate X position based on alignment
     var textX;
-    var horizontalPadding = canvasW * 0.065; // 6.5% padding on sides
     if (textAlign === 'left') {
         textX = horizontalPadding;
     } else if (textAlign === 'right') {
@@ -319,12 +368,6 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatK
         textX = canvasW / 2;
     }
 
-    // Get font weights
-    var titleWeightKey = settings.titleWeight || 'bold';
-    var bodyWeightKey = settings.bodyWeight || 'medium';
-    var titleWeightValue = App.FONT_WEIGHTS[titleWeightKey] ? App.FONT_WEIGHTS[titleWeightKey].value : 700;
-    var bodyWeightValue = App.FONT_WEIGHTS[bodyWeightKey] ? App.FONT_WEIGHTS[bodyWeightKey].value : 500;
-
     if (settings.headline) {
         ctx.fillStyle = settings.titleColor || '#ffffff';
         ctx.font = titleWeightValue + ' ' + headlineFontSize + 'px ' + titleFontFamily;
@@ -332,11 +375,14 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatK
         startY += headlineFontSize + lineSpacing;
     }
 
-    if (settings.subheadline) {
+    if (subheadlineLines.length > 0) {
         ctx.globalAlpha = 0.9;
         ctx.fillStyle = settings.bodyColor || '#ffffff';
         ctx.font = bodyWeightValue + ' ' + subheadlineFontSize + 'px ' + bodyFontFamily;
-        ctx.fillText(settings.subheadline, textX, startY);
+        for (var i = 0; i < subheadlineLines.length; i++) {
+            ctx.fillText(subheadlineLines[i], textX, startY);
+            startY += subheadlineFontSize + bodyLineSpacing;
+        }
         ctx.globalAlpha = 1;
     }
 };
