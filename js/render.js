@@ -114,13 +114,14 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
 
     var imgX = (canvasW - imgW) / 2;
     var imgY;
+    var radius = imgW * (format.cornerRadius || 0.1);
     if (preset.centered) {
         imgY = (canvasH - imgH) / 2;
     } else {
-        imgY = canvasH * preset.screenshotY;
+        var spacing = settings.textSpacing || 'medium';
+        var screenshotY = typeof preset.screenshotY === 'object' ? preset.screenshotY[spacing] : preset.screenshotY;
+        imgY = canvasH * screenshotY;
     }
-
-    var radius = imgW * (format.cornerRadius || 0.1);
 
     ctx.save();
 
@@ -166,13 +167,14 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
     ctx.beginPath();
     if (preset.cropTop) {
         var bottomRadius = Math.min(radius, imgH);
-        ctx.moveTo(imgX, imgY);
-        ctx.lineTo(imgX + imgW, imgY);
+        var clipTopY = Math.max(0, imgY);
+        ctx.moveTo(imgX, clipTopY);
+        ctx.lineTo(imgX + imgW, clipTopY);
         ctx.lineTo(imgX + imgW, imgY + imgH - bottomRadius);
         ctx.quadraticCurveTo(imgX + imgW, imgY + imgH, imgX + imgW - bottomRadius, imgY + imgH);
         ctx.lineTo(imgX + bottomRadius, imgY + imgH);
         ctx.quadraticCurveTo(imgX, imgY + imgH, imgX, imgY + imgH - bottomRadius);
-        ctx.lineTo(imgX, imgY);
+        ctx.lineTo(imgX, clipTopY);
     } else if (preset.cropBottom) {
         var topRadius = Math.min(radius, imgH);
         ctx.moveTo(imgX + topRadius, imgY);
@@ -203,22 +205,24 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
         ctx.beginPath();
         if (preset.cropTop) {
             // Frame pour bottom preset (crop top)
+            var frameTopY = Math.max(0, imgY);
             var bottomRadius = Math.min(radius, imgH);
-            ctx.moveTo(imgX - frameOffset, imgY);
+            ctx.moveTo(imgX - frameOffset, frameTopY);
             ctx.lineTo(imgX - frameOffset, imgY + imgH - bottomRadius);
             ctx.quadraticCurveTo(imgX - frameOffset, imgY + imgH + frameOffset, imgX + bottomRadius, imgY + imgH + frameOffset);
             ctx.lineTo(imgX + imgW - bottomRadius, imgY + imgH + frameOffset);
             ctx.quadraticCurveTo(imgX + imgW + frameOffset, imgY + imgH + frameOffset, imgX + imgW + frameOffset, imgY + imgH - bottomRadius);
-            ctx.lineTo(imgX + imgW + frameOffset, imgY);
+            ctx.lineTo(imgX + imgW + frameOffset, frameTopY);
         } else if (preset.cropBottom) {
             // Frame pour top preset (crop bottom)
+            var frameBottomY = Math.min(canvasH, imgY + imgH);
             var topRadius = Math.min(radius, imgH);
-            ctx.moveTo(imgX - frameOffset, canvasH);
+            ctx.moveTo(imgX - frameOffset, frameBottomY);
             ctx.lineTo(imgX - frameOffset, imgY + topRadius);
             ctx.quadraticCurveTo(imgX - frameOffset, imgY - frameOffset, imgX + topRadius, imgY - frameOffset);
             ctx.lineTo(imgX + imgW - topRadius, imgY - frameOffset);
             ctx.quadraticCurveTo(imgX + imgW + frameOffset, imgY - frameOffset, imgX + imgW + frameOffset, imgY + topRadius);
-            ctx.lineTo(imgX + imgW + frameOffset, canvasH);
+            ctx.lineTo(imgX + imgW + frameOffset, frameBottomY);
         } else {
             // Frame complet pour center
             ctx.roundRect(imgX - frameOffset, imgY - frameOffset, imgW + frameWidth, imgH + frameWidth, frameRadius);

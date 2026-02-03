@@ -328,18 +328,32 @@ App.initEventListeners = function() {
         }
     });
 
-    // Position presets
-    document.querySelectorAll('.position-btn-new').forEach(function(btn) {
+    // Position presets (text buttons)
+    document.querySelectorAll('.position-text-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
             var settings = App.getActiveSettings();
             if (settings) {
-                document.querySelectorAll('.position-btn-new').forEach(function(b) { b.classList.remove('active'); });
+                document.querySelectorAll('.position-text-btn').forEach(function(b) { b.classList.remove('active'); });
                 btn.classList.add('active');
                 settings.preset = btn.dataset.preset;
                 App.updateTextFieldsState();
                 App.scheduleRender();
                 App.updateApplyToAllButton();
             }
+        });
+    });
+
+    // Spacing buttons
+    document.querySelectorAll('.spacing-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var settings = App.getActiveSettings();
+            if (!settings) return;
+
+            document.querySelectorAll('.spacing-btn').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            settings.textSpacing = btn.dataset.spacing;
+            App.scheduleRender();
+            App.updateApplyToAllButton();
         });
     });
 

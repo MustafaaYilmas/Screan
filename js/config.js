@@ -76,7 +76,7 @@ App.FONTS = {
 
 App.PRESETS = {
     'top': {
-        screenshotY: 0.24,
+        screenshotY: { small: 0.18, medium: 0.24, large: 0.38, xlarge: 0.52 },
         textY: 0.04,
         screenshotScale: 0.88,
         cropBottom: true
@@ -87,7 +87,7 @@ App.PRESETS = {
         noText: true
     },
     'bottom': {
-        screenshotY: -0.12,
+        screenshotY: { small: -0.06, medium: -0.12, large: -0.26, xlarge: -0.40 },
         textY: 0.82,
         screenshotScale: 0.88,
         cropTop: true
@@ -118,7 +118,8 @@ App.DEFAULT_SETTINGS = {
     // Other settings
     addShadow: true,
     preset: 'top',
-    textAlign: 'center'
+    textAlign: 'center',
+    textSpacing: 'medium'
 };
 
 App.FONT_WEIGHTS = {

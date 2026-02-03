@@ -98,12 +98,17 @@ App.updateSettingsUI = function() {
     // Other settings
     document.getElementById('addShadow').checked = settings.addShadow;
 
-    document.querySelectorAll('.position-btn-new').forEach(function(btn) {
+    document.querySelectorAll('.position-text-btn').forEach(function(btn) {
         btn.classList.toggle('active', btn.dataset.preset === settings.preset);
     });
 
     document.querySelectorAll('.align-btn').forEach(function(btn) {
         btn.classList.toggle('active', btn.dataset.align === (settings.textAlign || 'center'));
+    });
+
+    // Spacing buttons
+    document.querySelectorAll('.spacing-btn').forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.spacing === (settings.textSpacing || 'medium'));
     });
 
     App.updateTextFieldsState();
@@ -118,7 +123,8 @@ App.updateTextFieldsState = function() {
 
     document.getElementById('titleSection').style.display = hideText ? 'none' : 'block';
     document.getElementById('bodySection').style.display = hideText ? 'none' : 'block';
-    document.getElementById('textAlignSection').style.display = hideText ? 'none' : 'block';
+    document.getElementById('spacingRow').style.display = hideText ? 'none' : 'flex';
+    document.getElementById('alignRow').style.display = hideText ? 'none' : 'flex';
 };
 
 App.updateApplyToAllButton = function() {
@@ -143,7 +149,7 @@ App.allSettingsMatch = function(screenshots) {
         // Device frame settings
         'addDeviceFrame', 'deviceFrameColor',
         // Other settings
-        'addShadow', 'preset', 'textAlign'
+        'addShadow', 'preset', 'textAlign', 'textSpacing'
     ];
 
     var first = screenshots[0].settings;
@@ -187,7 +193,8 @@ App.applySettingsToAll = function() {
         // Other settings
         addShadow: currentSettings.addShadow,
         preset: currentSettings.preset,
-        textAlign: currentSettings.textAlign
+        textAlign: currentSettings.textAlign,
+        textSpacing: currentSettings.textSpacing
     };
 
     screenshots.forEach(function(screenshot) {

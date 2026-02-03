@@ -1,100 +1,105 @@
 /* ============================================
-   Position Buttons
+   Layout Section
    ============================================ */
 
-.position-buttons {
+.layout-row {
     display: flex;
-    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
 }
 
-.position-btn-new {
-    flex: 1;
+.layout-row:last-child {
+    margin-bottom: 0;
+}
+
+.layout-label {
+    font-size: 13px;
+    color: var(--foreground-muted);
+}
+
+/* ============================================
+   Position Buttons (Text Style)
+   ============================================ */
+
+.position-text-buttons {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 8px;
+    gap: 2px;
+    height: 34px;
     background: var(--input);
-    border: 1px solid transparent;
-    border-radius: var(--radius-md);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius);
+    padding: 2px;
+    box-sizing: border-box;
+    min-width: 170px;
+}
+
+.position-text-btn {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: calc(var(--radius) - 2px);
+    color: var(--foreground-muted);
+    font-size: 13px;
+    font-weight: 500;
     cursor: pointer;
     transition: all var(--transition-fast);
 }
 
-.position-btn-new:hover {
+.position-text-btn:hover {
+    color: var(--foreground);
     background: var(--muted);
 }
 
-.position-btn-new.active {
-    border-color: var(--foreground-muted);
+.position-text-btn.active {
+    background: var(--foreground);
+    color: var(--background);
+}
+
+/* ============================================
+   Spacing Buttons
+   ============================================ */
+
+.spacing-buttons {
+    display: flex;
+    gap: 2px;
+    height: 34px;
     background: var(--input);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius);
+    padding: 2px;
+    box-sizing: border-box;
+    width: fit-content;
 }
 
-.position-btn-new span {
-    font-size: 12px;
-    color: var(--foreground-muted);
-}
-
-.position-btn-new.active span {
-    color: var(--foreground);
-}
-
-.position-preview {
+.spacing-btn {
     width: 40px;
-    height: 56px;
-    background: color-mix(in srgb, var(--foreground) 12%, transparent);
-    border-radius: var(--radius-sm);
-    position: relative;
-    overflow: hidden;
-}
-
-.position-btn-new.active .position-preview {
-    background: color-mix(in srgb, var(--foreground) 18%, transparent);
-}
-
-.position-icon {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: calc(var(--radius) - 2px);
     color: var(--foreground-muted);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
 }
 
-.position-icon.text {
-    width: 20px !important;
-    height: 20px !important;
-}
-
-.position-icon.screenshot {
-    width: 30px !important;
-    height: 30px !important;
-}
-
-/* Top: texte en haut, screenshot dépasse en bas */
-[data-preset="top"] .position-icon.text {
-    top: 6px;
-}
-
-[data-preset="top"] .position-icon.screenshot {
-    bottom: -8px;
-}
-
-/* Center: screenshot centré */
-[data-preset="center"] .position-icon.screenshot {
-    top: 50%;
-    transform: translate(-50%, -50%);
-}
-
-/* Bottom: screenshot dépasse en haut, texte en bas */
-[data-preset="bottom"] .position-icon.screenshot {
-    top: -8px;
-}
-
-[data-preset="bottom"] .position-icon.text {
-    bottom: 6px;
-}
-
-.position-btn-new.active .position-icon {
+.spacing-btn:hover {
     color: var(--foreground);
+    background: var(--muted);
+}
+
+.spacing-btn.active {
+    background: var(--foreground);
+    color: var(--background);
 }
 
 /* ============================================
@@ -104,16 +109,18 @@
 .align-buttons {
     display: flex;
     gap: 2px;
+    height: 34px;
     background: var(--input);
     border: 1px solid var(--input-border);
     border-radius: var(--radius);
     padding: 2px;
+    box-sizing: border-box;
     width: fit-content;
 }
 
 .align-btn {
     width: 32px;
-    height: 28px;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
