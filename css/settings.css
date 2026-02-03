@@ -15,6 +15,7 @@
     overflow-y: auto;
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE/Edge */
+    padding-top: 8px;
 }
 
 .settings-scroll::-webkit-scrollbar {
