@@ -96,10 +96,10 @@ App.renderCanvas = function(canvas, screenshot) {
     }
     ctx.fillRect(0, 0, w, h);
 
-    App.drawScreenshot(ctx, screenshot, w, h, preset, settings, format);
+    var screenshotInfo = App.drawScreenshot(ctx, screenshot, w, h, preset, settings, format);
 
     if (!preset.noText && (settings.headline || settings.subheadline)) {
-        App.drawText(ctx, w, h, preset, settings, format, App.currentFormat);
+        App.drawText(ctx, w, h, preset, settings, format, App.currentFormat, screenshotInfo);
     }
 };
 
@@ -226,6 +226,8 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
         ctx.stroke();
         ctx.restore();
     }
+
+    return { imgY: imgY, imgH: imgH };
 };
 
 App.getFontSizeKey = function(formatKey) {
@@ -248,7 +250,7 @@ App.getFontSizeKey = function(formatKey) {
     }
 };
 
-App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatKey) {
+App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatKey, screenshotInfo) {
     // Determine font size category based on format
     var fontSizeKey = App.getFontSizeKey(formatKey || App.currentFormat);
 
@@ -280,26 +282,22 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatK
         totalTextHeight += subheadlineFontSize;
     }
 
-    // Determine available text zone and center vertically
-    var textZoneStart, textZoneEnd;
+    // Determine text start position (centered in available space)
+    var startY;
+    var textZoneHeight;
     if (preset.cropBottom) {
-        // Preset "top": text at top
-        var topZone = format.textZoneTop || [0.03, 0.22];
-        textZoneStart = canvasH * topZone[0];
-        textZoneEnd = canvasH * topZone[1];
+        // Preset "top": text zone is from 0 to screenshot top
+        textZoneHeight = screenshotInfo.imgY;
+        startY = (textZoneHeight - totalTextHeight) / 2;
     } else if (preset.cropTop) {
-        // Preset "bottom": text at bottom
-        var bottomZone = format.textZoneBottom || [0.78, 0.97];
-        textZoneStart = canvasH * bottomZone[0];
-        textZoneEnd = canvasH * bottomZone[1];
+        // Preset "bottom": text zone is from screenshot bottom to canvas bottom
+        var screenshotEndY = screenshotInfo.imgY + screenshotInfo.imgH;
+        textZoneHeight = canvasH - screenshotEndY;
+        startY = screenshotEndY + (textZoneHeight - totalTextHeight) / 2;
     } else {
-        // Fallback
-        textZoneStart = canvasH * preset.textY;
-        textZoneEnd = textZoneStart + totalTextHeight + 50;
+        // Fallback (center preset)
+        startY = canvasH * preset.textY;
     }
-
-    var textZoneHeight = textZoneEnd - textZoneStart;
-    var startY = textZoneStart + (textZoneHeight - totalTextHeight) / 2;
 
     // Text alignment
     var textAlign = settings.textAlign || 'center';

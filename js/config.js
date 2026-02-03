@@ -10,16 +10,16 @@ App.FORMATS = {
     'iphone-6.7': { width: 1290, height: 2796, name: 'iPhone 6.7"', cornerRadius: 0.10 },
     'iphone-6.5': { width: 1284, height: 2778, name: 'iPhone 6.5"', cornerRadius: 0.10 },
     'iphone-5.5': { width: 1242, height: 2208, name: 'iPhone 5.5"', cornerRadius: 0.08 },
-    'ipad-13': { width: 2064, height: 2752, name: 'iPad 13"', cornerRadius: 0.04, textZoneTop: [0.02, 0.18], textZoneBottom: [0.80, 0.96] },
-    'ipad-12.9': { width: 2048, height: 2732, name: 'iPad 12.9"', cornerRadius: 0.04, textZoneTop: [0.02, 0.18], textZoneBottom: [0.80, 0.96] },
-    'ipad-11': { width: 1668, height: 2388, name: 'iPad 11"', cornerRadius: 0.04, textZoneTop: [0.02, 0.18], textZoneBottom: [0.80, 0.96] },
+    'ipad-13': { width: 2064, height: 2752, name: 'iPad 13"', cornerRadius: 0.04 },
+    'ipad-12.9': { width: 2048, height: 2732, name: 'iPad 12.9"', cornerRadius: 0.04 },
+    'ipad-11': { width: 1668, height: 2388, name: 'iPad 11"', cornerRadius: 0.04 },
     'mac-1280': { width: 1280, height: 800, name: 'Mac 1280', cornerRadius: 0.02 },
     'mac-2880': { width: 2880, height: 1800, name: 'Mac 2880', cornerRadius: 0.02 },
     // Android - Google Play Store
     'android-phone-1080': { width: 1080, height: 1920, name: 'Phone FHD', cornerRadius: 0.06 },
     'android-phone-1440': { width: 1440, height: 2560, name: 'Phone QHD', cornerRadius: 0.06 },
-    'android-tablet-7': { width: 1200, height: 1920, name: 'Tablet 7"', cornerRadius: 0.04, textZoneTop: [0.02, 0.18], textZoneBottom: [0.80, 0.96] },
-    'android-tablet-10': { width: 1600, height: 2560, name: 'Tablet 10"', cornerRadius: 0.04, textZoneTop: [0.02, 0.18], textZoneBottom: [0.80, 0.96] }
+    'android-tablet-7': { width: 1200, height: 1920, name: 'Tablet 7"', cornerRadius: 0.04 },
+    'android-tablet-10': { width: 1600, height: 2560, name: 'Tablet 10"', cornerRadius: 0.04 }
 };
 
 // Font sizes: [title, body] for each size variant
@@ -83,7 +83,7 @@ App.PRESETS = {
     },
     'center': {
         centered: true,
-        screenshotScale: 0.85,
+        screenshotScale: 0.88,
         noText: true
     },
     'bottom': {
