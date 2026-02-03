@@ -82,8 +82,8 @@ App.updateSidebarCounts = function() {
         var count = App.state.platforms[platformKey].screenshots.length;
         var badge = document.querySelector('[data-platform="' + platformKey + '"] .screenshot-count');
         if (badge) {
-            badge.textContent = '(' + count + ')';
-            badge.style.display = count > 0 ? 'inline' : 'none';
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'inline-flex' : 'none';
         }
     });
 };
