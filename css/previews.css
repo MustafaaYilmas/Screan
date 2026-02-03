@@ -12,7 +12,7 @@
 
 .previews-container {
     display: flex;
-    gap: 32px;
+    gap: 16px;
     padding: 32px;
     min-height: 100%;
     align-items: center;
@@ -27,7 +27,13 @@
     cursor: pointer;
     border-radius: 20px;
     padding: 8px;
-    transition: all var(--transition-base);
+    transition: opacity var(--transition-base), outline var(--transition-base);
+    opacity: 0.5;
+}
+
+.preview-item.active,
+.panels-hidden .preview-item {
+    opacity: 1;
 }
 
 .preview-item:hover {
@@ -36,9 +42,13 @@
 
 .preview-item.active {
     background: transparent;
-    outline: 3px solid var(--ring);
+    outline: 2px solid color-mix(in srgb, var(--ring) 70%, transparent);
     outline-offset: 4px;
     border-radius: 16px;
+}
+
+:root.light .preview-item.active {
+    outline-color: color-mix(in srgb, var(--ring) 30%, transparent);
 }
 
 .preview-item canvas {
