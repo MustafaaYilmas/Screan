@@ -117,6 +117,59 @@
 }
 
 /* ============================================
+   Align Buttons
+   ============================================ */
+
+.align-buttons {
+    display: flex;
+    gap: 2px;
+    background: var(--input);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius);
+    padding: 2px;
+    width: fit-content;
+}
+
+.align-btn {
+    width: 32px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: calc(var(--radius) - 2px);
+    color: var(--foreground-muted);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.align-btn:hover {
+    color: var(--foreground);
+    background: var(--muted);
+}
+
+.align-btn.active {
+    background: var(--foreground);
+    color: var(--background);
+}
+
+.align-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.align-btn:disabled:hover {
+    background: transparent;
+    color: var(--foreground-muted);
+}
+
+.align-btn:disabled.active {
+    background: var(--foreground);
+    color: var(--background);
+}
+
+/* ============================================
    Text Input
    ============================================ */
 

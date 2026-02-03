@@ -89,7 +89,7 @@ App.renderCanvas = function(canvas, screenshot) {
         // Gradient from top (bgColor) to bottom (bgGradientColor)
         var gradient = ctx.createLinearGradient(0, 0, 0, h);
         gradient.addColorStop(0, settings.bgColor);
-        gradient.addColorStop(1, settings.bgGradientColor || '#4A90D9');
+        gradient.addColorStop(1, settings.bgGradientColor || '#ffffff');
         ctx.fillStyle = gradient;
     } else {
         ctx.fillStyle = settings.bgColor;
@@ -301,8 +301,21 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatK
     var textZoneHeight = textZoneEnd - textZoneStart;
     var startY = textZoneStart + (textZoneHeight - totalTextHeight) / 2;
 
-    ctx.textAlign = 'center';
+    // Text alignment
+    var textAlign = settings.textAlign || 'center';
+    ctx.textAlign = textAlign;
     ctx.textBaseline = 'top';
+
+    // Calculate X position based on alignment
+    var textX;
+    var horizontalPadding = canvasW * 0.065; // 6.5% padding on sides
+    if (textAlign === 'left') {
+        textX = horizontalPadding;
+    } else if (textAlign === 'right') {
+        textX = canvasW - horizontalPadding;
+    } else {
+        textX = canvasW / 2;
+    }
 
     // Get font weights
     var titleWeightKey = settings.titleWeight || 'bold';
@@ -313,7 +326,7 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatK
     if (settings.headline) {
         ctx.fillStyle = settings.titleColor || '#ffffff';
         ctx.font = titleWeightValue + ' ' + headlineFontSize + 'px ' + titleFontFamily;
-        ctx.fillText(settings.headline, canvasW / 2, startY);
+        ctx.fillText(settings.headline, textX, startY);
         startY += headlineFontSize + lineSpacing;
     }
 
@@ -321,7 +334,7 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatK
         ctx.globalAlpha = 0.9;
         ctx.fillStyle = settings.bodyColor || '#ffffff';
         ctx.font = bodyWeightValue + ' ' + subheadlineFontSize + 'px ' + bodyFontFamily;
-        ctx.fillText(settings.subheadline, canvasW / 2, startY);
+        ctx.fillText(settings.subheadline, textX, startY);
         ctx.globalAlpha = 1;
     }
 };

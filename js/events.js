@@ -343,6 +343,20 @@ App.initEventListeners = function() {
         });
     });
 
+    // Text alignment
+    document.querySelectorAll('.align-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var settings = App.getActiveSettings();
+            if (settings) {
+                document.querySelectorAll('.align-btn').forEach(function(b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                settings.textAlign = btn.dataset.align;
+                App.scheduleRender();
+                App.updateApplyToAllButton();
+            }
+        });
+    });
+
     // Platform selection
     document.querySelectorAll('.platform-header').forEach(function(header) {
         header.addEventListener('click', function() {

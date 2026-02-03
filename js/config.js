@@ -110,14 +110,15 @@ App.DEFAULT_SETTINGS = {
     // Background settings
     bgColor: '#75B7E7',
     bgGradient: false,
-    bgGradientColor: '#4A90D9',
+    bgGradientColor: '#ffffff',
     bgGradientAngle: 180,
     // Device frame settings
     addDeviceFrame: true,
     deviceFrameColor: '#000000',
     // Other settings
     addShadow: true,
-    preset: 'top'
+    preset: 'top',
+    textAlign: 'center'
 };
 
 App.FONT_WEIGHTS = {

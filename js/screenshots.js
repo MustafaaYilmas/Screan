@@ -93,8 +93,8 @@ App.updateSettingsUI = function() {
     document.getElementById('bgColor1Hex').value = settings.bgColor.toUpperCase();
     document.getElementById('bgGradient').checked = settings.bgGradient || false;
     document.getElementById('gradientColorRow').style.display = settings.bgGradient ? 'flex' : 'none';
-    document.getElementById('bgGradientColor').value = settings.bgGradientColor || '#4A90D9';
-    document.getElementById('bgGradientColorHex').value = (settings.bgGradientColor || '#4A90D9').toUpperCase();
+    document.getElementById('bgGradientColor').value = settings.bgGradientColor || '#ffffff';
+    document.getElementById('bgGradientColorHex').value = (settings.bgGradientColor || '#ffffff').toUpperCase();
 
     // Device frame settings
     document.getElementById('addDeviceFrame').checked = settings.addDeviceFrame;
@@ -109,6 +109,10 @@ App.updateSettingsUI = function() {
         btn.classList.toggle('active', btn.dataset.preset === settings.preset);
     });
 
+    document.querySelectorAll('.align-btn').forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.align === (settings.textAlign || 'center'));
+    });
+
     App.updateTextFieldsState();
 };
 
@@ -121,6 +125,7 @@ App.updateTextFieldsState = function() {
 
     document.getElementById('titleSection').style.display = hideText ? 'none' : 'block';
     document.getElementById('bodySection').style.display = hideText ? 'none' : 'block';
+    document.getElementById('textAlignSection').style.display = hideText ? 'none' : 'block';
 };
 
 App.updateApplyToAllButton = function() {
@@ -145,7 +150,7 @@ App.allSettingsMatch = function(screenshots) {
         // Device frame settings
         'addDeviceFrame', 'deviceFrameColor',
         // Other settings
-        'addShadow', 'preset'
+        'addShadow', 'preset', 'textAlign'
     ];
 
     var first = screenshots[0].settings;
@@ -188,7 +193,8 @@ App.applySettingsToAll = function() {
         deviceFrameColor: currentSettings.deviceFrameColor,
         // Other settings
         addShadow: currentSettings.addShadow,
-        preset: currentSettings.preset
+        preset: currentSettings.preset,
+        textAlign: currentSettings.textAlign
     };
 
     screenshots.forEach(function(screenshot) {
