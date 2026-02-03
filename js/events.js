@@ -418,5 +418,15 @@ App.initEventListeners = function() {
     // Toggle panels (sidebar + settings) - desktop only
     document.getElementById('togglePanels').addEventListener('click', function() {
         document.body.classList.toggle('panels-hidden');
+        var isHidden = document.body.classList.contains('panels-hidden');
+        var newIcon = isHidden ? 'square' : 'columns-3';
+        // Lucide replaces <i> with <svg>, so we need to replace the svg with a new <i>
+        var svg = this.querySelector('svg');
+        if (svg) {
+            var newI = document.createElement('i');
+            newI.setAttribute('data-lucide', newIcon);
+            svg.replaceWith(newI);
+            lucide.createIcons({ nodes: [newI] });
+        }
     });
 };
