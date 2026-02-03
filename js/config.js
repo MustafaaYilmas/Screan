@@ -30,39 +30,39 @@ App.FONT_SIZES = {
         large:  [132, 80]
     },
     'ipad': {
-        small:  [112, 64],
-        medium: [140, 80],
-        large:  [168, 96]
+        small:  [90, 60],
+        medium: [120, 72],
+        large:  [132, 80]
     },
     'ipad-11': {
-        small:  [88, 52],
-        medium: [110, 64],
-        large:  [132, 76]
+        small:  [90, 60],
+        medium: [120, 72],
+        large:  [132, 80]
     },
     'mac': {
-        small:  [38, 22],
-        medium: [48, 28],
-        large:  [58, 34]
+        small:  [90, 60],
+        medium: [120, 72],
+        large:  [132, 80]
     },
     'mac-2880': {
-        small:  [86, 50],
-        medium: [108, 63],
-        large:  [130, 76]
+        small:  [90, 60],
+        medium: [120, 72],
+        large:  [132, 80]
     },
     'android-phone': {
-        small:  [72, 48],
-        medium: [96, 58],
-        large:  [108, 66]
+        small:  [90, 60],
+        medium: [120, 72],
+        large:  [132, 80]
     },
     'android-tablet': {
-        small:  [100, 56],
-        medium: [124, 70],
-        large:  [148, 84]
+        small:  [90, 60],
+        medium: [120, 72],
+        large:  [132, 80]
     },
     'android-tablet-7': {
-        small:  [80, 46],
-        medium: [100, 58],
-        large:  [120, 70]
+        small:  [90, 60],
+        medium: [120, 72],
+        large:  [132, 80]
     }
 };
 
@@ -76,7 +76,7 @@ App.FONTS = {
 
 App.PRESETS = {
     'top': {
-        screenshotY: { small: 0.18, medium: 0.24, large: 0.38, xlarge: 0.52 },
+        screenshotY: { small: 0.18, medium: 0.24, large: 0.30, xlarge: 0.50 },
         textY: 0.04,
         screenshotScale: 0.88,
         cropBottom: true
@@ -87,7 +87,7 @@ App.PRESETS = {
         noText: true
     },
     'bottom': {
-        screenshotY: { small: -0.06, medium: -0.12, large: -0.26, xlarge: -0.40 },
+        screenshotY: { small: -0.06, medium: -0.12, large: -0.18, xlarge: -0.38 },
         textY: 0.82,
         screenshotScale: 0.88,
         cropTop: true
