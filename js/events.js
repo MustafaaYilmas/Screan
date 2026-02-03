@@ -401,15 +401,8 @@ App.initEventListeners = function() {
         App.applySettingsToAll();
     });
 
-    // Toggle panels (sidebar + settings)
-    var isMobile = window.matchMedia('(max-width: 768px)').matches;
+    // Toggle panels (sidebar + settings) - desktop only
     document.getElementById('togglePanels').addEventListener('click', function() {
-        if (window.matchMedia('(max-width: 768px)').matches) {
-            // On mobile: toggle panels-visible (panels hidden by default)
-            document.body.classList.toggle('panels-visible');
-        } else {
-            // On desktop: toggle panels-hidden (panels visible by default)
-            document.body.classList.toggle('panels-hidden');
-        }
+        document.body.classList.toggle('panels-hidden');
     });
 };
