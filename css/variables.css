@@ -21,8 +21,8 @@
     --border-subtle: #262626;    /* neutral-800 */
 
     /* Input */
-    --input: #1f1f1f;            /* between neutral-900 and 800 */
-    --input-border: #353535;     /* between neutral-800 and 700 */
+    --input: #262626;            /* neutral-800 */
+    --input-border: transparent;
 
     /* Ring (focus) */
     --ring: #525252;             /* neutral-600 */
@@ -81,8 +81,8 @@
     --border-subtle: #e5e5e5;    /* neutral-200 */
 
     /* Input */
-    --input: #ffffff;            /* white - keep for inputs */
-    --input-border: #d4d4d4;     /* neutral-300, more visible */
+    --input: #f5f5f5;            /* neutral-100 */
+    --input-border: transparent;
 
     /* Ring (focus) */
     --ring: #737373;             /* neutral-500, more visible */

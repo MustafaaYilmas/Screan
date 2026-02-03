@@ -53,7 +53,7 @@
 }
 
 .settings-section {
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .section-header {
@@ -75,12 +75,6 @@
     padding: 0 20px 20px;
 }
 
-/* Disabled state for settings */
-.settings-section input:disabled,
-.settings-section button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
 
 /* Image Upload */
 .image-upload {

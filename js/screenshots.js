@@ -54,17 +54,10 @@ App.selectScreenshot = function(index) {
 };
 
 App.updateSettingsUI = function() {
-    var settings = App.getActiveSettings();
+    var settings = App.getActiveSettings() || App.DEFAULT_SETTINGS;
     var screenshots = App.getActiveScreenshots();
-    var hasSelection = screenshots.length > 0;
-
-    document.querySelectorAll('.settings-section input, .settings-section button, .settings-section select').forEach(function(el) {
-        el.disabled = !hasSelection;
-    });
 
     App.updateApplyToAllButton();
-
-    if (!hasSelection) return;
 
     // Text content
     document.getElementById('headline').value = settings.headline;
