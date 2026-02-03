@@ -40,79 +40,61 @@
 }
 
 .position-preview {
-    width: 36px;
-    height: 52px;
-    background: var(--background);
+    width: 40px;
+    height: 56px;
+    background: color-mix(in srgb, var(--foreground) 12%, transparent);
     border-radius: var(--radius-sm);
     position: relative;
     overflow: hidden;
 }
 
-.position-text-area {
+.position-btn-new.active .position-preview {
+    background: color-mix(in srgb, var(--foreground) 18%, transparent);
+}
+
+.position-icon {
     position: absolute;
-    left: 4px;
-    right: 4px;
-    height: 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--foreground-muted);
 }
 
-.position-text-area::before,
-.position-text-area::after {
-    content: '';
-    height: 3px;
-    background: var(--foreground-muted);
-    border-radius: 1px;
-    opacity: 0.3;
+.position-icon.text {
+    width: 20px !important;
+    height: 20px !important;
 }
 
-.position-text-area::before {
-    width: 80%;
+.position-icon.screenshot {
+    width: 30px !important;
+    height: 30px !important;
 }
 
-.position-text-area::after {
-    width: 55%;
+/* Top: texte en haut, screenshot dépasse en bas */
+[data-preset="top"] .position-icon.text {
+    top: 6px;
 }
 
-.position-text-area.top { top: 4px; }
-.position-text-area.bottom { bottom: 4px; }
-
-.position-screenshot-area {
-    position: absolute;
-    left: 6px;
-    right: 6px;
-    background: var(--foreground-muted);
-    border-radius: 2px;
-    opacity: 0.4;
+[data-preset="top"] .position-icon.screenshot {
+    bottom: -8px;
 }
 
-.position-screenshot-area.top {
-    top: 4px;
-    bottom: 16px;
-}
-
-.position-screenshot-area.bottom {
-    top: 16px;
-    bottom: -4px;
-}
-
-.position-screenshot-area.centered {
+/* Center: screenshot centré */
+[data-preset="center"] .position-icon.screenshot {
     top: 50%;
-    transform: translateY(-50%);
-    height: 28px;
+    transform: translate(-50%, -50%);
 }
 
-.position-btn-new.active .position-screenshot-area {
-    background: var(--foreground);
-    opacity: 0.9;
+/* Bottom: screenshot dépasse en haut, texte en bas */
+[data-preset="bottom"] .position-icon.screenshot {
+    top: -8px;
 }
 
-.position-btn-new.active .position-text-area::before,
-.position-btn-new.active .position-text-area::after {
-    background: var(--foreground);
-    opacity: 0.6;
+[data-preset="bottom"] .position-icon.text {
+    bottom: 6px;
+}
+
+.position-btn-new.active .position-icon {
+    color: var(--foreground);
 }
 
 /* ============================================
