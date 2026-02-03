@@ -5,7 +5,7 @@
 .settings-panel {
     width: 300px;
     background: var(--card);
-    border-left: 1px solid var(--border);
+    border-left: 1px solid var(--border-subtle);
     display: flex;
     flex-direction: column;
 }
@@ -23,7 +23,7 @@
 
 .settings-footer {
     padding: 16px;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--border-subtle);
 }
 
 .btn-apply-all {

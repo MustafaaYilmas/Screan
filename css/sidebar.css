@@ -1,11 +1,73 @@
 /* ============================================
+   Mini Sidebar (Icons)
+   ============================================ */
+
+.mini-sidebar {
+    width: 48px;
+    background: var(--card);
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    padding: 12px 0;
+    box-sizing: border-box;
+}
+
+.mini-sidebar-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.mini-sidebar-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius);
+    color: var(--foreground-muted);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+}
+
+.mini-sidebar-btn:hover {
+    background: var(--muted);
+    color: var(--foreground);
+}
+
+.mini-sidebar-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.mini-sidebar-btn .icon-sun {
+    display: none;
+}
+
+.mini-sidebar-btn .icon-moon {
+    display: block;
+}
+
+:root.light .mini-sidebar-btn .icon-sun {
+    display: block;
+}
+
+:root.light .mini-sidebar-btn .icon-moon {
+    display: none;
+}
+
+/* ============================================
    Sidebar (Left)
    ============================================ */
 
 .sidebar {
-    width: 200px;
+    width: 170px;
     background: var(--card);
-    border-right: 1px solid var(--border);
+    border-right: 1px solid var(--border-subtle);
     display: flex;
     flex-direction: column;
 }
@@ -13,7 +75,7 @@
 .sidebar-header {
     height: var(--header-height);
     padding: 0 16px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--border-subtle);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -25,77 +87,6 @@
     font-size: 15px;
     color: var(--foreground);
     letter-spacing: -0.02em;
-    transform: translateY(-1px);
-}
-
-/* Header Actions */
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.help-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    color: var(--foreground-muted);
-    border-radius: var(--radius);
-    transition: all var(--transition-fast);
-}
-
-.help-link:hover {
-    background: var(--muted);
-    color: var(--foreground);
-}
-
-.help-link svg {
-    width: 16px;
-    height: 16px;
-}
-
-/* Theme Toggle */
-.theme-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    cursor: pointer;
-    color: var(--foreground-muted);
-    transition: all var(--transition-fast);
-}
-
-.theme-toggle:hover {
-    background: var(--muted);
-    color: var(--foreground);
-    border-color: var(--ring);
-}
-
-.theme-toggle svg {
-    width: 16px;
-    height: 16px;
-}
-
-.theme-toggle .icon-sun {
-    display: none;
-}
-
-.theme-toggle .icon-moon {
-    display: block;
-}
-
-:root.light .theme-toggle .icon-sun {
-    display: block;
-}
-
-:root.light .theme-toggle .icon-moon {
-    display: none;
 }
 
 .sidebar-nav {
@@ -111,7 +102,7 @@
 .nav-section + .nav-section {
     margin-top: 8px;
     padding-top: 12px;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--border-subtle);
 }
 
 .nav-section-title {
@@ -202,7 +193,7 @@
 
 .sidebar-footer {
     padding: 16px;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--border-subtle);
 }
 
 .btn-export {
