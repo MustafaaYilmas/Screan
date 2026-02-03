@@ -49,7 +49,8 @@ body.panels-hidden .mini-sidebar {
     color: var(--foreground);
 }
 
-.mini-sidebar-btn svg {
+.mini-sidebar-btn svg,
+.mini-sidebar-btn [data-lucide] {
     width: 18px;
     height: 18px;
 }

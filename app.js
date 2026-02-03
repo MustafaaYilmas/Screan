@@ -21,6 +21,9 @@ function toggleTheme() {
 initTheme();
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Lucide icons
+    lucide.createIcons();
+
     // Theme toggle
     document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 

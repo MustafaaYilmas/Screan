@@ -65,3 +65,13 @@ select:focus-visible {
     background: var(--muted);
     color: var(--foreground);
 }
+
+/* ============================================
+   Lucide Icons
+   ============================================ */
+
+[data-lucide] {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2;
+}
