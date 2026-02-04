@@ -222,6 +222,11 @@ App.Storage = {
         App.updateSidebarCounts();
         App.updateExportButton();
         App.updateEmptyStateText();
+
+        // Update language selector with saved languages
+        if (typeof App.updateLanguageSelect === 'function') {
+            App.updateLanguageSelect();
+        }
     },
 
     // Clear all stored data
