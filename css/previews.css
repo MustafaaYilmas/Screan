@@ -129,3 +129,21 @@
     cursor: grabbing;
     transition: none;
 }
+
+.preview-item.dropping {
+    animation: dropAppear 0.15s ease forwards;
+}
+
+.preview-item.active.dropping {
+    animation: dropAppearActive 0.15s ease forwards;
+}
+
+@keyframes dropAppear {
+    from { opacity: 0; }
+    to { opacity: 0.5; }
+}
+
+@keyframes dropAppearActive {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

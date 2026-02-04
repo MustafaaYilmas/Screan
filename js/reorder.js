@@ -28,6 +28,9 @@ App._onDragStart = function(e) {
     var item = e.target.closest('.preview-item');
     if (!item) return;
 
+    // Only handle drag from previews container, not from settings panel
+    if (!item.closest('#previewsContainer')) return;
+
     var r = App._reorder;
     r.draggingItem = item;
     r.isReordering = true;
@@ -38,6 +41,37 @@ App._onDragStart = function(e) {
     r.initialOrder = Array.from(r.container.querySelectorAll('.preview-item')).map(function(el) {
         return parseInt(el.dataset.index, 10);
     });
+
+    // Create custom drag image from the canvas only
+    var canvas = item.querySelector('canvas');
+    if (canvas) {
+        // Clone canvas and copy its content
+        var dragImage = document.createElement('canvas');
+        dragImage.width = canvas.width;
+        dragImage.height = canvas.height;
+        dragImage.style.width = canvas.style.width;
+        dragImage.style.height = canvas.style.height;
+        dragImage.style.position = 'absolute';
+        dragImage.style.top = '-9999px';
+        dragImage.style.left = '-9999px';
+        dragImage.style.borderRadius = '16px';
+
+        var ctx = dragImage.getContext('2d');
+        ctx.drawImage(canvas, 0, 0);
+
+        document.body.appendChild(dragImage);
+
+        // Set drag image offset to center of cursor on the image
+        var rect = canvas.getBoundingClientRect();
+        var offsetX = e.clientX - rect.left;
+        var offsetY = e.clientY - rect.top;
+        e.dataTransfer.setDragImage(dragImage, offsetX, offsetY);
+
+        // Clean up after drag starts
+        setTimeout(function() {
+            document.body.removeChild(dragImage);
+        }, 0);
+    }
 
     // Delay to allow drag image to be captured
     setTimeout(function() {
@@ -52,7 +86,7 @@ App._onDragEnd = function(e) {
     var r = App._reorder;
     if (!r.draggingItem) return;
 
-    r.draggingItem.classList.remove('dragging');
+    var draggedItem = r.draggingItem;
 
     // Get new order from DOM
     var newOrder = Array.from(r.container.querySelectorAll('.preview-item')).map(function(el) {
@@ -66,7 +100,7 @@ App._onDragEnd = function(e) {
     for (var i = 0; i < r.initialOrder.length; i++) {
         if (r.initialOrder[i] !== newOrder[i]) {
             // Find the dragged item's original and new position
-            var draggedDataIndex = parseInt(r.draggingItem.dataset.index, 10);
+            var draggedDataIndex = parseInt(draggedItem.dataset.index, 10);
             fromIndex = r.initialOrder.indexOf(draggedDataIndex);
             toIndex = newOrder.indexOf(draggedDataIndex);
             break;
@@ -77,10 +111,18 @@ App._onDragEnd = function(e) {
     r.isReordering = false;
     r.initialOrder = [];
 
-    // Apply the reorder to data
-    if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
-        App.moveScreenshot(fromIndex, toIndex);
-    }
+    // Animate the dropped item appearing
+    draggedItem.classList.remove('dragging');
+    draggedItem.classList.add('dropping');
+
+    // Wait for appear animation, then update data
+    setTimeout(function() {
+        draggedItem.classList.remove('dropping');
+        // Apply the reorder to data
+        if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
+            App.moveScreenshot(fromIndex, toIndex);
+        }
+    }, 150);
 };
 
 App._onDragOver = function(e) {

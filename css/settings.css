@@ -10,6 +10,14 @@
     flex-direction: column;
 }
 
+/* Prevent drag on settings panel elements */
+.settings-panel img,
+.settings-panel canvas {
+    -webkit-user-drag: none;
+    user-drag: none;
+    pointer-events: none;
+}
+
 .settings-scroll {
     flex: 1;
     overflow-y: auto;
