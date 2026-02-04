@@ -10,9 +10,15 @@ App.initLanguageEvents = function() {
     var removeBtn = document.getElementById('removeLanguageBtn');
     var dropdown = document.getElementById('languageDropdown');
     var languageSelect = document.getElementById('languageSelect');
+    var previewLanguageSelect = document.getElementById('previewLanguageSelect');
 
     // Language select change - switch language
     languageSelect.addEventListener('change', function(e) {
+        App.switchLanguage(e.target.value);
+    });
+
+    // Preview language select change - switch language (synced)
+    previewLanguageSelect.addEventListener('change', function(e) {
         App.switchLanguage(e.target.value);
     });
 
@@ -178,14 +184,16 @@ App.switchLanguage = function(langCode) {
 // Update the language select dropdown
 App.updateLanguageSelect = function() {
     var select = document.getElementById('languageSelect');
+    var previewSelect = document.getElementById('previewLanguageSelect');
     var removeBtn = document.getElementById('removeLanguageBtn');
     if (!select) return;
 
     var languages = App.state.languages || ['en'];
     var activeLang = App.state.activeLanguage || 'en';
 
-    // Clear and rebuild options
+    // Clear and rebuild options for both selects
     select.innerHTML = '';
+    if (previewSelect) previewSelect.innerHTML = '';
 
     languages.forEach(function(langCode) {
         var lang = App.LANGUAGES[langCode];
@@ -194,11 +202,22 @@ App.updateLanguageSelect = function() {
         var option = document.createElement('option');
         option.value = langCode;
         option.textContent = lang.name;
-        if (langCode === activeLang) {
-            option.selected = true;
-        }
         select.appendChild(option);
+
+        // Clone for preview select
+        if (previewSelect) {
+            var previewOption = document.createElement('option');
+            previewOption.value = langCode;
+            previewOption.textContent = lang.name;
+            previewSelect.appendChild(previewOption);
+        }
     });
+
+    // Set the selected value on both selects
+    select.value = activeLang;
+    if (previewSelect) {
+        previewSelect.value = activeLang;
+    }
 
     // Update remove button state (can't remove English or if only one language)
     if (removeBtn) {
@@ -210,6 +229,15 @@ App.updateLanguageSelect = function() {
     if (translateBtn) {
         // Enable if there are multiple languages (will be fully functional later with AI)
         translateBtn.disabled = true; // Always disabled for now
+    }
+
+    // Show/hide preview language select based on number of languages
+    if (previewSelect) {
+        if (languages.length <= 1) {
+            previewSelect.classList.add('single-language');
+        } else {
+            previewSelect.classList.remove('single-language');
+        }
     }
 };
 

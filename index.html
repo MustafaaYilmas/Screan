@@ -91,6 +91,9 @@
                     <select id="formatSelect" class="format-select">
                         <!-- Options generated dynamically based on active platform -->
                     </select>
+                    <select id="previewLanguageSelect" class="preview-language-select">
+                        <!-- Options synced with languageSelect, visible only when panels hidden -->
+                    </select>
                 </div>
             </header>
 
@@ -334,7 +337,7 @@
             <!-- Apply to All Button -->
             <div class="settings-footer" id="settingsFooter" style="display: none;">
                 <button class="btn-apply-all" id="applyToAllBtn">
-                    <i data-lucide="wand-sparkles"></i>
+                    <i data-lucide="arrow-right-left"></i>
                     Apply to All
                 </button>
             </div>

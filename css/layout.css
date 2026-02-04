@@ -90,3 +90,36 @@
     border-color: var(--ring);
     box-shadow: 0 0 0 3px rgba(63, 63, 70, 0.3);
 }
+
+/* Preview language select - only visible when panels are hidden */
+.preview-language-select {
+    display: none;
+    height: 34px;
+    padding: 0 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--foreground);
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color var(--transition-fast);
+}
+
+.preview-language-select:hover {
+    border-color: var(--ring);
+}
+
+.preview-language-select:focus {
+    outline: none;
+    border-color: var(--ring);
+    box-shadow: 0 0 0 3px rgba(63, 63, 70, 0.3);
+}
+
+/* Show language select only when panels hidden AND multiple languages */
+body.panels-hidden .preview-language-select {
+    display: block;
+}
+
+body.panels-hidden .preview-language-select.single-language {
+    display: none;
+}
