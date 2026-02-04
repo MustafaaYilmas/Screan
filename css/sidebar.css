@@ -29,6 +29,13 @@ body.panels-hidden .mini-sidebar {
     gap: 4px;
 }
 
+.mini-sidebar-bottom {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .mini-sidebar-btn {
     width: 36px;
     height: 36px;
