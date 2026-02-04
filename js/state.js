@@ -6,6 +6,9 @@ var App = window.App || {};
 
 App.state = {
     activePlatform: 'iphone',
+    // Global language settings (shared across all platforms)
+    languages: ['en'],
+    activeLanguage: 'en',
     platforms: {
         'iphone': {
             screenshots: [],

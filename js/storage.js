@@ -72,6 +72,9 @@ App.Storage = {
                     platforms: platformsData,
                     activePlatform: App.state.activePlatform,
                     currentFormat: App.currentFormat,
+                    // Global language settings
+                    languages: App.state.languages || ['en'],
+                    activeLanguage: App.state.activeLanguage || 'en',
                     timestamp: Date.now()
                 };
 
@@ -115,6 +118,9 @@ App.Storage = {
                     // Restore state
                     App.state.activePlatform = data.activePlatform || 'iphone';
                     App.currentFormat = data.currentFormat || 'iphone-6.9';
+                    // Restore global language settings
+                    App.state.languages = data.languages || ['en'];
+                    App.state.activeLanguage = data.activeLanguage || 'en';
 
                     // Count images to load
                     var imagesToLoad = 0;

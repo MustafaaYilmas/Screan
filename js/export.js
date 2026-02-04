@@ -14,34 +14,51 @@ App.exportAll = async function() {
     var tempCanvas = document.createElement('canvas');
     var tempCtx = tempCanvas.getContext('2d');
 
-    // Loop through all platforms
-    var platformKeys = Object.keys(App.state.platforms);
+    // Get languages to export
+    var languages = App.state.languages || ['en'];
+    var hasMultipleLanguages = languages.length > 1;
 
-    for (var p = 0; p < platformKeys.length; p++) {
-        var platformKey = platformKeys[p];
-        var platform = App.state.platforms[platformKey];
+    // Loop through all languages
+    for (var l = 0; l < languages.length; l++) {
+        var langCode = languages[l];
+        var langName = App.LANGUAGES[langCode] ? App.LANGUAGES[langCode].name : langCode;
 
-        // Skip platforms with no screenshots or no export formats
-        if (platform.screenshots.length === 0 || platform.exportFormats.length === 0) {
-            continue;
-        }
+        // Loop through all platforms
+        var platformKeys = Object.keys(App.state.platforms);
 
-        // Export each format for this platform
-        for (var i = 0; i < platform.exportFormats.length; i++) {
-            var formatKey = platform.exportFormats[i];
-            var format = App.FORMATS[formatKey];
-            tempCanvas.width = format.width;
-            tempCanvas.height = format.height;
+        for (var p = 0; p < platformKeys.length; p++) {
+            var platformKey = platformKeys[p];
+            var platform = App.state.platforms[platformKey];
 
-            for (var j = 0; j < platform.screenshots.length; j++) {
-                progressText.textContent = 'Exporting ' + format.name + ' - ' + (j + 1) + '/' + platform.screenshots.length;
+            // Skip platforms with no screenshots or no export formats
+            if (platform.screenshots.length === 0 || platform.exportFormats.length === 0) {
+                continue;
+            }
 
-                App.renderCanvasForExport(tempCanvas, tempCtx, platform.screenshots[j], format, formatKey);
+            // Export each format for this platform
+            for (var i = 0; i < platform.exportFormats.length; i++) {
+                var formatKey = platform.exportFormats[i];
+                var format = App.FORMATS[formatKey];
+                tempCanvas.width = format.width;
+                tempCanvas.height = format.height;
 
-                await new Promise(function(r) { setTimeout(r, 50); });
+                for (var j = 0; j < platform.screenshots.length; j++) {
+                    var langProgress = hasMultipleLanguages ? ' (' + langName + ')' : '';
+                    progressText.textContent = 'Exporting ' + format.name + ' - ' + (j + 1) + '/' + platform.screenshots.length + langProgress;
 
-                var blob = await new Promise(function(resolve) { tempCanvas.toBlob(resolve, 'image/png'); });
-                files.push({ blob: blob, filename: formatKey + '_' + (j + 1) + '.png' });
+                    // Render with language-specific content
+                    App.renderCanvasForExport(tempCanvas, tempCtx, platform.screenshots[j], format, formatKey, langCode);
+
+                    await new Promise(function(r) { setTimeout(r, 50); });
+
+                    var blob = await new Promise(function(resolve) { tempCanvas.toBlob(resolve, 'image/png'); });
+
+                    // Build file path based on number of languages
+                    var filename = formatKey + '_' + (j + 1) + '.png';
+                    var folderPath = hasMultipleLanguages ? langCode + '/' + formatKey : formatKey;
+
+                    files.push({ blob: blob, filename: filename, folder: folderPath });
+                }
             }
         }
     }
@@ -50,8 +67,7 @@ App.exportAll = async function() {
 
     var zip = new JSZip();
     files.forEach(function(item) {
-        var folder = item.filename.split('_')[0];
-        zip.file(folder + '/' + item.filename, item.blob);
+        zip.file(item.folder + '/' + item.filename, item.blob);
     });
 
     var zipBlob = await zip.generateAsync({ type: 'blob' });
@@ -66,28 +82,34 @@ App.exportAll = async function() {
     modal.classList.remove('show');
 };
 
-App.renderCanvasForExport = function(canvas, ctx, screenshot, format, formatKey) {
+App.renderCanvasForExport = function(canvas, ctx, screenshot, format, formatKey, langCode) {
     var settings = screenshot.settings;
     var preset = App.PRESETS[settings.preset];
     var w = format.width;
     var h = format.height;
 
+    // Get content for the specified language
+    var localizedContent = App.getLocalizedContent(settings, langCode);
+
+    // Create a temporary settings object with the language-specific content
+    var exportSettings = Object.assign({}, settings, localizedContent);
+
     ctx.clearRect(0, 0, w, h);
 
     // Draw background (solid or gradient)
-    if (settings.bgGradient) {
+    if (exportSettings.bgGradient) {
         var gradient = ctx.createLinearGradient(0, 0, 0, h);
-        gradient.addColorStop(0, settings.bgColor);
-        gradient.addColorStop(1, settings.bgGradientColor || '#ffffff');
+        gradient.addColorStop(0, exportSettings.bgColor);
+        gradient.addColorStop(1, exportSettings.bgGradientColor || '#ffffff');
         ctx.fillStyle = gradient;
     } else {
-        ctx.fillStyle = settings.bgColor;
+        ctx.fillStyle = exportSettings.bgColor;
     }
     ctx.fillRect(0, 0, w, h);
 
-    var screenshotInfo = App.drawScreenshot(ctx, screenshot, w, h, preset, settings, format);
+    var screenshotInfo = App.drawScreenshot(ctx, screenshot, w, h, preset, exportSettings, format);
 
-    if (!preset.noText && (settings.headline || settings.subheadline)) {
-        App.drawText(ctx, w, h, preset, settings, format, formatKey, screenshotInfo);
+    if (!preset.noText && (exportSettings.headline || exportSettings.subheadline)) {
+        App.drawText(ctx, w, h, preset, exportSettings, format, formatKey, screenshotInfo);
     }
 };

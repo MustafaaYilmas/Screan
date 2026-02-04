@@ -14,12 +14,17 @@ App.handleScreenshots = function(files) {
             var img = new Image();
             img.onload = function() {
                 var isFirst = platformData.screenshots.length === 0;
+
+                // Create settings with content for all global languages
+                var settings = Object.assign({}, App.DEFAULT_SETTINGS);
+                App.initializeScreenshotContent(settings);
+
                 platformData.screenshots.push({
                     src: e.target.result,
                     image: img,
                     width: img.width,
                     height: img.height,
-                    settings: Object.assign({}, App.DEFAULT_SETTINGS)
+                    settings: settings
                 });
                 if (isFirst) {
                     platformData.activeIndex = 0;
@@ -50,7 +55,16 @@ App.removeScreenshot = function(index) {
 };
 
 App.selectScreenshot = function(index) {
+    // Save current content before switching
+    var currentSettings = App.getActiveSettings();
+    App.saveContentToActiveLanguage(currentSettings);
+
     App.setActiveIndex(index);
+
+    // Load content for active language in new screenshot
+    var newSettings = App.getActiveSettings();
+    App.loadContentFromLanguage(newSettings, App.state.activeLanguage || 'en');
+
     App.updateSettingsUI();
     App.scheduleRender();
 };
@@ -60,6 +74,11 @@ App.updateSettingsUI = function() {
     var screenshots = App.getActiveScreenshots();
 
     App.updateApplyToAllButton();
+
+    // Update language tabs
+    if (typeof App.updateLanguageTabs === 'function') {
+        App.updateLanguageTabs();
+    }
 
     // Text content
     document.getElementById('headline').value = settings.headline;
@@ -123,6 +142,7 @@ App.updateTextFieldsState = function() {
     var preset = App.PRESETS[settings.preset];
     var hideText = preset.noText === true;
 
+    document.getElementById('languageSection').style.display = hideText ? 'none' : 'block';
     document.getElementById('titleSection').style.display = hideText ? 'none' : 'block';
     document.getElementById('bodySection').style.display = hideText ? 'none' : 'block';
     document.getElementById('spacingRow').style.display = hideText ? 'none' : 'flex';

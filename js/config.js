@@ -95,7 +95,31 @@ App.PRESETS = {
     }
 };
 
+// Available languages for content translation
+App.LANGUAGES = {
+    'en': { name: 'English', flag: '🇺🇸' },
+    'fr': { name: 'Français', flag: '🇫🇷' },
+    'es': { name: 'Español', flag: '🇪🇸' },
+    'de': { name: 'Deutsch', flag: '🇩🇪' },
+    'it': { name: 'Italiano', flag: '🇮🇹' },
+    'pt': { name: 'Português', flag: '🇵🇹' },
+    'ja': { name: '日本語', flag: '🇯🇵' },
+    'ko': { name: '한국어', flag: '🇰🇷' },
+    'zh': { name: '中文', flag: '🇨🇳' },
+    'ar': { name: 'العربية', flag: '🇸🇦' },
+    'nl': { name: 'Nederlands', flag: '🇳🇱' },
+    'ru': { name: 'Русский', flag: '🇷🇺' }
+};
+
 App.DEFAULT_SETTINGS = {
+    // Content per language (languages list is stored at platform level)
+    content: {
+        'en': {
+            headline: 'Your Amazing App',
+            subheadline: 'The best way to do things'
+        }
+    },
+    // Active content fields (synced with active language)
     headline: 'Your Amazing App',
     subheadline: 'The best way to do things',
     // Title settings

@@ -489,3 +489,153 @@
     color: var(--background);
     border-color: var(--foreground);
 }
+
+/* ============================================
+   Localize Section
+   ============================================ */
+
+.language-select-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+}
+
+.language-select {
+    flex: 1;
+}
+
+.add-language-btn,
+.remove-language-btn {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--input);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius);
+    color: var(--foreground-muted);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.add-language-btn:hover,
+.remove-language-btn:hover:not(:disabled) {
+    background: var(--muted);
+    border-color: var(--ring);
+    color: var(--foreground);
+}
+
+.add-language-btn:disabled,
+.remove-language-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.add-language-btn svg,
+.remove-language-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+#languageSection {
+    position: relative;
+}
+
+#languageSection .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.translate-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--foreground-muted);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.translate-btn:hover:not(:disabled) {
+    background: var(--muted);
+    color: var(--foreground);
+    border-color: var(--ring);
+}
+
+.translate-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.translate-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Language Dropdown */
+.language-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.language-dropdown.open {
+    display: block;
+}
+
+.language-dropdown-content {
+    padding: 4px;
+}
+
+.language-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: transparent;
+    border: none;
+    border-radius: calc(var(--radius) - 2px);
+    color: var(--foreground);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    width: 100%;
+    text-align: left;
+}
+
+.language-option:hover:not(.added) {
+    background: var(--muted);
+}
+
+.language-option.added {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.language-option .lang-check {
+    margin-left: auto;
+    color: var(--foreground-muted);
+}
+
+.language-option .lang-check svg {
+    width: 14px;
+    height: 14px;
+}

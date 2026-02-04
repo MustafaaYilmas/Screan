@@ -133,6 +133,7 @@ App.initEventListeners = function() {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.headline = e.target.value;
+            App.saveContentToActiveLanguage(settings);
             App.debouncedRender();
         }
     });
@@ -141,6 +142,7 @@ App.initEventListeners = function() {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.subheadline = e.target.value;
+            App.saveContentToActiveLanguage(settings);
             App.debouncedRender();
         }
     });
@@ -450,4 +452,7 @@ App.initEventListeners = function() {
             lucide.createIcons({ nodes: [newI] });
         }
     });
+
+    // Language management (defined in localize.js)
+    App.initLanguageEvents();
 };
