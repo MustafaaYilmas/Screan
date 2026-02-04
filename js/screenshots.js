@@ -227,3 +227,25 @@ App.applySettingsToAll = function() {
     App.updateSettingsUI();
     App.Storage.scheduleSave();
 };
+
+App.moveScreenshot = function(fromIndex, toIndex) {
+    var screenshots = App.getActiveScreenshots();
+    if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0) return;
+    if (fromIndex >= screenshots.length || toIndex >= screenshots.length) return;
+
+    var activeIndex = App.getActiveIndex();
+    var item = screenshots.splice(fromIndex, 1)[0];
+    screenshots.splice(toIndex, 0, item);
+
+    // Update active index to follow the moved item if it was active
+    if (activeIndex === fromIndex) {
+        App.setActiveIndex(toIndex);
+    } else if (fromIndex < activeIndex && toIndex >= activeIndex) {
+        App.setActiveIndex(activeIndex - 1);
+    } else if (fromIndex > activeIndex && toIndex <= activeIndex) {
+        App.setActiveIndex(activeIndex + 1);
+    }
+
+    App.renderAllPreviews();
+    App.Storage.scheduleSave();
+};

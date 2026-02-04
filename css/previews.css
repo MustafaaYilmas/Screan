@@ -110,9 +110,24 @@
     opacity: 0.7;
 }
 
-/* Drag Over State */
+/* Drag Over State (file upload) */
 .previews-wrapper.drag-over {
     background: var(--muted);
     outline: 2px dashed var(--ring);
     outline-offset: -2px;
+}
+
+/* Drag & Drop Reorder */
+.preview-item {
+    user-select: none;
+    will-change: transform;
+    transition: transform 0.2s ease;
+}
+
+.preview-item.dragging {
+    opacity: 0.8;
+    z-index: 100;
+    cursor: grabbing;
+    transition: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }

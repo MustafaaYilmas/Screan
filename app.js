@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     App.initEventListeners();
     App.initDragDrop();
+    App.initReorder();
     App.initAITranslateEvents();
 
     // Load persisted data from IndexedDB

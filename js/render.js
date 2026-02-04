@@ -61,6 +61,9 @@ App.renderAllPreviews = function() {
                 e.stopPropagation();
                 App.removeScreenshot(idx);
             });
+
+            // Setup drag & drop reordering
+            App.setupReorderItem(item, idx, container);
         })(index);
 
         item.appendChild(canvas);

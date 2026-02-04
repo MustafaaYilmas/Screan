@@ -27,6 +27,7 @@ A simple, elegant screenshot studio for creating App Store and Google Play scree
 - **Multi-format export**: Export all formats at once as a ZIP file
 - **Persistent storage**: Screenshots and settings saved in IndexedDB
 - **Drag & drop**: Easy screenshot import
+- **Drag & drop reorder**: Reorder screenshots with smooth animations
 
 ### User Interface
 - **Dark/Light mode**: Toggle between themes
