@@ -51,6 +51,11 @@
     outline-color: color-mix(in srgb, var(--ring) 30%, transparent);
 }
 
+/* Hide selection outline when panels are hidden */
+.panels-hidden .preview-item.active {
+    outline: none;
+}
+
 .preview-item canvas {
     display: block;
     border-radius: 16px;

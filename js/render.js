@@ -55,6 +55,10 @@ App.renderAllPreviews = function() {
             item.addEventListener('click', function(e) {
                 if (!e.target.closest('.preview-delete-btn')) {
                     App.selectScreenshot(idx);
+                    // Show panels if hidden
+                    if (document.body.classList.contains('panels-hidden')) {
+                        document.getElementById('togglePanels').click();
+                    }
                 }
             });
             deleteBtn.addEventListener('click', function(e) {
