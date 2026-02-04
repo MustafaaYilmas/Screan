@@ -93,11 +93,26 @@ body.panels-hidden .mini-sidebar {
     box-sizing: border-box;
 }
 
-.app-name {
-    font-weight: 600;
-    font-size: 15px;
-    color: var(--foreground);
-    letter-spacing: -0.02em;
+.app-logo {
+    height: 13px;
+    width: auto;
+}
+
+/* Logo light (blanc) visible en mode dark, logo dark visible en mode light */
+.logo-light {
+    display: block;
+}
+
+.logo-dark {
+    display: none;
+}
+
+:root.light .logo-light {
+    display: none;
+}
+
+:root.light .logo-dark {
+    display: block;
 }
 
 .sidebar-nav {

@@ -52,7 +52,8 @@
         <!-- Left Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <span class="app-name">Screan.app</span>
+                <img src="assets/logo_dark.png" alt="Screan" class="app-logo logo-dark">
+                <img src="assets/logo_light.png" alt="Screan" class="app-logo logo-light">
             </div>
 
             <nav class="sidebar-nav">
@@ -121,6 +122,35 @@
             <div class="settings-scroll">
                 <!-- Content Tab -->
                 <div class="settings-tab-content active" id="contentTab">
+                    <!-- Localize -->
+                    <section class="settings-section" id="languageSection">
+                        <div class="section-header">
+                            <span class="section-title">Localize</span>
+                            <button class="icon-btn translate-btn" id="translateAllBtn" title="Translate with AI" disabled>
+                                <i data-lucide="languages"></i>
+                            </button>
+                        </div>
+                        <div class="section-content">
+                            <div class="language-select-row">
+                                <select id="languageSelect" class="font-select language-select">
+                                    <option value="en">English</option>
+                                </select>
+                                <button class="add-language-btn" id="addLanguageBtn" title="Add language">
+                                    <i data-lucide="plus"></i>
+                                </button>
+                                <button class="remove-language-btn" id="removeLanguageBtn" title="Remove language" disabled>
+                                    <i data-lucide="trash-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Language dropdown for adding (hidden by default) -->
+                        <div class="language-dropdown" id="languageDropdown">
+                            <div class="language-dropdown-content">
+                                <!-- Languages will be populated by JS -->
+                            </div>
+                        </div>
+                    </section>
+
                     <!-- Title -->
                     <section class="settings-section" id="titleSection">
                         <div class="section-header">
@@ -326,6 +356,7 @@
     <script src="js/screenshots.js"></script>
     <script src="js/dragdrop.js"></script>
     <script src="js/export.js"></script>
+    <script src="js/localize.js"></script>
     <script src="js/events.js"></script>
     <script src="app.js"></script>
 
