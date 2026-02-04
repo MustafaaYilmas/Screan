@@ -125,9 +125,7 @@
 }
 
 .preview-item.dragging {
-    opacity: 0.8;
-    z-index: 100;
+    opacity: 0;
     cursor: grabbing;
     transition: none;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
