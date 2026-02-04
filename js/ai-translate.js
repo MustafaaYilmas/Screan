@@ -55,14 +55,15 @@ App.updateTranslateButtonState = function() {
     var hasScreenshots = App.getActiveScreenshots().length > 0;
     var hasKey = App.hasApiKey();
 
-    // Show/hide translate and remove buttons based on language
+    // Enable/disable translate button based on language and screenshots
     if (translateBtn) {
-        translateBtn.style.display = isNotEnglish ? 'flex' : 'none';
-        translateBtn.disabled = !hasScreenshots;
+        translateBtn.disabled = !isNotEnglish || !hasScreenshots;
 
         // Update tooltip
         var targetLangName = App.LANGUAGES[activeLang] ? App.LANGUAGES[activeLang].name : activeLang;
-        if (!hasScreenshots) {
+        if (!isNotEnglish) {
+            translateBtn.title = 'Select a language to translate';
+        } else if (!hasScreenshots) {
             translateBtn.title = 'Add screenshots first';
         } else if (!hasKey) {
             translateBtn.title = 'Configure API key to translate';
@@ -71,8 +72,9 @@ App.updateTranslateButtonState = function() {
         }
     }
 
+    // Enable/disable remove button based on language
     if (removeBtn) {
-        removeBtn.style.display = isNotEnglish ? 'flex' : 'none';
+        removeBtn.disabled = !isNotEnglish;
     }
 
     // Update API key row visibility
