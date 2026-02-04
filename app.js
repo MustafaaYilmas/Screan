@@ -27,6 +27,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Theme toggle
     document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
+    // Generate sidebar platforms from config
+    App.initSidebarPlatforms();
+
     // Initialize format dropdown for default platform
     App.updateFormatDropdown();
 

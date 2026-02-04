@@ -5,10 +5,11 @@
 var App = window.App || {};
 
 App.FORMATS = {
-    // iOS - App Store
-    'iphone-6.9': { width: 1260, height: 2736, name: 'iPhone 6.9"', cornerRadius: 0.10 },
-    'iphone-6.7': { width: 1290, height: 2796, name: 'iPhone 6.7"', cornerRadius: 0.10 },
-    'iphone-6.5': { width: 1284, height: 2778, name: 'iPhone 6.5"', cornerRadius: 0.10 },
+    // iOS - App Store (catégories officielles App Store Connect)
+    'iphone-6.9': { width: 1290, height: 2796, name: 'iPhone 6.9"', cornerRadius: 0.10 },
+    'iphone-6.5': { width: 1290, height: 2796, name: 'iPhone 6.5"', cornerRadius: 0.10 },
+    'iphone-6.3': { width: 1206, height: 2622, name: 'iPhone 6.3"', cornerRadius: 0.10 },
+    'iphone-6.1': { width: 1179, height: 2556, name: 'iPhone 6.1"', cornerRadius: 0.10 },
     'iphone-5.5': { width: 1242, height: 2208, name: 'iPhone 5.5"', cornerRadius: 0.08 },
     'ipad-13': { width: 2064, height: 2752, name: 'iPad 13"', cornerRadius: 0.04 },
     'ipad-12.9': { width: 2048, height: 2732, name: 'iPad 12.9"', cornerRadius: 0.04 },
@@ -139,26 +140,31 @@ App.SIZE_MULTIPLIERS = {
 App.PLATFORM_FAMILIES = {
     'iphone': {
         name: 'iPhone',
-        formats: ['iphone-6.9', 'iphone-6.7', 'iphone-6.5', 'iphone-5.5'],
-        defaultExport: ['iphone-6.9', 'iphone-6.7']
+        section: 'appStore',
+        formats: ['iphone-6.9', 'iphone-6.5', 'iphone-6.3', 'iphone-6.1', 'iphone-5.5'],
+        defaultExport: ['iphone-6.9', 'iphone-6.5']
     },
     'ipad': {
         name: 'iPad',
+        section: 'appStore',
         formats: ['ipad-13', 'ipad-12.9', 'ipad-11'],
         defaultExport: ['ipad-13']
     },
     'mac': {
         name: 'Mac',
+        section: 'appStore',
         formats: ['mac-2880', 'mac-1280'],
         defaultExport: ['mac-2880']
     },
     'android-phone': {
         name: 'Phone',
+        section: 'googlePlay',
         formats: ['android-phone-1080', 'android-phone-1440'],
         defaultExport: ['android-phone-1080']
     },
     'android-tablet': {
         name: 'Tablet',
+        section: 'googlePlay',
         formats: ['android-tablet-7', 'android-tablet-10'],
         defaultExport: ['android-tablet-7']
     }

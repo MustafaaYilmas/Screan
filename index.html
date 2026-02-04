@@ -57,115 +57,12 @@
 
             <nav class="sidebar-nav">
                 <!-- Apple App Store -->
-                <div class="nav-section">
+                <div class="nav-section" id="appStoreSection">
                     <div class="nav-section-title">App Store</div>
-
-                    <!-- iPhone -->
-                    <div class="platform-item active" data-platform="iphone">
-                        <div class="platform-header">
-                            <span class="platform-name">iPhone</span>
-                            <span class="screenshot-count" style="display: none;">0</span>
-                        </div>
-                        <div class="platform-sizes">
-                            <label class="size-item">
-                                <input type="checkbox" data-platform="iphone" data-format="iphone-6.9" checked>
-                                <span>6.9"</span>
-                            </label>
-                            <label class="size-item">
-                                <input type="checkbox" data-platform="iphone" data-format="iphone-6.7" checked>
-                                <span>6.7"</span>
-                            </label>
-                            <label class="size-item">
-                                <input type="checkbox" data-platform="iphone" data-format="iphone-6.5">
-                                <span>6.5"</span>
-                            </label>
-                            <label class="size-item">
-                                <input type="checkbox" data-platform="iphone" data-format="iphone-5.5">
-                                <span>5.5"</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- iPad -->
-                    <div class="platform-item" data-platform="ipad">
-                        <div class="platform-header">
-                            <span class="platform-name">iPad</span>
-                            <span class="screenshot-count" style="display: none;">0</span>
-                        </div>
-                        <div class="platform-sizes">
-                            <label class="size-item">
-                                <input type="checkbox" data-platform="ipad" data-format="ipad-13" checked>
-                                <span>13"</span>
-                            </label>
-                            <label class="size-item">
-                                <input type="checkbox" data-platform="ipad" data-format="ipad-12.9">
-                                <span>12.9"</span>
-                            </label>
-                            <label class="size-item">
-                                <input type="checkbox" data-platform="ipad" data-format="ipad-11">
-                                <span>11"</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Mac -->
-                    <div class="platform-item" data-platform="mac">
-                        <div class="platform-header">
-                            <span class="platform-name">Mac</span>
-                            <span class="screenshot-count" style="display: none;">0</span>
-                        </div>
-                        <div class="platform-sizes">
-                            <label class="size-item">
-                                <input type="checkbox" data-platform="mac" data-format="mac-2880" checked>
-                                <span>2880</span>
-                            </label>
-                            <label class="size-item">
-                                <input type="checkbox" data-platform="mac" data-format="mac-1280">
-                                <span>1280</span>
-                            </label>
-                        </div>
-                    </div>
                 </div>
 
-                <!-- Google Play Store -->
-                <div class="nav-section">
+                <div class="nav-section" id="googlePlaySection">
                     <div class="nav-section-title">Google Play</div>
-
-                    <!-- Android Phone -->
-                    <div class="platform-item" data-platform="android-phone">
-                        <div class="platform-header">
-                            <span class="platform-name">Phone</span>
-                            <span class="screenshot-count" style="display: none;">0</span>
-                        </div>
-                        <div class="platform-sizes">
-                            <label class="size-item">
-                                <input type="checkbox" data-platform="android-phone" data-format="android-phone-1080" checked>
-                                <span>1080p</span>
-                            </label>
-                            <label class="size-item">
-                                <input type="checkbox" data-platform="android-phone" data-format="android-phone-1440">
-                                <span>1440p</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Android Tablet -->
-                    <div class="platform-item" data-platform="android-tablet">
-                        <div class="platform-header">
-                            <span class="platform-name">Tablet</span>
-                            <span class="screenshot-count" style="display: none;">0</span>
-                        </div>
-                        <div class="platform-sizes">
-                            <label class="size-item">
-                                <input type="checkbox" data-platform="android-tablet" data-format="android-tablet-7" checked>
-                                <span>7"</span>
-                            </label>
-                            <label class="size-item">
-                                <input type="checkbox" data-platform="android-tablet" data-format="android-tablet-10">
-                                <span>10"</span>
-                            </label>
-                        </div>
-                    </div>
                 </div>
             </nav>
 
@@ -209,181 +106,199 @@
 
         <!-- Right Panel -->
         <aside class="settings-panel">
+            <!-- Settings Tabs -->
+            <div class="settings-tabs">
+                <button class="settings-tab active" data-tab="content">
+                    <i data-lucide="align-center"></i>
+                    Content
+                </button>
+                <button class="settings-tab" data-tab="style">
+                    <i data-lucide="brush"></i>
+                    Style
+                </button>
+            </div>
+
             <div class="settings-scroll">
-                <!-- Text Layout -->
-                <section class="settings-section" id="textLayoutSection">
-                    <div class="section-header">
-                        <span class="section-title">Layout</span>
-                    </div>
-                    <div class="section-content">
-                        <div class="layout-row">
-                            <span class="layout-label">Position</span>
-                            <div class="position-text-buttons">
-                                <button class="position-text-btn active" data-preset="top">Top</button>
-                                <button class="position-text-btn" data-preset="center">Center</button>
-                                <button class="position-text-btn" data-preset="bottom">Bottom</button>
+                <!-- Content Tab -->
+                <div class="settings-tab-content active" id="contentTab">
+                    <!-- Title -->
+                    <section class="settings-section" id="titleSection">
+                        <div class="section-header">
+                            <span class="section-title">Title</span>
+                        </div>
+                        <div class="section-content">
+                            <input type="text" id="headline" class="text-input" placeholder="Enter title...">
+                            <div class="text-options-row">
+                                <select id="titleFont" class="font-select">
+                                    <option value="sf-pro">SF Pro</option>
+                                    <option value="sf-rounded">SF Rounded</option>
+                                    <option value="sf-mono">SF Mono</option>
+                                    <option value="new-york">New York</option>
+                                    <option value="inter">Inter</option>
+                                </select>
+                                <div class="size-buttons">
+                                    <button class="size-btn" data-size="small" data-target="title">S</button>
+                                    <button class="size-btn active" data-size="medium" data-target="title">M</button>
+                                    <button class="size-btn" data-size="large" data-target="title">L</button>
+                                </div>
+                            </div>
+                            <div class="text-options-row">
+                                <select id="titleWeight" class="font-select">
+                                    <option value="thin">Thin</option>
+                                    <option value="regular">Regular</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="semibold">Semi-bold</option>
+                                    <option value="bold" selected>Bold</option>
+                                </select>
+                                <div class="color-input-wrap">
+                                    <input type="color" id="titleColor" value="#ffffff">
+                                    <input type="text" class="color-hex-input" id="titleColorHex" value="#FFFFFF" maxlength="7">
+                                </div>
                             </div>
                         </div>
-                        <div class="layout-row" id="spacingRow">
-                            <span class="layout-label">Spacing</span>
-                            <div class="spacing-buttons">
-                                <button class="spacing-btn" data-spacing="small">S</button>
-                                <button class="spacing-btn active" data-spacing="medium">M</button>
-                                <button class="spacing-btn" data-spacing="large">L</button>
-                                <button class="spacing-btn" data-spacing="xlarge">XL</button>
-                            </div>
-                        </div>
-                        <div class="layout-row" id="alignRow">
-                            <span class="layout-label">Align</span>
-                            <div class="align-buttons" id="alignButtons">
-                                <button class="align-btn" data-align="left" title="Align left">
-                                    <i data-lucide="align-left"></i>
-                                </button>
-                                <button class="align-btn active" data-align="center" title="Align center">
-                                    <i data-lucide="align-center"></i>
-                                </button>
-                                <button class="align-btn" data-align="right" title="Align right">
-                                    <i data-lucide="align-right"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                    </section>
 
-                <!-- Title -->
-                <section class="settings-section" id="titleSection">
-                    <div class="section-header">
-                        <span class="section-title">Title</span>
-                    </div>
-                    <div class="section-content">
-                        <input type="text" id="headline" class="text-input" placeholder="Enter title...">
-                        <div class="text-options-row">
-                            <select id="titleFont" class="font-select">
-                                <option value="sf-pro">SF Pro</option>
-                                <option value="sf-rounded">SF Rounded</option>
-                                <option value="sf-mono">SF Mono</option>
-                                <option value="new-york">New York</option>
-                                <option value="inter">Inter</option>
-                            </select>
-                            <div class="size-buttons">
-                                <button class="size-btn" data-size="small" data-target="title">S</button>
-                                <button class="size-btn active" data-size="medium" data-target="title">M</button>
-                                <button class="size-btn" data-size="large" data-target="title">L</button>
+                    <!-- Body -->
+                    <section class="settings-section" id="bodySection">
+                        <div class="section-header">
+                            <span class="section-title">Body</span>
+                        </div>
+                        <div class="section-content">
+                            <textarea id="subheadline" class="text-input text-area" placeholder="Enter subtitle..." rows="2"></textarea>
+                            <div class="text-options-row">
+                                <select id="bodyFont" class="font-select">
+                                    <option value="sf-pro">SF Pro</option>
+                                    <option value="sf-rounded">SF Rounded</option>
+                                    <option value="sf-mono">SF Mono</option>
+                                    <option value="new-york">New York</option>
+                                    <option value="inter">Inter</option>
+                                </select>
+                                <div class="size-buttons">
+                                    <button class="size-btn" data-size="small" data-target="body">S</button>
+                                    <button class="size-btn active" data-size="medium" data-target="body">M</button>
+                                    <button class="size-btn" data-size="large" data-target="body">L</button>
+                                </div>
+                            </div>
+                            <div class="text-options-row">
+                                <select id="bodyWeight" class="font-select">
+                                    <option value="thin">Thin</option>
+                                    <option value="regular">Regular</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="semibold">Semi-bold</option>
+                                    <option value="bold">Bold</option>
+                                </select>
+                                <div class="color-input-wrap">
+                                    <input type="color" id="bodyColor" value="#ffffff">
+                                    <input type="text" class="color-hex-input" id="bodyColorHex" value="#FFFFFF" maxlength="7">
+                                </div>
                             </div>
                         </div>
-                        <div class="text-options-row">
-                            <select id="titleWeight" class="font-select">
-                                <option value="thin">Thin</option>
-                                <option value="regular">Regular</option>
-                                <option value="medium">Medium</option>
-                                <option value="semibold">Semi-bold</option>
-                                <option value="bold" selected>Bold</option>
-                            </select>
-                            <div class="color-input-wrap">
-                                <input type="color" id="titleColor" value="#ffffff">
-                                <input type="text" class="color-hex-input" id="titleColorHex" value="#FFFFFF" maxlength="7">
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                    </section>
+                </div>
 
-                <!-- Body -->
-                <section class="settings-section" id="bodySection">
-                    <div class="section-header">
-                        <span class="section-title">Body</span>
-                    </div>
-                    <div class="section-content">
-                        <textarea id="subheadline" class="text-input text-area" placeholder="Enter subtitle..." rows="2"></textarea>
-                        <div class="text-options-row">
-                            <select id="bodyFont" class="font-select">
-                                <option value="sf-pro">SF Pro</option>
-                                <option value="sf-rounded">SF Rounded</option>
-                                <option value="sf-mono">SF Mono</option>
-                                <option value="new-york">New York</option>
-                                <option value="inter">Inter</option>
-                            </select>
-                            <div class="size-buttons">
-                                <button class="size-btn" data-size="small" data-target="body">S</button>
-                                <button class="size-btn active" data-size="medium" data-target="body">M</button>
-                                <button class="size-btn" data-size="large" data-target="body">L</button>
+                <!-- Style Tab -->
+                <div class="settings-tab-content" id="styleTab">
+                    <!-- Text Layout -->
+                    <section class="settings-section" id="textLayoutSection">
+                        <div class="section-header">
+                            <span class="section-title">Layout</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="layout-row">
+                                <span class="layout-label">Position</span>
+                                <div class="position-text-buttons">
+                                    <button class="position-text-btn active" data-preset="top">Top</button>
+                                    <button class="position-text-btn" data-preset="center">Center</button>
+                                    <button class="position-text-btn" data-preset="bottom">Bottom</button>
+                                </div>
+                            </div>
+                            <div class="layout-row" id="spacingRow">
+                                <span class="layout-label">Spacing</span>
+                                <div class="spacing-buttons">
+                                    <button class="spacing-btn" data-spacing="small">S</button>
+                                    <button class="spacing-btn active" data-spacing="medium">M</button>
+                                    <button class="spacing-btn" data-spacing="large">L</button>
+                                    <button class="spacing-btn" data-spacing="xlarge">XL</button>
+                                </div>
+                            </div>
+                            <div class="layout-row" id="alignRow">
+                                <span class="layout-label">Align</span>
+                                <div class="align-buttons" id="alignButtons">
+                                    <button class="align-btn" data-align="left" title="Align left">
+                                        <i data-lucide="align-left"></i>
+                                    </button>
+                                    <button class="align-btn active" data-align="center" title="Align center">
+                                        <i data-lucide="align-center"></i>
+                                    </button>
+                                    <button class="align-btn" data-align="right" title="Align right">
+                                        <i data-lucide="align-right"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <div class="text-options-row">
-                            <select id="bodyWeight" class="font-select">
-                                <option value="thin">Thin</option>
-                                <option value="regular">Regular</option>
-                                <option value="medium" selected>Medium</option>
-                                <option value="semibold">Semi-bold</option>
-                                <option value="bold">Bold</option>
-                            </select>
-                            <div class="color-input-wrap">
-                                <input type="color" id="bodyColor" value="#ffffff">
-                                <input type="text" class="color-hex-input" id="bodyColorHex" value="#FFFFFF" maxlength="7">
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                    </section>
 
-                <!-- Background -->
-                <section class="settings-section" id="backgroundSection">
-                    <div class="section-header">
-                        <span class="section-title">Background</span>
-                    </div>
-                    <div class="section-content">
-                        <div class="color-row">
-                            <label class="color-label">Color</label>
-                            <div class="color-input-wrap">
-                                <input type="color" id="bgColor1" value="#75B7E7">
-                                <input type="text" class="color-hex-input" id="bgColor1Hex" value="#75B7E7" maxlength="7">
+                    <!-- Background -->
+                    <section class="settings-section" id="backgroundSection">
+                        <div class="section-header">
+                            <span class="section-title">Background</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="color-row">
+                                <label class="color-label">Color</label>
+                                <div class="color-input-wrap">
+                                    <input type="color" id="bgColor1" value="#75B7E7">
+                                    <input type="text" class="color-hex-input" id="bgColor1Hex" value="#75B7E7" maxlength="7">
+                                </div>
+                            </div>
+                            <div class="color-row" id="gradientColorRow" style="display: none;">
+                                <label class="color-label">End color</label>
+                                <div class="color-input-wrap">
+                                    <input type="color" id="bgGradientColor" value="#ffffff">
+                                    <input type="text" class="color-hex-input" id="bgGradientColorHex" value="#FFFFFF" maxlength="7">
+                                </div>
+                            </div>
+                            <div class="color-row">
+                                <label class="color-label">Gradient</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="bgGradient">
+                                    <span class="toggle-slider"></span>
+                                </label>
                             </div>
                         </div>
-                        <div class="color-row" id="gradientColorRow" style="display: none;">
-                            <label class="color-label">End color</label>
-                            <div class="color-input-wrap">
-                                <input type="color" id="bgGradientColor" value="#ffffff">
-                                <input type="text" class="color-hex-input" id="bgGradientColorHex" value="#FFFFFF" maxlength="7">
-                            </div>
-                        </div>
-                        <div class="color-row">
-                            <label class="color-label">Gradient</label>
+                    </section>
+
+                    <!-- Device Frame -->
+                    <section class="settings-section" id="deviceFrameSection">
+                        <div class="section-header">
+                            <span class="section-title">Device</span>
                             <label class="toggle">
-                                <input type="checkbox" id="bgGradient">
+                                <input type="checkbox" id="addDeviceFrame" checked>
                                 <span class="toggle-slider"></span>
                             </label>
                         </div>
-                    </div>
-                </section>
-
-                <!-- Device Frame -->
-                <section class="settings-section" id="deviceFrameSection">
-                    <div class="section-header">
-                        <span class="section-title">Device Frame</span>
-                        <label class="toggle">
-                            <input type="checkbox" id="addDeviceFrame" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    <div class="section-content" id="deviceFrameContent">
-                        <div class="color-row">
-                            <label class="color-label">Color</label>
-                            <div class="color-input-wrap">
-                                <input type="color" id="deviceFrameColor" value="#000000">
-                                <input type="text" class="color-hex-input" id="deviceFrameColorHex" value="#000000" maxlength="7">
+                        <div class="section-content" id="deviceFrameContent">
+                            <div class="color-row">
+                                <label class="color-label">Frame color</label>
+                                <div class="color-input-wrap">
+                                    <input type="color" id="deviceFrameColor" value="#000000">
+                                    <input type="text" class="color-hex-input" id="deviceFrameColorHex" value="#000000" maxlength="7">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                <!-- Shadow -->
-                <section class="settings-section">
-                    <div class="section-header">
-                        <span class="section-title">Shadow</span>
-                        <label class="toggle">
-                            <input type="checkbox" id="addShadow">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </section>
+                    <!-- Shadow -->
+                    <section class="settings-section">
+                        <div class="section-header">
+                            <span class="section-title">Shadow</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="addShadow">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </section>
+                </div>
             </div>
 
             <!-- Apply to All Button -->

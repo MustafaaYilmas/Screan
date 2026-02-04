@@ -89,6 +89,33 @@ App.normalizeHex = function(value) {
 };
 
 App.initEventListeners = function() {
+    // Settings tabs
+    document.querySelectorAll('.settings-tab').forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            var targetTab = this.getAttribute('data-tab');
+
+            // Update tab buttons
+            document.querySelectorAll('.settings-tab').forEach(function(t) {
+                t.classList.remove('active');
+            });
+            this.classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.settings-tab-content').forEach(function(content) {
+                content.classList.remove('active');
+            });
+            document.getElementById(targetTab + 'Tab').classList.add('active');
+
+            // Hide Apply to All button on Content tab
+            var footer = document.getElementById('settingsFooter');
+            if (targetTab === 'content') {
+                footer.style.display = 'none';
+            } else {
+                App.updateApplyToAllButton();
+            }
+        });
+    });
+
     // Add screenshot
     var addBtn = document.getElementById('addScreenshotBtn');
     var input = document.getElementById('screenshotInput');

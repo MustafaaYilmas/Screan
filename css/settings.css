@@ -15,7 +15,51 @@
     overflow-y: auto;
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE/Edge */
+}
+
+/* Settings Tabs */
+.settings-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.settings-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 16px;
+    background: var(--background-subtle);
+    border: none;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--foreground-muted);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.settings-tab svg {
+    width: 14px;
+    height: 14px;
+}
+
+.settings-tab:hover {
+    color: var(--foreground);
+}
+
+.settings-tab.active {
+    color: var(--foreground);
+    background: transparent;
+}
+
+.settings-tab-content {
+    display: none;
     padding-top: 8px;
+}
+
+.settings-tab-content.active {
+    display: block;
 }
 
 .settings-scroll::-webkit-scrollbar {

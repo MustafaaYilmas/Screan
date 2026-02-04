@@ -10,7 +10,7 @@ App.state = {
         'iphone': {
             screenshots: [],
             activeIndex: 0,
-            exportFormats: ['iphone-6.9', 'iphone-6.7']
+            exportFormats: ['iphone-6.9', 'iphone-6.5']
         },
         'ipad': {
             screenshots: [],
@@ -114,6 +114,62 @@ App.updateEmptyStateText = function() {
     if (text) {
         text.textContent = 'Drag & drop ' + family.name + ' screenshots here';
     }
+};
+
+// Generate sidebar platforms from PLATFORM_FAMILIES config
+App.initSidebarPlatforms = function() {
+    var appStoreSection = document.getElementById('appStoreSection');
+    var googlePlaySection = document.getElementById('googlePlaySection');
+
+    Object.keys(App.PLATFORM_FAMILIES).forEach(function(platformKey) {
+        var family = App.PLATFORM_FAMILIES[platformKey];
+        var section = family.section === 'appStore' ? appStoreSection : googlePlaySection;
+        var isFirst = platformKey === 'iphone';
+
+        // Create platform item
+        var platformItem = document.createElement('div');
+        platformItem.className = 'platform-item' + (isFirst ? ' active' : '');
+        platformItem.setAttribute('data-platform', platformKey);
+
+        // Create header
+        var header = document.createElement('div');
+        header.className = 'platform-header';
+        header.innerHTML = '<span class="platform-name">' + family.name + '</span>' +
+            '<span class="screenshot-count" style="display: none;">0</span>';
+
+        // Create sizes container
+        var sizesContainer = document.createElement('div');
+        sizesContainer.className = 'platform-sizes';
+
+        // Create checkboxes for each format
+        family.formats.forEach(function(formatKey) {
+            var format = App.FORMATS[formatKey];
+            var isDefault = family.defaultExport.indexOf(formatKey) !== -1;
+
+            // Extract display name (remove prefix like "iPhone ", "iPad ", etc.)
+            var displayName = format.name.replace(/^(iPhone|iPad|Mac|Phone|Tablet)\s*/i, '');
+
+            var label = document.createElement('label');
+            label.className = 'size-item';
+
+            var checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.setAttribute('data-platform', platformKey);
+            checkbox.setAttribute('data-format', formatKey);
+            if (isDefault) checkbox.checked = true;
+
+            var span = document.createElement('span');
+            span.textContent = displayName;
+
+            label.appendChild(checkbox);
+            label.appendChild(span);
+            sizesContainer.appendChild(label);
+        });
+
+        platformItem.appendChild(header);
+        platformItem.appendChild(sizesContainer);
+        section.appendChild(platformItem);
+    });
 };
 
 App.updateFormatDropdown = function() {
