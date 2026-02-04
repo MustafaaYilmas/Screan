@@ -33,14 +33,14 @@ App.updateApiKeyRowVisibility = function() {
     var apiKeyRow = document.getElementById('apiKeyRow');
     if (!apiKeyRow) return;
 
-    var activeLang = App.state.activeLanguage || 'en';
-    var isNotEnglish = activeLang !== 'en';
+    var languages = App.state.languages || ['en'];
+    var hasMultipleLanguages = languages.length > 1;
 
-    // Show API key row when we're not on English
-    apiKeyRow.style.display = isNotEnglish ? 'flex' : 'none';
+    // Show API key row when there are multiple languages
+    apiKeyRow.style.display = hasMultipleLanguages ? 'flex' : 'none';
 
     // Refresh lucide icons if visible
-    if (isNotEnglish) {
+    if (hasMultipleLanguages) {
         lucide.createIcons();
     }
 };
@@ -52,27 +52,29 @@ App.updateTranslateButtonState = function() {
 
     var activeLang = App.state.activeLanguage || 'en';
     var isNotEnglish = activeLang !== 'en';
+    var languages = App.state.languages || ['en'];
+    var hasMultipleLanguages = languages.length > 1;
     var hasScreenshots = App.getActiveScreenshots().length > 0;
     var hasKey = App.hasApiKey();
 
-    // Enable/disable translate button based on language and screenshots
+    // Enable/disable translate button based on multiple languages and screenshots
     if (translateBtn) {
-        translateBtn.disabled = !isNotEnglish || !hasScreenshots;
+        translateBtn.disabled = !hasMultipleLanguages || !hasScreenshots;
 
         // Update tooltip
-        var targetLangName = App.LANGUAGES[activeLang] ? App.LANGUAGES[activeLang].name : activeLang;
-        if (!isNotEnglish) {
-            translateBtn.title = 'Select a language to translate';
+        var sourceLangName = App.LANGUAGES[activeLang] ? App.LANGUAGES[activeLang].name : activeLang;
+        if (!hasMultipleLanguages) {
+            translateBtn.title = 'Add a language to translate';
         } else if (!hasScreenshots) {
             translateBtn.title = 'Add screenshots first';
         } else if (!hasKey) {
             translateBtn.title = 'Configure API key to translate';
         } else {
-            translateBtn.title = 'Translate to ' + targetLangName;
+            translateBtn.title = 'Translate from ' + sourceLangName + ' to all languages';
         }
     }
 
-    // Enable/disable remove button based on language
+    // Enable/disable remove button based on language (can't remove English)
     if (removeBtn) {
         removeBtn.disabled = !isNotEnglish;
     }
@@ -142,40 +144,51 @@ App.initAITranslateEvents = function() {
     App.updateTranslateButtonState();
 };
 
-// Translate all screenshots from English to the currently selected language
+// Translate all screenshots from the active language to all other languages
 App.translateAllScreenshots = function() {
     var apiKey = App.getApiKey();
     if (!apiKey) {
         return;
     }
 
-    var targetLang = App.state.activeLanguage || 'en';
-    var sourceLang = 'en'; // Always translate from English
+    var sourceLang = App.state.activeLanguage || 'en';
+    var languages = App.state.languages || ['en'];
 
-    if (targetLang === 'en') {
+    // Get all target languages (all languages except the source)
+    var targetLangs = languages.filter(function(lang) {
+        return lang !== sourceLang;
+    });
+
+    if (targetLangs.length === 0) {
         return;
     }
 
-    // Collect all content to translate (from English source)
+    // Collect all content to translate from source language
     var contentToTranslate = [];
 
     Object.keys(App.state.platforms).forEach(function(platformKey) {
         var screenshots = App.state.platforms[platformKey].screenshots;
         screenshots.forEach(function(screenshot, index) {
-            var content = screenshot.settings.content[sourceLang];
-            if (content && (content.headline || content.subheadline)) {
+            // Get content from source language, or fallback to current headline/subheadline
+            var content = screenshot.settings.content && screenshot.settings.content[sourceLang];
+            var headline = content ? content.headline : screenshot.settings.headline;
+            var subheadline = content ? content.subheadline : screenshot.settings.subheadline;
+
+            if (headline || subheadline) {
                 contentToTranslate.push({
                     platform: platformKey,
                     index: index,
-                    headline: content.headline || '',
-                    subheadline: content.subheadline || ''
+                    headline: headline || '',
+                    subheadline: subheadline || ''
                 });
             }
         });
     });
 
+    var sourceLangName = App.LANGUAGES[sourceLang] ? App.LANGUAGES[sourceLang].name : sourceLang;
+
     if (contentToTranslate.length === 0) {
-        alert('No English content to translate. Add text to your screenshots first.');
+        alert('No ' + sourceLangName + ' content to translate. Add text to your screenshots first.');
         return;
     }
 
@@ -185,22 +198,12 @@ App.translateAllScreenshots = function() {
         translateBtn.classList.add('loading');
     }
 
-    // Perform translation
-    App.performBatchTranslation(contentToTranslate, sourceLang, [targetLang], apiKey)
+    // Perform translation to all target languages
+    App.performBatchTranslation(contentToTranslate, sourceLang, targetLangs, apiKey)
         .then(function() {
             if (translateBtn) {
                 translateBtn.classList.remove('loading');
             }
-            // Load the translated content into all screenshots' active fields
-            Object.keys(App.state.platforms).forEach(function(platformKey) {
-                var screenshots = App.state.platforms[platformKey].screenshots;
-                screenshots.forEach(function(screenshot) {
-                    if (screenshot.settings.content && screenshot.settings.content[targetLang]) {
-                        screenshot.settings.headline = screenshot.settings.content[targetLang].headline;
-                        screenshot.settings.subheadline = screenshot.settings.content[targetLang].subheadline;
-                    }
-                });
-            });
             App.updateSettingsUI();
             App.renderAllPreviews();
             App.Storage.scheduleSave();
@@ -217,6 +220,7 @@ App.translateAllScreenshots = function() {
 // Perform batch translation via Claude API
 App.performBatchTranslation = function(contentList, sourceLang, targetLangs, apiKey) {
     // Build the prompt for translation
+    var sourceLangName = App.LANGUAGES[sourceLang] ? App.LANGUAGES[sourceLang].name : sourceLang;
     var targetLanguageNames = targetLangs.map(function(lang) {
         return App.LANGUAGES[lang] ? App.LANGUAGES[lang].name : lang;
     });
@@ -230,21 +234,22 @@ App.performBatchTranslation = function(contentList, sourceLang, targetLangs, api
         };
     });
 
-    var prompt = 'Translate the following app store screenshot texts to ' + targetLanguageNames.join(', ') + '.\n\n' +
-        'Auto-detect the source language. These are marketing texts for an app store listing.\n\n' +
+    // Build expected JSON structure example
+    var jsonExample = '{\n  "translations": {\n';
+    targetLangs.forEach(function(lang, idx) {
+        jsonExample += '    "' + lang + '": [\n';
+        jsonExample += '      { "id": 0, "headline": "translated headline", "subheadline": "translated subheadline" },\n';
+        jsonExample += '      ...\n';
+        jsonExample += '    ]' + (idx < targetLangs.length - 1 ? ',' : '') + '\n';
+    });
+    jsonExample += '  }\n}';
+
+    var prompt = 'Translate the following app store screenshot texts from ' + sourceLangName + ' to ' + targetLanguageNames.join(', ') + '.\n\n' +
+        'These are marketing texts for an app store listing.\n\n' +
         'IMPORTANT: Keep translations approximately the same length as the source text (similar character count). This is critical for layout consistency.\n\n' +
         'Keep them concise, catchy, and appropriate for app store screenshots.\n\n' +
         'Input (JSON):\n' + JSON.stringify(textsToTranslate, null, 2) + '\n\n' +
-        'Return ONLY a valid JSON object with this exact structure (no markdown, no explanation):\n' +
-        '{\n' +
-        '  "translations": {\n' +
-        '    "' + targetLangs[0] + '": [\n' +
-        '      { "id": 0, "headline": "translated headline", "subheadline": "translated subheadline" },\n' +
-        '      ...\n' +
-        '    ],\n' +
-        '    ...\n' +
-        '  }\n' +
-        '}';
+        'Return ONLY a valid JSON object with this exact structure (no markdown, no explanation):\n' + jsonExample;
 
     return fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
