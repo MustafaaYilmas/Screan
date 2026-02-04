@@ -4,70 +4,9 @@
 
 var App = window.App || {};
 
-// Debounce utility for input events
-App.debounce = function(fn, delay) {
-    var timeoutId;
-    return function() {
-        var context = this;
-        var args = arguments;
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(function() {
-            fn.apply(context, args);
-        }, delay);
-    };
-};
-
-// Throttle utility for resize events
-App.throttle = function(fn, delay) {
-    var lastCall = 0;
-    var timeoutId;
-    return function() {
-        var context = this;
-        var args = arguments;
-        var now = Date.now();
-        var remaining = delay - (now - lastCall);
-
-        clearTimeout(timeoutId);
-
-        if (remaining <= 0) {
-            lastCall = now;
-            fn.apply(context, args);
-        } else {
-            timeoutId = setTimeout(function() {
-                lastCall = Date.now();
-                fn.apply(context, args);
-            }, remaining);
-        }
-    };
-};
-
-// Schedule render using requestAnimationFrame to avoid blocking
-App._renderScheduled = false;
-App.scheduleRender = function() {
-    if (App._renderScheduled) return;
-    App._renderScheduled = true;
-    requestAnimationFrame(function() {
-        App._renderScheduled = false;
-        App.renderAllPreviews();
-    });
-};
-
-// Debounced render for text inputs (300ms delay)
-App.debouncedRender = App.debounce(function() {
-    App.scheduleRender();
-    App.Storage.scheduleSave();
-}, 300);
-
-// Debounced render for color hex inputs (200ms delay)
-App.debouncedColorRender = App.debounce(function() {
-    App.scheduleRender();
-    App.updateApplyToAllButton();
-    App.Storage.scheduleSave();
-}, 200);
-
 // Helper to render and save after settings change
 App.renderAndSave = function() {
-    App.scheduleRender();
+    App.renderAllPreviews();
     App.updateApplyToAllButton();
     App.Storage.scheduleSave();
 };
@@ -125,16 +64,16 @@ App.initEventListeners = function() {
     // Format select
     document.getElementById('formatSelect').addEventListener('change', function(e) {
         App.setCurrentFormat(e.target.value);
-        App.scheduleRender();
+        App.renderAllPreviews();
     });
 
-    // Text inputs (debounced for better INP)
+    // Text inputs
     document.getElementById('headline').addEventListener('input', function(e) {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.headline = e.target.value;
             App.saveContentToActiveLanguage(settings);
-            App.debouncedRender();
+            App.renderAndSave();
         }
     });
 
@@ -143,7 +82,7 @@ App.initEventListeners = function() {
         if (settings) {
             settings.subheadline = e.target.value;
             App.saveContentToActiveLanguage(settings);
-            App.debouncedRender();
+            App.renderAndSave();
         }
     });
 
@@ -209,7 +148,7 @@ App.initEventListeners = function() {
             if (hex) {
                 settings.titleColor = hex;
                 document.getElementById('titleColor').value = hex;
-                App.debouncedColorRender();
+                App.renderAndSave();
             }
         }
     });
@@ -241,7 +180,7 @@ App.initEventListeners = function() {
             if (hex) {
                 settings.bodyColor = hex;
                 document.getElementById('bodyColor').value = hex;
-                App.debouncedColorRender();
+                App.renderAndSave();
             }
         }
     });
@@ -273,7 +212,7 @@ App.initEventListeners = function() {
             if (hex) {
                 settings.bgColor = hex;
                 document.getElementById('bgColor1').value = hex;
-                App.debouncedColorRender();
+                App.renderAndSave();
             }
         }
     });
@@ -306,7 +245,7 @@ App.initEventListeners = function() {
             if (hex) {
                 settings.bgGradientColor = hex;
                 document.getElementById('bgGradientColor').value = hex;
-                App.debouncedColorRender();
+                App.renderAndSave();
             }
         }
     });
@@ -329,7 +268,7 @@ App.initEventListeners = function() {
             if (hex) {
                 settings.deviceFrameColor = hex;
                 document.getElementById('deviceFrameColor').value = hex;
-                App.debouncedColorRender();
+                App.renderAndSave();
             }
         }
     });
