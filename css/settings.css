@@ -124,6 +124,40 @@
     letter-spacing: 0.05em;
 }
 
+.section-header-spacer {
+    flex: 1;
+}
+
+.btn-apply-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius);
+    color: var(--foreground-muted);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    opacity: 0;
+}
+
+.settings-section:hover .btn-apply-section {
+    opacity: 1;
+}
+
+.btn-apply-section:hover {
+    background: var(--muted);
+    color: var(--foreground);
+}
+
+.btn-apply-section svg {
+    width: 14px;
+    height: 14px;
+}
+
 .section-content {
     padding: 0 20px 20px;
 }

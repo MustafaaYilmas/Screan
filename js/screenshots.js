@@ -112,7 +112,7 @@ App.updateSettingsUI = function() {
 
     // Device frame settings
     document.getElementById('addDeviceFrame').checked = settings.addDeviceFrame;
-    document.getElementById('deviceFrameContent').style.display = settings.addDeviceFrame ? 'block' : 'none';
+    document.getElementById('deviceFrameColorRow').style.display = settings.addDeviceFrame ? 'flex' : 'none';
     document.getElementById('deviceFrameColor').value = settings.deviceFrameColor;
     document.getElementById('deviceFrameColorHex').value = settings.deviceFrameColor.toUpperCase();
 
@@ -218,6 +218,46 @@ App.applySettingsToAll = function() {
         textAlign: currentSettings.textAlign,
         textSpacing: currentSettings.textSpacing
     };
+
+    screenshots.forEach(function(screenshot) {
+        Object.assign(screenshot.settings, settingsToApply);
+    });
+
+    App.renderAllPreviews();
+    App.updateSettingsUI();
+    App.Storage.scheduleSave();
+};
+
+App.applySectionToAll = function(section) {
+    var screenshots = App.getActiveScreenshots();
+    var currentSettings = App.getActiveSettings();
+    if (!currentSettings || screenshots.length < 2) return;
+
+    var settingsToApply = {};
+
+    if (section === 'device') {
+        settingsToApply = {
+            addDeviceFrame: currentSettings.addDeviceFrame,
+            deviceFrameColor: currentSettings.deviceFrameColor
+        };
+    } else if (section === 'shadow') {
+        settingsToApply = {
+            addShadow: currentSettings.addShadow
+        };
+    } else if (section === 'background') {
+        settingsToApply = {
+            bgColor: currentSettings.bgColor,
+            bgGradient: currentSettings.bgGradient,
+            bgGradientColor: currentSettings.bgGradientColor,
+            bgGradientAngle: currentSettings.bgGradientAngle
+        };
+    } else if (section === 'layout') {
+        settingsToApply = {
+            preset: currentSettings.preset,
+            textSpacing: currentSettings.textSpacing,
+            textAlign: currentSettings.textAlign
+        };
+    }
 
     screenshots.forEach(function(screenshot) {
         Object.assign(screenshot.settings, settingsToApply);

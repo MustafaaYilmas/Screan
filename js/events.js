@@ -287,7 +287,7 @@ App.initEventListeners = function() {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.addDeviceFrame = e.target.checked;
-            document.getElementById('deviceFrameContent').style.display = e.target.checked ? 'block' : 'none';
+            document.getElementById('deviceFrameColorRow').style.display = e.target.checked ? 'flex' : 'none';
             App.renderAndSave();
         }
     });
@@ -375,6 +375,14 @@ App.initEventListeners = function() {
     // Apply to All
     document.getElementById('applyToAllBtn').addEventListener('click', function() {
         App.applySettingsToAll();
+    });
+
+    // Apply section to All
+    document.querySelectorAll('.btn-apply-section').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var section = this.getAttribute('data-section');
+            App.applySectionToAll(section);
+        });
     });
 
     // Toggle panels (sidebar + settings) - desktop only

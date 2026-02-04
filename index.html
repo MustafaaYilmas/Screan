@@ -233,6 +233,10 @@
                     <section class="settings-section" id="textLayoutSection">
                         <div class="section-header">
                             <span class="section-title">Layout</span>
+                            <span class="section-header-spacer"></span>
+                            <button class="btn-apply-section" data-section="layout" title="Apply to all">
+                                <i data-lucide="arrow-right-left"></i>
+                            </button>
                         </div>
                         <div class="section-content">
                             <div class="layout-row">
@@ -273,6 +277,10 @@
                     <section class="settings-section" id="backgroundSection">
                         <div class="section-header">
                             <span class="section-title">Background</span>
+                            <span class="section-header-spacer"></span>
+                            <button class="btn-apply-section" data-section="background" title="Apply to all">
+                                <i data-lucide="arrow-right-left"></i>
+                            </button>
                         </div>
                         <div class="section-content">
                             <div class="color-row">
@@ -303,13 +311,20 @@
                     <section class="settings-section" id="deviceFrameSection">
                         <div class="section-header">
                             <span class="section-title">Device</span>
-                            <label class="toggle">
-                                <input type="checkbox" id="addDeviceFrame" checked>
-                                <span class="toggle-slider"></span>
-                            </label>
+                            <span class="section-header-spacer"></span>
+                            <button class="btn-apply-section" data-section="device" title="Apply to all">
+                                <i data-lucide="arrow-right-left"></i>
+                            </button>
                         </div>
-                        <div class="section-content" id="deviceFrameContent">
+                        <div class="section-content">
                             <div class="color-row">
+                                <label class="color-label">Show border</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="addDeviceFrame" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="color-row" id="deviceFrameColorRow">
                                 <label class="color-label">Frame color</label>
                                 <div class="color-input-wrap">
                                     <input type="color" id="deviceFrameColor" value="#000000">
@@ -320,13 +335,22 @@
                     </section>
 
                     <!-- Shadow -->
-                    <section class="settings-section">
+                    <section class="settings-section" id="shadowSection">
                         <div class="section-header">
                             <span class="section-title">Shadow</span>
-                            <label class="toggle">
-                                <input type="checkbox" id="addShadow">
-                                <span class="toggle-slider"></span>
-                            </label>
+                            <span class="section-header-spacer"></span>
+                            <button class="btn-apply-section" data-section="shadow" title="Apply to all">
+                                <i data-lucide="arrow-right-left"></i>
+                            </button>
+                        </div>
+                        <div class="section-content">
+                            <div class="color-row">
+                                <label class="color-label">Display shadow</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="addShadow">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
                         </div>
                     </section>
                 </div>
