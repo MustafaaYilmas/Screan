@@ -115,13 +115,13 @@ App.DEFAULT_SETTINGS = {
     // Content per language (languages list is stored at platform level)
     content: {
         'en': {
-            headline: 'Your Amazing App',
-            subheadline: 'The best way to do things'
+            headline: 'Hello!',
+            subheadline: 'Your story starts here'
         }
     },
     // Active content fields (synced with active language)
-    headline: 'Your Amazing App',
-    subheadline: 'The best way to do things',
+    headline: 'Hello!',
+    subheadline: 'Your story starts here',
     // Title settings
     titleFont: 'sf-rounded',
     titleSize: 'medium',

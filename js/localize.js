@@ -6,27 +6,26 @@ var App = window.App || {};
 
 // Initialize language-related events
 App.initLanguageEvents = function() {
-    var addBtn = document.getElementById('addLanguageBtn');
     var removeBtn = document.getElementById('removeLanguageBtn');
-    var dropdown = document.getElementById('languageDropdown');
     var languageSelect = document.getElementById('languageSelect');
     var previewLanguageSelect = document.getElementById('previewLanguageSelect');
 
-    // Language select change - switch language
+    // Language select change - switch or add language
     languageSelect.addEventListener('change', function(e) {
-        App.switchLanguage(e.target.value);
+        var value = e.target.value;
+
+        // Check if it's a new language to add (prefixed with "add:")
+        if (value.indexOf('add:') === 0) {
+            var langCode = value.substring(4);
+            App.addLanguage(langCode);
+        } else {
+            App.switchLanguage(value);
+        }
     });
 
     // Preview language select change - switch language (synced)
     previewLanguageSelect.addEventListener('change', function(e) {
         App.switchLanguage(e.target.value);
-    });
-
-    // Add language button - toggle dropdown
-    addBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        App.populateLanguageDropdown();
-        dropdown.classList.toggle('open');
     });
 
     // Remove language button
@@ -35,44 +34,6 @@ App.initLanguageEvents = function() {
             App.removeLanguage(App.state.activeLanguage);
         }
     });
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!dropdown.contains(e.target) && !addBtn.contains(e.target)) {
-            dropdown.classList.remove('open');
-        }
-    });
-};
-
-// Populate the language dropdown with available languages (for adding)
-App.populateLanguageDropdown = function() {
-    var dropdownContent = document.querySelector('.language-dropdown-content');
-    dropdownContent.innerHTML = '';
-
-    var currentLangs = App.state.languages || ['en'];
-
-    Object.keys(App.LANGUAGES).forEach(function(langCode) {
-        var lang = App.LANGUAGES[langCode];
-        var isAdded = currentLangs.indexOf(langCode) !== -1;
-
-        var option = document.createElement('button');
-        option.className = 'language-option' + (isAdded ? ' added' : '');
-        option.dataset.lang = langCode;
-        option.innerHTML = '<span class="lang-name">' + lang.name + '</span>' +
-            (isAdded ? '<span class="lang-check"><i data-lucide="check"></i></span>' : '');
-
-        if (!isAdded) {
-            option.addEventListener('click', function() {
-                App.addLanguage(langCode);
-                document.getElementById('languageDropdown').classList.remove('open');
-            });
-        }
-
-        dropdownContent.appendChild(option);
-    });
-
-    // Refresh lucide icons
-    lucide.createIcons();
 };
 
 // Add a new language (global, affects all screenshots across all platforms)
@@ -156,28 +117,42 @@ App.removeLanguage = function(langCode) {
 
 // Switch to a different language (global)
 App.switchLanguage = function(langCode) {
-    // Save current content for current screenshot before switching
-    var currentSettings = App.getActiveSettings();
-    if (currentSettings && App.state.activeLanguage && currentSettings.content) {
-        currentSettings.content[App.state.activeLanguage] = {
-            headline: currentSettings.headline,
-            subheadline: currentSettings.subheadline
-        };
-    }
+    var previousLang = App.state.activeLanguage || 'en';
+
+    // Save current content for ALL screenshots before switching
+    Object.keys(App.state.platforms).forEach(function(platformKey) {
+        var screenshots = App.state.platforms[platformKey].screenshots;
+        screenshots.forEach(function(screenshot) {
+            if (screenshot.settings && previousLang) {
+                if (!screenshot.settings.content) {
+                    screenshot.settings.content = {};
+                }
+                screenshot.settings.content[previousLang] = {
+                    headline: screenshot.settings.headline,
+                    subheadline: screenshot.settings.subheadline
+                };
+            }
+        });
+    });
 
     // Switch language globally
     App.state.activeLanguage = langCode;
 
-    // Load content for this language in current screenshot
-    if (currentSettings && currentSettings.content && currentSettings.content[langCode]) {
-        currentSettings.headline = currentSettings.content[langCode].headline;
-        currentSettings.subheadline = currentSettings.content[langCode].subheadline;
-    }
+    // Load content for this language in ALL screenshots
+    Object.keys(App.state.platforms).forEach(function(platformKey) {
+        var screenshots = App.state.platforms[platformKey].screenshots;
+        screenshots.forEach(function(screenshot) {
+            if (screenshot.settings && screenshot.settings.content && screenshot.settings.content[langCode]) {
+                screenshot.settings.headline = screenshot.settings.content[langCode].headline;
+                screenshot.settings.subheadline = screenshot.settings.content[langCode].subheadline;
+            }
+        });
+    });
 
     // Update UI
     App.updateLanguageSelect();
     App.updateSettingsUI();
-    App.scheduleRender();
+    App.renderAllPreviews();
     App.Storage.scheduleSave();
 };
 
@@ -195,6 +170,7 @@ App.updateLanguageSelect = function() {
     select.innerHTML = '';
     if (previewSelect) previewSelect.innerHTML = '';
 
+    // Add active languages
     languages.forEach(function(langCode) {
         var lang = App.LANGUAGES[langCode];
         if (!lang) return;
@@ -213,6 +189,27 @@ App.updateLanguageSelect = function() {
         }
     });
 
+    // Get available languages to add
+    var availableLanguages = Object.keys(App.LANGUAGES).filter(function(langCode) {
+        return languages.indexOf(langCode) === -1;
+    });
+
+    // Add separator and available languages if there are any
+    if (availableLanguages.length > 0) {
+        var separator = document.createElement('option');
+        separator.disabled = true;
+        separator.textContent = '── Add language ──';
+        select.appendChild(separator);
+
+        availableLanguages.forEach(function(langCode) {
+            var lang = App.LANGUAGES[langCode];
+            var option = document.createElement('option');
+            option.value = 'add:' + langCode;
+            option.textContent = '+ ' + lang.name;
+            select.appendChild(option);
+        });
+    }
+
     // Set the selected value on both selects
     select.value = activeLang;
     if (previewSelect) {
@@ -224,11 +221,9 @@ App.updateLanguageSelect = function() {
         removeBtn.disabled = activeLang === 'en' || languages.length <= 1;
     }
 
-    // Update translate button state
-    var translateBtn = document.getElementById('translateAllBtn');
-    if (translateBtn) {
-        // Enable if there are multiple languages (will be fully functional later with AI)
-        translateBtn.disabled = true; // Always disabled for now
+    // Update translate button state (delegated to AI module)
+    if (typeof App.updateTranslateButtonState === 'function') {
+        App.updateTranslateButtonState();
     }
 
     // Show/hide preview language select based on number of languages

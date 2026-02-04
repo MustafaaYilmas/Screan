@@ -35,10 +35,14 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     App.initEventListeners();
     App.initDragDrop();
+    App.initAITranslateEvents();
 
     // Load persisted data from IndexedDB
     await App.Storage.init();
     await App.Storage.loadAll();
+
+    // Update AI translate button state after loading data
+    App.updateTranslateButtonState();
 
     App.updateSettingsUI();
     App.renderAllPreviews();

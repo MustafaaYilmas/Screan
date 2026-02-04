@@ -129,27 +129,25 @@
                     <section class="settings-section" id="languageSection">
                         <div class="section-header">
                             <span class="section-title">Localize</span>
-                            <button class="icon-btn translate-btn" id="translateAllBtn" title="Translate with AI" disabled>
-                                <i data-lucide="languages"></i>
-                            </button>
                         </div>
                         <div class="section-content">
                             <div class="language-select-row">
                                 <select id="languageSelect" class="font-select language-select">
                                     <option value="en">English</option>
                                 </select>
-                                <button class="add-language-btn" id="addLanguageBtn" title="Add language">
-                                    <i data-lucide="plus"></i>
+                                <button class="icon-btn translate-btn" id="translateAllBtn" title="Translate with AI" disabled>
+                                    <i data-lucide="wand-sparkles"></i>
                                 </button>
                                 <button class="remove-language-btn" id="removeLanguageBtn" title="Remove language" disabled>
                                     <i data-lucide="trash-2"></i>
                                 </button>
                             </div>
-                        </div>
-                        <!-- Language dropdown for adding (hidden by default) -->
-                        <div class="language-dropdown" id="languageDropdown">
-                            <div class="language-dropdown-content">
-                                <!-- Languages will be populated by JS -->
+                            <div class="api-key-row" id="apiKeyRow" style="display: none;">
+                                <input type="password" id="apiKeyInput" class="api-key-input" placeholder="Claude API Key (local use only)">
+                                <button class="api-key-toggle" id="apiKeyToggle" type="button" title="Show/Hide API key">
+                                    <i data-lucide="eye" class="icon-show"></i>
+                                    <i data-lucide="eye-off" class="icon-hide"></i>
+                                </button>
                             </div>
                         </div>
                     </section>
@@ -360,6 +358,7 @@
     <script src="js/dragdrop.js"></script>
     <script src="js/export.js"></script>
     <script src="js/localize.js"></script>
+    <script src="js/ai-translate.js"></script>
     <script src="js/events.js"></script>
     <script src="app.js"></script>
 
