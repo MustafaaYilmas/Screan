@@ -36,6 +36,14 @@ body.panels-hidden .mini-sidebar {
     align-items: center;
 }
 
+.version-number {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--foreground-muted);
+    opacity: 0.6;
+    padding: 12px 0 16px;
+}
+
 .mini-sidebar-btn {
     width: 36px;
     height: 36px;
