@@ -103,14 +103,20 @@ App.renderCanvas = function(canvas, screenshot) {
     }
     ctx.fillRect(0, 0, w, h);
 
-    var screenshotInfo = App.drawScreenshot(ctx, screenshot, w, h, preset, settings, format);
-
+    // Pre-calculate text layout for dynamic screenshot positioning
+    var textLayout = null;
     if (!preset.noText && (settings.headline || settings.subheadline)) {
-        App.drawText(ctx, w, h, preset, settings, format, App.currentFormat, screenshotInfo);
+        textLayout = App.calculateTextLayout(ctx, w, h, settings, format, App.currentFormat);
+    }
+
+    var screenshotInfo = App.drawScreenshot(ctx, screenshot, w, h, preset, settings, format, textLayout);
+
+    if (textLayout) {
+        App.drawText(ctx, w, h, preset, settings, format, App.currentFormat, screenshotInfo, textLayout);
     }
 };
 
-App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, settings, format) {
+App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, settings, format, textLayout) {
     // Fixed horizontal margin (4% on each side = 92% width)
     var horizontalMargin = format.horizontalMargin || 0.87;
     var imgW = canvasW * horizontalMargin;
@@ -124,6 +130,15 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
     var radius = imgW * (format.cornerRadius || 0.1);
     if (preset.centered) {
         imgY = (canvasH - imgH) / 2;
+    } else if (textLayout) {
+        // Dynamic positioning: screenshot placed after text zone
+        if (preset.cropBottom) {
+            // Preset "top": text at top, screenshot below
+            imgY = textLayout.totalZoneHeight;
+        } else if (preset.cropTop) {
+            // Preset "bottom": screenshot at top, text below
+            imgY = canvasH - textLayout.totalZoneHeight - imgH;
+        }
     } else {
         var spacing = settings.textSpacing || 'medium';
         var screenshotY = typeof preset.screenshotY === 'object' ? preset.screenshotY[spacing] : preset.screenshotY;
@@ -295,8 +310,7 @@ App.wrapText = function(ctx, text, maxWidth) {
     return lines;
 };
 
-App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatKey, screenshotInfo) {
-    // Determine font size category based on format
+App.calculateTextLayout = function(ctx, canvasW, canvasH, settings, format, formatKey) {
     var fontSizeKey = App.getFontSizeKey(formatKey || App.currentFormat);
 
     var titleSize = settings.titleSize || 'medium';
@@ -307,35 +321,36 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatK
 
     var lineSpacing = headlineFontSize * 0.35;
 
-    // Get font families
+    // Get font families and weights
     var titleFontKey = settings.titleFont || 'sf-pro';
     var bodyFontKey = settings.bodyFont || 'sf-pro';
     var titleFontConfig = App.FONTS[titleFontKey] || App.FONTS['sf-pro'];
     var bodyFontConfig = App.FONTS[bodyFontKey] || App.FONTS['sf-pro'];
-    var titleFontFamily = titleFontConfig.family;
-    var bodyFontFamily = bodyFontConfig.family;
-
-    // Calculate max width for text wrapping
-    var horizontalPadding = canvasW * 0.065;
-    var maxTextWidth = canvasW - (horizontalPadding * 2);
-
-    // Get font weights
     var titleWeightKey = settings.titleWeight || 'bold';
     var bodyWeightKey = settings.bodyWeight || 'medium';
     var titleWeightValue = App.FONT_WEIGHTS[titleWeightKey] ? App.FONT_WEIGHTS[titleWeightKey].value : 700;
     var bodyWeightValue = App.FONT_WEIGHTS[bodyWeightKey] ? App.FONT_WEIGHTS[bodyWeightKey].value : 500;
 
+    var horizontalPadding = canvasW * 0.065;
+    var maxTextWidth = canvasW - (horizontalPadding * 2);
+
+    // Wrap headline text (multiline support)
+    ctx.font = titleWeightValue + ' ' + headlineFontSize + 'px ' + titleFontConfig.family;
+    var headlineLines = settings.headline ? App.wrapText(ctx, settings.headline, maxTextWidth) : [];
+    var titleLineSpacing = headlineFontSize * 0.15;
+
     // Wrap subheadline text
-    ctx.font = bodyWeightValue + ' ' + subheadlineFontSize + 'px ' + bodyFontFamily;
+    ctx.font = bodyWeightValue + ' ' + subheadlineFontSize + 'px ' + bodyFontConfig.family;
     var subheadlineLines = settings.subheadline ? App.wrapText(ctx, settings.subheadline, maxTextWidth) : [];
     var bodyLineSpacing = subheadlineFontSize * 0.3;
 
     // Calculate total text block height
     var totalTextHeight = 0;
-    if (settings.headline) {
-        totalTextHeight += headlineFontSize;
+    if (headlineLines.length > 0) {
+        totalTextHeight += headlineFontSize * headlineLines.length;
+        totalTextHeight += titleLineSpacing * (headlineLines.length - 1);
     }
-    if (settings.headline && subheadlineLines.length > 0) {
+    if (headlineLines.length > 0 && subheadlineLines.length > 0) {
         totalTextHeight += lineSpacing;
     }
     if (subheadlineLines.length > 0) {
@@ -343,18 +358,47 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatK
         totalTextHeight += bodyLineSpacing * (subheadlineLines.length - 1);
     }
 
-    // Determine text start position (centered in available space)
+    // Spacing margin
+    var spacing = settings.textSpacing || 'medium';
+    var marginRatio = App.SPACING_MARGINS[spacing] || App.SPACING_MARGINS.medium;
+    var margin = canvasH * marginRatio;
+
+    return {
+        headlineLines: headlineLines,
+        subheadlineLines: subheadlineLines,
+        headlineFontSize: headlineFontSize,
+        subheadlineFontSize: subheadlineFontSize,
+        lineSpacing: lineSpacing,
+        titleLineSpacing: titleLineSpacing,
+        bodyLineSpacing: bodyLineSpacing,
+        totalTextHeight: totalTextHeight,
+        margin: margin,
+        horizontalPadding: horizontalPadding,
+        maxTextWidth: maxTextWidth,
+        titleFontFamily: titleFontConfig.family,
+        bodyFontFamily: bodyFontConfig.family,
+        titleWeightValue: titleWeightValue,
+        bodyWeightValue: bodyWeightValue,
+        // Total zone = margin above + text + margin below
+        totalZoneHeight: margin + totalTextHeight + margin
+    };
+};
+
+App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatKey, screenshotInfo, textLayout) {
+    var tl = textLayout;
+
+    // Determine text start position using margin-based layout
+    // Text is vertically centered within the text zone, respecting min margins
     var startY;
-    var textZoneHeight;
     if (preset.cropBottom) {
-        // Preset "top": text zone is from 0 to screenshot top
-        textZoneHeight = screenshotInfo.imgY;
-        startY = (textZoneHeight - totalTextHeight) / 2;
+        // Preset "top": text zone is [0, imgY], center text with margins
+        var zoneHeight = screenshotInfo.imgY;
+        startY = tl.margin + (zoneHeight - 2 * tl.margin - tl.totalTextHeight) / 2;
     } else if (preset.cropTop) {
-        // Preset "bottom": text zone is from screenshot bottom to canvas bottom
+        // Preset "bottom": text zone is [screenshotEnd, canvasH], center text with margins
         var screenshotEndY = screenshotInfo.imgY + screenshotInfo.imgH;
-        textZoneHeight = canvasH - screenshotEndY;
-        startY = screenshotEndY + (textZoneHeight - totalTextHeight) / 2;
+        var zoneHeight = canvasH - screenshotEndY;
+        startY = screenshotEndY + tl.margin + (zoneHeight - 2 * tl.margin - tl.totalTextHeight) / 2;
     } else {
         // Fallback (center preset)
         startY = canvasH * preset.textY;
@@ -368,27 +412,34 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatK
     // Calculate X position based on alignment
     var textX;
     if (textAlign === 'left') {
-        textX = horizontalPadding;
+        textX = tl.horizontalPadding;
     } else if (textAlign === 'right') {
-        textX = canvasW - horizontalPadding;
+        textX = canvasW - tl.horizontalPadding;
     } else {
         textX = canvasW / 2;
     }
 
-    if (settings.headline) {
+    // Draw headline (multiline)
+    if (tl.headlineLines.length > 0) {
         ctx.fillStyle = settings.titleColor || '#ffffff';
-        ctx.font = titleWeightValue + ' ' + headlineFontSize + 'px ' + titleFontFamily;
-        ctx.fillText(settings.headline, textX, startY);
-        startY += headlineFontSize + lineSpacing;
+        ctx.font = tl.titleWeightValue + ' ' + tl.headlineFontSize + 'px ' + tl.titleFontFamily;
+        for (var i = 0; i < tl.headlineLines.length; i++) {
+            ctx.fillText(tl.headlineLines[i], textX, startY);
+            startY += tl.headlineFontSize + (i < tl.headlineLines.length - 1 ? tl.titleLineSpacing : 0);
+        }
+        if (tl.subheadlineLines.length > 0) {
+            startY += tl.lineSpacing;
+        }
     }
 
-    if (subheadlineLines.length > 0) {
+    // Draw subheadline (multiline)
+    if (tl.subheadlineLines.length > 0) {
         ctx.globalAlpha = 0.9;
         ctx.fillStyle = settings.bodyColor || '#ffffff';
-        ctx.font = bodyWeightValue + ' ' + subheadlineFontSize + 'px ' + bodyFontFamily;
-        for (var i = 0; i < subheadlineLines.length; i++) {
-            ctx.fillText(subheadlineLines[i], textX, startY);
-            startY += subheadlineFontSize + bodyLineSpacing;
+        ctx.font = tl.bodyWeightValue + ' ' + tl.subheadlineFontSize + 'px ' + tl.bodyFontFamily;
+        for (var i = 0; i < tl.subheadlineLines.length; i++) {
+            ctx.fillText(tl.subheadlineLines[i], textX, startY);
+            startY += tl.subheadlineFontSize + tl.bodyLineSpacing;
         }
         ctx.globalAlpha = 1;
     }

@@ -161,6 +161,14 @@ App.SIZE_MULTIPLIERS = {
     large: 1.2
 };
 
+// Spacing margins (percentage of canvas height) applied above and below the text block
+App.SPACING_MARGINS = {
+    small: 0.03,
+    medium: 0.05,
+    large: 0.08,
+    xlarge: 0.12
+};
+
 App.PLATFORM_FAMILIES = {
     'iphone': {
         name: 'iPhone',

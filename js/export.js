@@ -107,9 +107,15 @@ App.renderCanvasForExport = function(canvas, ctx, screenshot, format, formatKey,
     }
     ctx.fillRect(0, 0, w, h);
 
-    var screenshotInfo = App.drawScreenshot(ctx, screenshot, w, h, preset, exportSettings, format);
-
+    // Pre-calculate text layout for dynamic screenshot positioning
+    var textLayout = null;
     if (!preset.noText && (exportSettings.headline || exportSettings.subheadline)) {
-        App.drawText(ctx, w, h, preset, exportSettings, format, formatKey, screenshotInfo);
+        textLayout = App.calculateTextLayout(ctx, w, h, exportSettings, format, formatKey);
+    }
+
+    var screenshotInfo = App.drawScreenshot(ctx, screenshot, w, h, preset, exportSettings, format, textLayout);
+
+    if (textLayout) {
+        App.drawText(ctx, w, h, preset, exportSettings, format, formatKey, screenshotInfo, textLayout);
     }
 };
