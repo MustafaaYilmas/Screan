@@ -238,10 +238,7 @@ App.applySectionToAll = function(section) {
     if (section === 'device') {
         settingsToApply = {
             addDeviceFrame: currentSettings.addDeviceFrame,
-            deviceFrameColor: currentSettings.deviceFrameColor
-        };
-    } else if (section === 'shadow') {
-        settingsToApply = {
+            deviceFrameColor: currentSettings.deviceFrameColor,
             addShadow: currentSettings.addShadow
         };
     } else if (section === 'background') {
