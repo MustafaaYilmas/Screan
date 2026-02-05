@@ -80,6 +80,11 @@ App.addLanguage = function(langCode) {
     App.switchLanguage(langCode);
     App.updateLanguageSelect();
     App.Storage.scheduleSave();
+
+    // Auto-translate if API key is configured
+    if (App.hasApiKey && App.hasApiKey()) {
+        App.autoTranslateNewLanguage(langCode);
+    }
 };
 
 // Remove a language (global, affects all screenshots across all platforms)

@@ -217,6 +217,80 @@ App.translateAllScreenshots = function() {
         });
 };
 
+// Auto-translate when a new language is added
+App.autoTranslateNewLanguage = function(newLangCode) {
+    var apiKey = App.getApiKey();
+    if (!apiKey) return;
+
+    // Source is English (or the first language if no English)
+    var sourceLang = 'en';
+    if (App.state.languages.indexOf('en') === -1) {
+        sourceLang = App.state.languages[0];
+    }
+
+    // Don't translate if the new language is the source
+    if (newLangCode === sourceLang) return;
+
+    // Collect content from source language
+    var contentToTranslate = [];
+
+    Object.keys(App.state.platforms).forEach(function(platformKey) {
+        var screenshots = App.state.platforms[platformKey].screenshots;
+        screenshots.forEach(function(screenshot, index) {
+            var content = screenshot.settings.content && screenshot.settings.content[sourceLang];
+            var headline = content ? content.headline : screenshot.settings.headline;
+            var subheadline = content ? content.subheadline : screenshot.settings.subheadline;
+
+            if (headline || subheadline) {
+                contentToTranslate.push({
+                    platform: platformKey,
+                    index: index,
+                    headline: headline || '',
+                    subheadline: subheadline || ''
+                });
+            }
+        });
+    });
+
+    if (contentToTranslate.length === 0) return;
+
+    // Show loading on translate button
+    var translateBtn = document.getElementById('translateAllBtn');
+    if (translateBtn) {
+        translateBtn.classList.add('loading');
+    }
+
+    App.performBatchTranslation(contentToTranslate, sourceLang, [newLangCode], apiKey)
+        .then(function() {
+            if (translateBtn) {
+                translateBtn.classList.remove('loading');
+            }
+
+            // If we're currently viewing the new language, reload its content
+            if (App.state.activeLanguage === newLangCode) {
+                Object.keys(App.state.platforms).forEach(function(platformKey) {
+                    var screenshots = App.state.platforms[platformKey].screenshots;
+                    screenshots.forEach(function(screenshot) {
+                        if (screenshot.settings.content && screenshot.settings.content[newLangCode]) {
+                            screenshot.settings.headline = screenshot.settings.content[newLangCode].headline;
+                            screenshot.settings.subheadline = screenshot.settings.content[newLangCode].subheadline;
+                        }
+                    });
+                });
+            }
+
+            App.updateSettingsUI();
+            App.renderAllPreviews();
+            App.Storage.scheduleSave();
+        })
+        .catch(function(error) {
+            if (translateBtn) {
+                translateBtn.classList.remove('loading');
+            }
+            console.error('Auto-translation error:', error);
+        });
+};
+
 // Perform batch translation via Claude API
 App.performBatchTranslation = function(contentList, sourceLang, targetLangs, apiKey) {
     // Build the prompt for translation
