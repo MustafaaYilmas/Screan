@@ -181,8 +181,8 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
             imgY = canvasH - textLayout.totalZoneHeight - imgH;
         }
     } else {
-        var spacing = settings.textSpacing || 'medium';
-        var screenshotY = typeof preset.screenshotY === 'object' ? preset.screenshotY[spacing] : preset.screenshotY;
+        var spacingValue = App.spacingToSliderValue(settings.textSpacing != null ? settings.textSpacing : 33);
+        var screenshotY = App.getSpacingScreenshotY(preset.screenshotY, spacingValue);
         imgY = canvasH * screenshotY;
     }
 
@@ -400,8 +400,8 @@ App.calculateTextLayout = function(ctx, canvasW, canvasH, settings, format, form
     }
 
     // Spacing margin
-    var spacing = settings.textSpacing || 'medium';
-    var marginRatio = App.SPACING_MARGINS[spacing] || App.SPACING_MARGINS.medium;
+    var spacingValue = App.spacingToSliderValue(settings.textSpacing != null ? settings.textSpacing : 33);
+    var marginRatio = App.getSpacingMargin(spacingValue);
     var margin = canvasH * marginRatio;
 
     return {

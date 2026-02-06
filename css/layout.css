@@ -91,9 +91,9 @@
     box-shadow: 0 0 0 3px rgba(63, 63, 70, 0.3);
 }
 
-/* Preview language select - only visible when panels are hidden */
+/* Preview language select - always visible when multiple languages */
 .preview-language-select {
-    display: none;
+    display: block;
     height: 34px;
     padding: 0 12px;
     background: var(--card);
@@ -115,11 +115,7 @@
     box-shadow: 0 0 0 3px rgba(63, 63, 70, 0.3);
 }
 
-/* Show language select only when panels hidden AND multiple languages */
-body.panels-hidden .preview-language-select {
-    display: block;
-}
-
-body.panels-hidden .preview-language-select.single-language {
+/* Hide when single language */
+.preview-language-select.single-language {
     display: none;
 }

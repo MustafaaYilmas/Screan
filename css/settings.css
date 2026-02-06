@@ -107,6 +107,14 @@
     cursor: not-allowed;
 }
 
+.btn-apply-all.loading {
+    pointer-events: none;
+}
+
+.btn-apply-all.loading svg {
+    animation: spin 1s linear infinite;
+}
+
 .settings-section {
     border-bottom: 1px solid var(--border-subtle);
 }
@@ -142,12 +150,9 @@
     border-radius: var(--radius);
     color: var(--foreground-muted);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: opacity var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
     opacity: 0;
-}
-
-.settings-section:hover .btn-apply-section {
-    opacity: 1;
+    pointer-events: none;
 }
 
 .btn-apply-section:hover {

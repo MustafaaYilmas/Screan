@@ -72,6 +72,12 @@ App.selectScreenshot = function(index) {
         item.classList.toggle('active', i === index);
     });
 
+    // Switch to Style tab when selecting a screenshot
+    var styleTab = document.querySelector('.settings-tab[data-tab="style"]');
+    if (styleTab && !styleTab.classList.contains('active')) {
+        styleTab.click();
+    }
+
     App.updateSettingsUI();
 };
 
@@ -79,7 +85,7 @@ App.updateSettingsUI = function() {
     var settings = App.getActiveSettings() || App.DEFAULT_SETTINGS;
     var screenshots = App.getActiveScreenshots();
 
-    App.updateApplyToAllButton();
+    App.updateSectionApplyButtons();
 
     // Update language tabs
     if (typeof App.updateLanguageTabs === 'function') {
@@ -133,10 +139,11 @@ App.updateSettingsUI = function() {
         btn.classList.toggle('active', btn.dataset.align === (settings.textAlign || 'center'));
     });
 
-    // Spacing buttons
-    document.querySelectorAll('.spacing-btn').forEach(function(btn) {
-        btn.classList.toggle('active', btn.dataset.spacing === (settings.textSpacing || 'medium'));
-    });
+    // Spacing slider
+    var spacingSlider = document.getElementById('spacingSlider');
+    if (spacingSlider) {
+        spacingSlider.value = App.spacingToSliderValue(settings.textSpacing != null ? settings.textSpacing : 33);
+    }
 
     App.updateTextFieldsState();
 };
@@ -155,83 +162,41 @@ App.updateTextFieldsState = function() {
     document.getElementById('alignRow').style.display = hideText ? 'none' : 'flex';
 };
 
-App.updateApplyToAllButton = function() {
-    var screenshots = App.getActiveScreenshots();
-    var settingsFooter = document.getElementById('settingsFooter');
-    if (settingsFooter) {
-        var showButton = screenshots.length >= 2 && !App.allSettingsMatch(screenshots);
-        settingsFooter.style.display = showButton ? 'block' : 'none';
-    }
+
+// Keys for each section
+App.SECTION_KEYS = {
+    layout: ['preset', 'textSpacing', 'textAlign'],
+    title: ['titleFont', 'titleSize', 'titleColor', 'titleWeight'],
+    body: ['bodyFont', 'bodySize', 'bodyColor', 'bodyWeight'],
+    background: ['bgColor', 'bgGradient', 'bgGradientColor', 'bgGradientAngle'],
+    device: ['addDeviceFrame', 'deviceFrameColor', 'addShadow']
 };
 
-App.allSettingsMatch = function(screenshots) {
+// Check if a section's settings match across all screenshots
+App.sectionSettingsMatch = function(section, screenshots) {
     if (screenshots.length < 2) return true;
-
-    var visualKeys = [
-        // Title settings
-        'titleFont', 'titleSize', 'titleColor', 'titleWeight',
-        // Body settings
-        'bodyFont', 'bodySize', 'bodyColor', 'bodyWeight',
-        // Background settings
-        'bgColor', 'bgGradient', 'bgGradientColor', 'bgGradientAngle',
-        // Device frame settings
-        'addDeviceFrame', 'deviceFrameColor',
-        // Other settings
-        'addShadow', 'preset', 'textAlign', 'textSpacing'
-    ];
+    var keys = App.SECTION_KEYS[section];
+    if (!keys) return true;
 
     var first = screenshots[0].settings;
     for (var i = 1; i < screenshots.length; i++) {
         var current = screenshots[i].settings;
-        for (var j = 0; j < visualKeys.length; j++) {
-            var key = visualKeys[j];
-            if (first[key] !== current[key]) {
-                return false;
-            }
+        for (var j = 0; j < keys.length; j++) {
+            if (first[keys[j]] !== current[keys[j]]) return false;
         }
     }
     return true;
 };
 
-App.applySettingsToAll = function() {
+// Show/hide per-section apply buttons based on whether settings differ
+App.updateSectionApplyButtons = function() {
     var screenshots = App.getActiveScreenshots();
-    var currentSettings = App.getActiveSettings();
-    if (!currentSettings || screenshots.length < 2) return;
-
-    // Settings to apply (excluding text content: headline, subheadline)
-    var settingsToApply = {
-        // Title settings
-        titleFont: currentSettings.titleFont,
-        titleSize: currentSettings.titleSize,
-        titleColor: currentSettings.titleColor,
-        titleWeight: currentSettings.titleWeight,
-        // Body settings
-        bodyFont: currentSettings.bodyFont,
-        bodySize: currentSettings.bodySize,
-        bodyColor: currentSettings.bodyColor,
-        bodyWeight: currentSettings.bodyWeight,
-        // Background settings
-        bgColor: currentSettings.bgColor,
-        bgGradient: currentSettings.bgGradient,
-        bgGradientColor: currentSettings.bgGradientColor,
-        bgGradientAngle: currentSettings.bgGradientAngle,
-        // Device frame settings
-        addDeviceFrame: currentSettings.addDeviceFrame,
-        deviceFrameColor: currentSettings.deviceFrameColor,
-        // Other settings
-        addShadow: currentSettings.addShadow,
-        preset: currentSettings.preset,
-        textAlign: currentSettings.textAlign,
-        textSpacing: currentSettings.textSpacing
-    };
-
-    screenshots.forEach(function(screenshot) {
-        Object.assign(screenshot.settings, settingsToApply);
+    document.querySelectorAll('.btn-apply-section').forEach(function(btn) {
+        var section = btn.getAttribute('data-section');
+        var show = screenshots.length >= 2 && !App.sectionSettingsMatch(section, screenshots);
+        btn.style.opacity = show ? '1' : '0';
+        btn.style.pointerEvents = show ? 'auto' : 'none';
     });
-
-    App.renderAllCanvases();
-    App.updateSettingsUI();
-    App.Storage.scheduleSave();
 };
 
 App.applySectionToAll = function(section) {
@@ -259,6 +224,20 @@ App.applySectionToAll = function(section) {
             preset: currentSettings.preset,
             textSpacing: currentSettings.textSpacing,
             textAlign: currentSettings.textAlign
+        };
+    } else if (section === 'title') {
+        settingsToApply = {
+            titleFont: currentSettings.titleFont,
+            titleSize: currentSettings.titleSize,
+            titleColor: currentSettings.titleColor,
+            titleWeight: currentSettings.titleWeight
+        };
+    } else if (section === 'body') {
+        settingsToApply = {
+            bodyFont: currentSettings.bodyFont,
+            bodySize: currentSettings.bodySize,
+            bodyColor: currentSettings.bodyColor,
+            bodyWeight: currentSettings.bodyWeight
         };
     }
 

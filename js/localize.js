@@ -6,34 +6,51 @@ var App = window.App || {};
 
 // Initialize language-related events
 App.initLanguageEvents = function() {
-    var removeBtn = document.getElementById('removeLanguageBtn');
-    var languageSelect = document.getElementById('languageSelect');
     var previewLanguageSelect = document.getElementById('previewLanguageSelect');
+    var activeContainer = document.getElementById('activeLanguages');
 
-    // Language select change - switch or add language
-    languageSelect.addEventListener('change', function(e) {
-        var value = e.target.value;
+    // Delegation on active language items
+    if (activeContainer) {
+        activeContainer.addEventListener('click', function(e) {
+            // Check if remove button was clicked
+            var removeBtn = e.target.closest('.remove-lang');
+            if (removeBtn) {
+                App.removeLanguage(removeBtn.dataset.lang);
+                return;
+            }
 
-        // Check if it's a new language to add (prefixed with "add:")
-        if (value.indexOf('add:') === 0) {
-            var langCode = value.substring(4);
-            App.addLanguage(langCode);
-        } else {
-            App.switchLanguage(value);
-        }
-    });
+            // Check if a language item was clicked
+            var item = e.target.closest('.language-item');
+            if (!item) return;
+
+            App.switchLanguage(item.dataset.lang);
+        });
+    }
+
+    // Add language button
+    var addLangBtn = document.getElementById('addLangBtn');
+    var availableSelect = document.getElementById('availableLanguagesSelect');
+    if (addLangBtn) {
+        addLangBtn.addEventListener('click', function() {
+            // Require API key before adding a language
+            if (!App.hasApiKey()) {
+                var apiKeyInput = document.getElementById('apiKeyInput');
+                if (apiKeyInput) apiKeyInput.focus();
+                return;
+            }
+
+            if (availableSelect && availableSelect.value) {
+                App.addLanguage(availableSelect.value);
+            }
+        });
+    }
 
     // Preview language select change - switch language (synced)
-    previewLanguageSelect.addEventListener('change', function(e) {
-        App.switchLanguage(e.target.value);
-    });
-
-    // Remove language button
-    removeBtn.addEventListener('click', function() {
-        if (App.state.activeLanguage) {
-            App.removeLanguage(App.state.activeLanguage);
-        }
-    });
+    if (previewLanguageSelect) {
+        previewLanguageSelect.addEventListener('change', function(e) {
+            App.switchLanguage(e.target.value);
+        });
+    }
 };
 
 // Add a new language (global, affects all screenshots across all platforms)
@@ -161,83 +178,124 @@ App.switchLanguage = function(langCode) {
     App.Storage.scheduleSave();
 };
 
-// Update the language select dropdown
+// Update the language chips UI and preview select
 App.updateLanguageSelect = function() {
-    var select = document.getElementById('languageSelect');
+    var activeContainer = document.getElementById('activeLanguages');
+    var availableContainer = document.getElementById('availableLanguages');
     var previewSelect = document.getElementById('previewLanguageSelect');
-    var removeBtn = document.getElementById('removeLanguageBtn');
-    if (!select) return;
+    var hiddenSelect = document.getElementById('languageSelect');
 
     var languages = App.state.languages || ['en'];
     var activeLang = App.state.activeLanguage || 'en';
 
-    // Clear and rebuild options for both selects
-    select.innerHTML = '';
-    if (previewSelect) previewSelect.innerHTML = '';
-
-    // Add active languages
-    languages.forEach(function(langCode) {
-        var lang = App.LANGUAGES[langCode];
-        if (!lang) return;
-
-        var option = document.createElement('option');
-        option.value = langCode;
-        option.textContent = lang.name;
-        select.appendChild(option);
-
-        // Clone for preview select
-        if (previewSelect) {
-            var previewOption = document.createElement('option');
-            previewOption.value = langCode;
-            previewOption.textContent = lang.name;
-            previewSelect.appendChild(previewOption);
-        }
-    });
-
-    // Get available languages to add
-    var availableLanguages = Object.keys(App.LANGUAGES).filter(function(langCode) {
-        return languages.indexOf(langCode) === -1;
-    });
-
-    // Add separator and available languages if there are any
-    if (availableLanguages.length > 0) {
-        var separator = document.createElement('option');
-        separator.disabled = true;
-        separator.textContent = '── Add language ──';
-        select.appendChild(separator);
-
-        availableLanguages.forEach(function(langCode) {
+    // Build active language list
+    if (activeContainer) {
+        activeContainer.innerHTML = '';
+        languages.forEach(function(langCode) {
             var lang = App.LANGUAGES[langCode];
-            var option = document.createElement('option');
-            option.value = 'add:' + langCode;
-            option.textContent = '+ ' + lang.name;
-            select.appendChild(option);
+            if (!lang) return;
+
+            var canRemove = langCode !== 'en' && languages.length > 1;
+
+            var row = document.createElement('div');
+            row.className = 'language-row';
+
+            var item = document.createElement('div');
+            item.className = 'language-item' + (langCode === activeLang ? ' active' : '');
+            item.dataset.lang = langCode;
+            item.innerHTML = '<span class="chip-name">' + lang.name + '</span>';
+            row.appendChild(item);
+
+            if (canRemove) {
+                var removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-lang';
+                removeBtn.title = 'Remove';
+                removeBtn.dataset.lang = langCode;
+                removeBtn.innerHTML = '<i data-lucide="trash-2"></i>';
+                row.appendChild(removeBtn);
+            }
+
+            activeContainer.appendChild(row);
         });
     }
 
-    // Set the selected value on both selects
-    select.value = activeLang;
+    // Build available language select
+    var availableSelect = document.getElementById('availableLanguagesSelect');
+    var addLangBtn = document.getElementById('addLangBtn');
+    var addLanguageSection = document.getElementById('addLanguageSection');
+    if (availableSelect) {
+        availableSelect.innerHTML = '';
+        var availableLanguages = Object.keys(App.LANGUAGES).filter(function(langCode) {
+            return languages.indexOf(langCode) === -1;
+        });
+        var hasKey = App.hasApiKey && App.hasApiKey();
+
+        if (availableLanguages.length === 0) {
+            // Hide the entire section when all languages are added
+            if (addLanguageSection) addLanguageSection.style.display = 'none';
+        } else {
+            if (addLanguageSection) addLanguageSection.style.display = '';
+            availableLanguages.forEach(function(langCode) {
+                var lang = App.LANGUAGES[langCode];
+                var option = document.createElement('option');
+                option.value = langCode;
+                option.textContent = lang.name;
+                availableSelect.appendChild(option);
+            });
+
+            // Disable if no API key
+            availableSelect.disabled = !hasKey;
+            if (addLangBtn) {
+                addLangBtn.disabled = !hasKey;
+            }
+        }
+    }
+
+    // Re-initialize Lucide icons for dynamically added elements
+    if (typeof lucide !== 'undefined') {
+        var iconElements = activeContainer ? Array.from(activeContainer.querySelectorAll('i[data-lucide]')) : [];
+        if (iconElements.length > 0) {
+            lucide.createIcons({ nodes: iconElements });
+        }
+    }
+
+    // Sync preview select (toolbar)
     if (previewSelect) {
+        previewSelect.innerHTML = '';
+        languages.forEach(function(langCode) {
+            var lang = App.LANGUAGES[langCode];
+            if (!lang) return;
+            var option = document.createElement('option');
+            option.value = langCode;
+            option.textContent = lang.name;
+            previewSelect.appendChild(option);
+        });
         previewSelect.value = activeLang;
-    }
 
-    // Update remove button state (can't remove English or if only one language)
-    if (removeBtn) {
-        removeBtn.disabled = activeLang === 'en' || languages.length <= 1;
-    }
-
-    // Update translate button state (delegated to AI module)
-    if (typeof App.updateTranslateButtonState === 'function') {
-        App.updateTranslateButtonState();
-    }
-
-    // Show/hide preview language select based on number of languages
-    if (previewSelect) {
         if (languages.length <= 1) {
             previewSelect.classList.add('single-language');
         } else {
             previewSelect.classList.remove('single-language');
         }
+    }
+
+    // Sync hidden select (for backwards compatibility)
+    if (hiddenSelect) {
+        hiddenSelect.innerHTML = '';
+        languages.forEach(function(langCode) {
+            var lang = App.LANGUAGES[langCode];
+            if (!lang) return;
+            var option = document.createElement('option');
+            option.value = langCode;
+            option.textContent = lang.name;
+            hiddenSelect.appendChild(option);
+        });
+        hiddenSelect.value = activeLang;
+    }
+
+    // Update translate button state (delegated to AI module)
+    if (typeof App.updateTranslateButtonState === 'function') {
+        App.updateTranslateButtonState();
     }
 };
 

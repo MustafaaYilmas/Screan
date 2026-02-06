@@ -144,7 +144,7 @@ App.DEFAULT_SETTINGS = {
     addShadow: true,
     preset: 'top',
     textAlign: 'center',
-    textSpacing: 'medium'
+    textSpacing: 33
 };
 
 App.FONT_WEIGHTS = {
@@ -166,7 +166,61 @@ App.SPACING_MARGINS = {
     small: 0.03,
     medium: 0.05,
     large: 0.08,
-    xlarge: 0.12
+    xlarge: 0.25
+};
+
+// Spacing slider: maps 0-100 to interpolated values
+// Snap points define the key positions on the slider
+App.SPACING_SNAP_POINTS = [
+    { value: 0,   key: 'small' },
+    { value: 33,  key: 'medium' },
+    { value: 67,  key: 'large' },
+    { value: 100, key: 'xlarge' }
+];
+
+// Convert legacy named spacing to slider value
+App.spacingToSliderValue = function(spacing) {
+    if (typeof spacing === 'number') return spacing;
+    var map = { small: 0, medium: 33, large: 67, xlarge: 100 };
+    return map[spacing] !== undefined ? map[spacing] : 33;
+};
+
+// Interpolate a spacing value (0-100) into a margin ratio
+App.getSpacingMargin = function(sliderValue) {
+    var points = App.SPACING_SNAP_POINTS;
+    var margins = App.SPACING_MARGINS;
+
+    if (sliderValue <= points[0].value) return margins[points[0].key];
+    if (sliderValue >= points[points.length - 1].value) return margins[points[points.length - 1].key];
+
+    for (var i = 0; i < points.length - 1; i++) {
+        if (sliderValue >= points[i].value && sliderValue <= points[i + 1].value) {
+            var t = (sliderValue - points[i].value) / (points[i + 1].value - points[i].value);
+            var a = margins[points[i].key];
+            var b = margins[points[i + 1].key];
+            return a + t * (b - a);
+        }
+    }
+    return margins.medium;
+};
+
+// Interpolate screenshotY from a spacing slider value (0-100)
+App.getSpacingScreenshotY = function(screenshotYObj, sliderValue) {
+    if (typeof screenshotYObj !== 'object') return screenshotYObj;
+
+    var points = App.SPACING_SNAP_POINTS;
+    if (sliderValue <= points[0].value) return screenshotYObj[points[0].key];
+    if (sliderValue >= points[points.length - 1].value) return screenshotYObj[points[points.length - 1].key];
+
+    for (var i = 0; i < points.length - 1; i++) {
+        if (sliderValue >= points[i].value && sliderValue <= points[i + 1].value) {
+            var t = (sliderValue - points[i].value) / (points[i + 1].value - points[i].value);
+            var a = screenshotYObj[points[i].key];
+            var b = screenshotYObj[points[i + 1].key];
+            return a + t * (b - a);
+        }
+    }
+    return screenshotYObj.medium;
 };
 
 App.PLATFORM_FAMILIES = {

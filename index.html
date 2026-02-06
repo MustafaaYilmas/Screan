@@ -54,7 +54,7 @@
                 <a href="https://github.com/cassardp/Screan#readme" target="_blank" rel="noopener" class="mini-sidebar-btn" title="View on GitHub">
                     <i data-lucide="github"></i>
                 </a>
-                <span class="version-number">0.54</span>
+                <span class="version-number">0.55</span>
             </div>
         </aside>
 
@@ -121,42 +121,62 @@
         <aside class="settings-panel">
             <!-- Settings Tabs -->
             <div class="settings-tabs">
-                <button class="settings-tab active" data-tab="content">
-                    <i data-lucide="align-center"></i>
-                    Content
-                </button>
-                <button class="settings-tab" data-tab="style">
+                <button class="settings-tab active" data-tab="style">
                     <i data-lucide="brush"></i>
                     Style
+                </button>
+                <button class="settings-tab" data-tab="localize">
+                    <i data-lucide="languages"></i>
+                    Localize
                 </button>
             </div>
 
             <div class="settings-scroll">
-                <!-- Content Tab -->
-                <div class="settings-tab-content active" id="contentTab">
-                    <!-- Localize -->
-                    <section class="settings-section" id="languageSection">
+                <!-- Style Tab -->
+                <div class="settings-tab-content active" id="styleTab">
+                    <!-- Text Layout -->
+                    <section class="settings-section" id="textLayoutSection">
                         <div class="section-header">
-                            <span class="section-title">Localize</span>
+                            <span class="section-title">Layout</span>
+                            <span class="section-header-spacer"></span>
+                            <button class="btn-apply-section" data-section="layout" title="Apply to all">
+                                <i data-lucide="arrow-right-left"></i>
+                            </button>
                         </div>
                         <div class="section-content">
-                            <div class="language-select-row">
-                                <select id="languageSelect" class="font-select language-select">
-                                    <option value="en">English</option>
-                                </select>
-                                <button class="icon-btn translate-btn" id="translateAllBtn" title="Translate with AI" disabled>
-                                    <i data-lucide="wand-sparkles"></i>
-                                </button>
-                                <button class="remove-language-btn" id="removeLanguageBtn" title="Remove language" disabled>
-                                    <i data-lucide="trash-2"></i>
-                                </button>
+                            <div class="layout-row">
+                                <span class="layout-label">Position</span>
+                                <div class="position-text-buttons">
+                                    <button class="position-text-btn active" data-preset="top" title="Top">
+                                        <i data-lucide="arrow-up-to-line"></i>
+                                    </button>
+                                    <button class="position-text-btn" data-preset="center" title="Center">
+                                        <i data-lucide="rectangle-vertical"></i>
+                                    </button>
+                                    <button class="position-text-btn" data-preset="bottom" title="Bottom">
+                                        <i data-lucide="arrow-down-to-line"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <div class="api-key-row" id="apiKeyRow" style="display: none;">
-                                <input type="password" id="apiKeyInput" class="api-key-input" placeholder="Claude API Key (local use only)">
-                                <button class="api-key-toggle" id="apiKeyToggle" type="button" title="Show/Hide API key">
-                                    <i data-lucide="eye" class="icon-show"></i>
-                                    <i data-lucide="eye-off" class="icon-hide"></i>
-                                </button>
+                            <div class="layout-row" id="spacingRow">
+                                <span class="layout-label">Spacing</span>
+                                <div class="slider-container">
+                                    <input type="range" id="spacingSlider" class="range-slider" min="0" max="100" value="33" step="1">
+                                </div>
+                            </div>
+                            <div class="layout-row" id="alignRow">
+                                <span class="layout-label">Align</span>
+                                <div class="align-buttons" id="alignButtons">
+                                    <button class="align-btn" data-align="left" title="Align left">
+                                        <i data-lucide="align-left"></i>
+                                    </button>
+                                    <button class="align-btn active" data-align="center" title="Align center">
+                                        <i data-lucide="align-center"></i>
+                                    </button>
+                                    <button class="align-btn" data-align="right" title="Align right">
+                                        <i data-lucide="align-right"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -165,6 +185,10 @@
                     <section class="settings-section" id="titleSection">
                         <div class="section-header">
                             <span class="section-title">Title</span>
+                            <span class="section-header-spacer"></span>
+                            <button class="btn-apply-section" data-section="title" title="Apply to all">
+                                <i data-lucide="arrow-right-left"></i>
+                            </button>
                         </div>
                         <div class="section-content">
                             <textarea id="headline" class="text-input title-area" placeholder="Enter title..." rows="2"></textarea>
@@ -202,6 +226,10 @@
                     <section class="settings-section" id="bodySection">
                         <div class="section-header">
                             <span class="section-title">Body</span>
+                            <span class="section-header-spacer"></span>
+                            <button class="btn-apply-section" data-section="body" title="Apply to all">
+                                <i data-lucide="arrow-right-left"></i>
+                            </button>
                         </div>
                         <div class="section-content">
                             <textarea id="subheadline" class="text-input text-area" placeholder="Enter subtitle..." rows="2"></textarea>
@@ -230,53 +258,6 @@
                                 <div class="color-input-wrap">
                                     <input type="color" id="bodyColor" value="#ffffff">
                                     <input type="text" class="color-hex-input" id="bodyColorHex" value="#FFFFFF" maxlength="7">
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-
-                <!-- Style Tab -->
-                <div class="settings-tab-content" id="styleTab">
-                    <!-- Text Layout -->
-                    <section class="settings-section" id="textLayoutSection">
-                        <div class="section-header">
-                            <span class="section-title">Layout</span>
-                            <span class="section-header-spacer"></span>
-                            <button class="btn-apply-section" data-section="layout" title="Apply to all">
-                                <i data-lucide="arrow-right-left"></i>
-                            </button>
-                        </div>
-                        <div class="section-content">
-                            <div class="layout-row">
-                                <span class="layout-label">Position</span>
-                                <div class="position-text-buttons">
-                                    <button class="position-text-btn active" data-preset="top">Top</button>
-                                    <button class="position-text-btn" data-preset="center">Center</button>
-                                    <button class="position-text-btn" data-preset="bottom">Bottom</button>
-                                </div>
-                            </div>
-                            <div class="layout-row" id="spacingRow">
-                                <span class="layout-label">Spacing</span>
-                                <div class="spacing-buttons">
-                                    <button class="spacing-btn" data-spacing="small">S</button>
-                                    <button class="spacing-btn active" data-spacing="medium">M</button>
-                                    <button class="spacing-btn" data-spacing="large">L</button>
-                                    <button class="spacing-btn" data-spacing="xlarge">XL</button>
-                                </div>
-                            </div>
-                            <div class="layout-row" id="alignRow">
-                                <span class="layout-label">Align</span>
-                                <div class="align-buttons" id="alignButtons">
-                                    <button class="align-btn" data-align="left" title="Align left">
-                                        <i data-lucide="align-left"></i>
-                                    </button>
-                                    <button class="align-btn active" data-align="center" title="Align center">
-                                        <i data-lucide="align-center"></i>
-                                    </button>
-                                    <button class="align-btn" data-align="right" title="Align right">
-                                        <i data-lucide="align-right"></i>
-                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -350,13 +331,63 @@
                         </div>
                     </section>
                 </div>
+
+                <!-- Localize Tab -->
+                <div class="settings-tab-content" id="localizeTab">
+                    <section class="settings-section" id="translationSection">
+                        <div class="section-header">
+                            <span class="section-title">API Key</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="api-key-row" id="apiKeyRow">
+                                <input type="password" id="apiKeyInput" class="api-key-input" placeholder="Claude API Key (local use only)">
+                                <button class="api-key-toggle" id="apiKeyToggle" type="button" title="Show/Hide API key">
+                                    <i data-lucide="eye" class="icon-show"></i>
+                                    <i data-lucide="eye-off" class="icon-hide"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="settings-section" id="languageSection">
+                        <div class="section-header">
+                            <span class="section-title">Languages</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="language-list" id="activeLanguages">
+                                <!-- Populated dynamically by localize.js -->
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="settings-section" id="addLanguageSection">
+                        <div class="section-header">
+                            <span class="section-title">Add language</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="add-language-row" id="addLanguageRow">
+                                <select id="availableLanguagesSelect" class="font-select">
+                                    <!-- Populated dynamically by localize.js -->
+                                </select>
+                                <button class="add-lang-btn" id="addLangBtn" title="Add">
+                                    <i data-lucide="plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Hidden select for preview toolbar sync -->
+                    <select id="languageSelect" class="font-select language-select" style="display: none;">
+                        <option value="en">English</option>
+                    </select>
+                </div>
             </div>
 
-            <!-- Apply to All Button -->
-            <div class="settings-footer" id="settingsFooter" style="display: none;">
-                <button class="btn-apply-all" id="applyToAllBtn">
-                    <i data-lucide="arrow-right-left"></i>
-                    Apply to All
+            <!-- Footer Buttons -->
+            <div class="settings-footer" id="translateFooter" style="display: none;">
+                <button class="btn-apply-all" id="translateAllBtn" disabled>
+                    <i data-lucide="wand-sparkles"></i>
+                    Translate All
                 </button>
             </div>
         </aside>

@@ -7,7 +7,7 @@ var App = window.App || {};
 // Helper to render and save after settings change (only active canvas)
 App.renderAndSave = function() {
     App.renderActivePreview();
-    App.updateApplyToAllButton();
+    App.updateSectionApplyButtons();
     App.Storage.scheduleSave();
 };
 
@@ -45,12 +45,12 @@ App.initEventListeners = function() {
             });
             document.getElementById(targetTab + 'Tab').classList.add('active');
 
-            // Hide Apply to All button on Content tab
-            var footer = document.getElementById('settingsFooter');
-            if (targetTab === 'content') {
-                footer.style.display = 'none';
+            // Toggle footers based on active tab
+            var translateFooter = document.getElementById('translateFooter');
+            if (targetTab === 'localize') {
+                App.updateTranslateFooterVisibility();
             } else {
-                App.updateApplyToAllButton();
+                translateFooter.style.display = 'none';
             }
         });
     });
@@ -73,6 +73,7 @@ App.initEventListeners = function() {
         if (settings) {
             settings.headline = e.target.value;
             App.saveContentToActiveLanguage(settings);
+            App.markTranslationDirty();
             App.renderAndSave();
         }
     });
@@ -82,6 +83,7 @@ App.initEventListeners = function() {
         if (settings) {
             settings.subheadline = e.target.value;
             App.saveContentToActiveLanguage(settings);
+            App.markTranslationDirty();
             App.renderAndSave();
         }
     });
@@ -306,18 +308,21 @@ App.initEventListeners = function() {
         });
     });
 
-    // Spacing buttons
-    document.querySelectorAll('.spacing-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
+    // Spacing slider
+    var spacingSlider = document.getElementById('spacingSlider');
+    if (spacingSlider) {
+        spacingSlider.addEventListener('input', function() {
             var settings = App.getActiveSettings();
             if (!settings) return;
 
-            document.querySelectorAll('.spacing-btn').forEach(function(b) { b.classList.remove('active'); });
-            btn.classList.add('active');
-            settings.textSpacing = btn.dataset.spacing;
-            App.renderAndSave();
+            settings.textSpacing = parseInt(this.value, 10);
+            App.renderActivePreview();
         });
-    });
+
+        spacingSlider.addEventListener('change', function() {
+            App.Storage.scheduleSave();
+        });
+    }
 
     // Text alignment
     document.querySelectorAll('.align-btn').forEach(function(btn) {
@@ -372,16 +377,12 @@ App.initEventListeners = function() {
     // Export
     document.getElementById('exportBtn').addEventListener('click', App.exportAll);
 
-    // Apply to All
-    document.getElementById('applyToAllBtn').addEventListener('click', function() {
-        App.applySettingsToAll();
-    });
-
     // Apply section to All
     document.querySelectorAll('.btn-apply-section').forEach(function(btn) {
         btn.addEventListener('click', function() {
             var section = this.getAttribute('data-section');
             App.applySectionToAll(section);
+            this.blur();
         });
     });
 

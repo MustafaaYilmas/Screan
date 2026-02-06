@@ -21,6 +21,10 @@ App.saveApiKey = function(key) {
     }
     App.updateApiKeyRowVisibility();
     App.updateTranslateButtonState();
+    // Refresh language chips (disabled state depends on API key)
+    if (typeof App.updateLanguageSelect === 'function') {
+        App.updateLanguageSelect();
+    }
 };
 
 // Check if API key is configured
@@ -28,21 +32,80 @@ App.hasApiKey = function() {
     return !!App.getApiKey();
 };
 
-// Update API key row visibility
+// Update API key row visibility (always visible now)
 App.updateApiKeyRowVisibility = function() {
     var apiKeyRow = document.getElementById('apiKeyRow');
     if (!apiKeyRow) return;
+    apiKeyRow.style.display = 'flex';
+};
 
+// Check if translation is needed (source content changed since last translation)
+App.isTranslationNeeded = function() {
     var languages = App.state.languages || ['en'];
-    var hasMultipleLanguages = languages.length > 1;
+    if (languages.length < 2) return false;
 
-    // Show API key row when there are multiple languages
-    apiKeyRow.style.display = hasMultipleLanguages ? 'flex' : 'none';
-
-    // Refresh lucide icons if visible
-    if (hasMultipleLanguages) {
-        lucide.createIcons();
+    var hasScreenshots = false;
+    var sourceLang = 'en';
+    if (languages.indexOf('en') === -1) {
+        sourceLang = languages[0];
     }
+
+    // Check across all platforms if source content differs from any target language content
+    var needed = false;
+    Object.keys(App.state.platforms).forEach(function(platformKey) {
+        var screenshots = App.state.platforms[platformKey].screenshots;
+        screenshots.forEach(function(screenshot) {
+            if (!screenshot.settings.content) return;
+            hasScreenshots = true;
+
+            var sourceContent = screenshot.settings.content[sourceLang];
+            if (!sourceContent) return;
+            if (!sourceContent.headline && !sourceContent.subheadline) return;
+
+            languages.forEach(function(lang) {
+                if (lang === sourceLang) return;
+                var targetContent = screenshot.settings.content[lang];
+                if (!targetContent) {
+                    needed = true;
+                    return;
+                }
+                // If target content is identical to source, it hasn't been translated
+                if (targetContent.headline === sourceContent.headline &&
+                    targetContent.subheadline === sourceContent.subheadline) {
+                    needed = true;
+                }
+            });
+        });
+    });
+
+    // Also check the dirty flag (set when source text is edited after a translation)
+    if (App.state._translationDirty) {
+        needed = true;
+    }
+
+    return hasScreenshots && needed;
+};
+
+// Mark translations as dirty (called when source text changes)
+App.markTranslationDirty = function() {
+    if ((App.state.languages || ['en']).length > 1) {
+        App.state._translationDirty = true;
+        App.updateTranslateFooterVisibility();
+    }
+};
+
+// Update translate footer visibility based on whether translation is needed
+App.updateTranslateFooterVisibility = function() {
+    var translateFooter = document.getElementById('translateFooter');
+    if (!translateFooter) return;
+
+    // Only show if we're on the localize tab
+    var localizeTab = document.querySelector('.settings-tab[data-tab="localize"]');
+    var isLocalizeActive = localizeTab && localizeTab.classList.contains('active');
+    if (!isLocalizeActive) return;
+
+    var show = App.isTranslationNeeded();
+    translateFooter.style.display = show ? '' : 'none';
 };
 
 // Update translate button state based on API key and languages
@@ -81,6 +144,9 @@ App.updateTranslateButtonState = function() {
 
     // Update API key row visibility
     App.updateApiKeyRowVisibility();
+
+    // Update footer visibility
+    App.updateTranslateFooterVisibility();
 };
 
 // Initialize AI translation events
@@ -144,7 +210,7 @@ App.initAITranslateEvents = function() {
     App.updateTranslateButtonState();
 };
 
-// Translate all screenshots from the active language to all other languages
+// Translate all screenshots from active language to all other languages
 App.translateAllScreenshots = function() {
     var apiKey = App.getApiKey();
     if (!apiKey) {
@@ -153,6 +219,14 @@ App.translateAllScreenshots = function() {
 
     var sourceLang = App.state.activeLanguage || 'en';
     var languages = App.state.languages || ['en'];
+
+    // Save current content to active language before translating
+    Object.keys(App.state.platforms).forEach(function(platformKey) {
+        var screenshots = App.state.platforms[platformKey].screenshots;
+        screenshots.forEach(function(screenshot) {
+            App.saveContentToActiveLanguage(screenshot.settings);
+        });
+    });
 
     // Get all target languages (all languages except the source)
     var targetLangs = languages.filter(function(lang) {
@@ -169,7 +243,6 @@ App.translateAllScreenshots = function() {
     Object.keys(App.state.platforms).forEach(function(platformKey) {
         var screenshots = App.state.platforms[platformKey].screenshots;
         screenshots.forEach(function(screenshot, index) {
-            // Get content from source language, or fallback to current headline/subheadline
             var content = screenshot.settings.content && screenshot.settings.content[sourceLang];
             var headline = content ? content.headline : screenshot.settings.headline;
             var subheadline = content ? content.subheadline : screenshot.settings.subheadline;
@@ -204,9 +277,11 @@ App.translateAllScreenshots = function() {
             if (translateBtn) {
                 translateBtn.classList.remove('loading');
             }
+            App.state._translationDirty = false;
             App.updateSettingsUI();
             App.renderAllCanvases();
             App.Storage.scheduleSave();
+            App.updateTranslateFooterVisibility();
         })
         .catch(function(error) {
             if (translateBtn) {
@@ -254,10 +329,14 @@ App.autoTranslateNewLanguage = function(newLangCode) {
 
     if (contentToTranslate.length === 0) return;
 
-    // Show loading on translate button
+    // Show loading on translate button and ensure footer is visible
     var translateBtn = document.getElementById('translateAllBtn');
+    var translateFooter = document.getElementById('translateFooter');
     if (translateBtn) {
         translateBtn.classList.add('loading');
+    }
+    if (translateFooter) {
+        translateFooter.style.display = '';
     }
 
     App.performBatchTranslation(contentToTranslate, sourceLang, [newLangCode], apiKey)
@@ -282,6 +361,7 @@ App.autoTranslateNewLanguage = function(newLangCode) {
             App.updateSettingsUI();
             App.renderAllCanvases();
             App.Storage.scheduleSave();
+            App.updateTranslateFooterVisibility();
         })
         .catch(function(error) {
             if (translateBtn) {

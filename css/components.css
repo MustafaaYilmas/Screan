@@ -31,11 +31,11 @@
     border-radius: var(--radius);
     padding: 2px;
     box-sizing: border-box;
-    min-width: 170px;
+    width: fit-content;
 }
 
 .position-text-btn {
-    flex: 1;
+    width: 28px;
     height: 100%;
     display: flex;
     align-items: center;
@@ -44,8 +44,6 @@
     border: none;
     border-radius: calc(var(--radius) - 2px);
     color: var(--foreground-muted);
-    font-size: 12px;
-    font-weight: 600;
     cursor: pointer;
     transition: all var(--transition-fast);
 }
@@ -61,45 +59,49 @@
 }
 
 /* ============================================
-   Spacing Buttons
+   Range Slider (generic)
    ============================================ */
 
-.spacing-buttons {
-    display: flex;
-    gap: 2px;
-    height: 34px;
-    background: var(--input);
-    border: 1px solid var(--input-border);
-    border-radius: var(--radius);
-    padding: 2px;
-    box-sizing: border-box;
-    width: fit-content;
-}
-
-.spacing-btn {
-    width: 28px;
-    height: 100%;
+.slider-container {
     display: flex;
     align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: none;
-    border-radius: calc(var(--radius) - 2px);
-    color: var(--foreground-muted);
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition-fast);
+    min-width: 170px;
 }
 
-.spacing-btn:hover {
-    color: var(--foreground);
+.range-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 3px;
     background: var(--muted);
+    border: none;
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
 }
 
-.spacing-btn.active {
+.range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
     background: var(--foreground);
-    color: var(--background);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform var(--transition-fast);
+}
+
+.range-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.range-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: var(--foreground);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
 }
 
 /* ============================================
@@ -501,59 +503,127 @@
 }
 
 /* ============================================
-   Localize Section
+   Localize Section - Language Chips
    ============================================ */
 
-.language-select-row {
+.add-language-row {
     display: flex;
     align-items: center;
     gap: 6px;
-    width: 100%;
 }
 
-.language-select {
-    flex: 1;
+/* Active languages: vertical list */
+.language-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.remove-language-btn {
-    width: 34px;
-    height: 34px;
+.language-row {
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 6px;
+}
+
+.language-item {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    height: 34px;
+    padding: 0 12px;
     background: var(--input);
     border: 1px solid var(--input-border);
     border-radius: var(--radius);
     color: var(--foreground-muted);
+    font-size: 13px;
     cursor: pointer;
     transition: all var(--transition-fast);
-    flex-shrink: 0;
+    user-select: none;
+    box-sizing: border-box;
 }
 
-.remove-language-btn:hover:not(:disabled) {
+.language-item:hover {
     background: var(--muted);
-    border-color: var(--ring);
     color: var(--foreground);
+    border-color: var(--ring);
 }
 
-.remove-language-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
+.language-item.active {
+    background: var(--foreground);
+    color: var(--background);
+    border-color: var(--foreground);
 }
 
-.remove-language-btn svg {
+.language-item .chip-name {
+    flex: 1;
+}
+
+.remove-lang {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius);
+    transition: all var(--transition-fast);
+    background: var(--input);
+    border: 1px solid var(--input-border);
+    flex-shrink: 0;
+    cursor: pointer;
+    color: var(--foreground-muted);
+}
+
+.remove-lang:hover {
+    background: var(--muted);
+    color: var(--foreground);
+    border-color: var(--ring);
+}
+
+.remove-lang svg {
     width: 14px;
     height: 14px;
 }
 
-#languageSection {
-    position: relative;
-}
-
-#languageSection .section-header {
+.add-lang-btn {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius);
+    transition: all var(--transition-fast);
+    background: var(--input);
+    border: 1px solid var(--input-border);
+    flex-shrink: 0;
+    cursor: pointer;
+    color: var(--foreground-muted);
+}
+
+.add-lang-btn:hover:not(.disabled) {
+    background: var(--muted);
+    color: var(--foreground);
+    border-color: var(--ring);
+}
+
+.add-lang-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.add-lang-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.translate-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.translate-label {
+    font-size: 12px;
+    color: var(--foreground-muted);
 }
 
 .translate-btn {
