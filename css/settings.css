@@ -160,6 +160,12 @@
     color: var(--foreground);
 }
 
+.btn-apply-section:focus,
+.btn-apply-section:active {
+    outline: none;
+    background: transparent;
+}
+
 .btn-apply-section svg {
     width: 14px;
     height: 14px;
