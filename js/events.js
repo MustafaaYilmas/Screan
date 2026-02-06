@@ -4,9 +4,9 @@
 
 var App = window.App || {};
 
-// Helper to render and save after settings change
+// Helper to render and save after settings change (only active canvas)
 App.renderAndSave = function() {
-    App.renderAllPreviews();
+    App.renderActivePreview();
     App.updateApplyToAllButton();
     App.Storage.scheduleSave();
 };

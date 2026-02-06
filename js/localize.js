@@ -157,7 +157,7 @@ App.switchLanguage = function(langCode) {
     // Update UI
     App.updateLanguageSelect();
     App.updateSettingsUI();
-    App.renderAllPreviews();
+    App.renderAllCanvases();
     App.Storage.scheduleSave();
 };
 

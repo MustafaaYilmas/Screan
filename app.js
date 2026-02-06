@@ -49,4 +49,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     App.renderAllPreviews();
 });
 
-window.addEventListener('resize', function() { App.renderAllPreviews(); });
+// Throttle resize with requestAnimationFrame to avoid excessive renders
+var resizeRafId = null;
+window.addEventListener('resize', function() {
+    if (resizeRafId) return;
+    resizeRafId = requestAnimationFrame(function() {
+        App.renderAllPreviews();
+        resizeRafId = null;
+    });
+});

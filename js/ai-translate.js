@@ -205,7 +205,7 @@ App.translateAllScreenshots = function() {
                 translateBtn.classList.remove('loading');
             }
             App.updateSettingsUI();
-            App.renderAllPreviews();
+            App.renderAllCanvases();
             App.Storage.scheduleSave();
         })
         .catch(function(error) {
@@ -280,7 +280,7 @@ App.autoTranslateNewLanguage = function(newLangCode) {
             }
 
             App.updateSettingsUI();
-            App.renderAllPreviews();
+            App.renderAllCanvases();
             App.Storage.scheduleSave();
         })
         .catch(function(error) {

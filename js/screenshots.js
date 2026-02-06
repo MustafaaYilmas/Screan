@@ -65,8 +65,14 @@ App.selectScreenshot = function(index) {
     var newSettings = App.getActiveSettings();
     App.loadContentFromLanguage(newSettings, App.state.activeLanguage || 'en');
 
+    // Update active class without rebuilding DOM or re-rendering canvases
+    var container = document.getElementById('previewsContainer');
+    var items = container.querySelectorAll('.preview-item');
+    items.forEach(function(item, i) {
+        item.classList.toggle('active', i === index);
+    });
+
     App.updateSettingsUI();
-    App.renderAllPreviews();
 };
 
 App.updateSettingsUI = function() {
@@ -223,7 +229,7 @@ App.applySettingsToAll = function() {
         Object.assign(screenshot.settings, settingsToApply);
     });
 
-    App.renderAllPreviews();
+    App.renderAllCanvases();
     App.updateSettingsUI();
     App.Storage.scheduleSave();
 };
@@ -260,7 +266,7 @@ App.applySectionToAll = function(section) {
         Object.assign(screenshot.settings, settingsToApply);
     });
 
-    App.renderAllPreviews();
+    App.renderAllCanvases();
     App.updateSettingsUI();
     App.Storage.scheduleSave();
 };

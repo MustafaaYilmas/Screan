@@ -81,6 +81,47 @@ App.renderAllPreviews = function() {
     wrapper.scrollLeft = scrollLeft;
 };
 
+// Render only the active screenshot's canvas without rebuilding DOM
+App.renderActivePreview = function() {
+    var container = document.getElementById('previewsContainer');
+    var screenshots = App.getActiveScreenshots();
+    var activeIndex = App.getActiveIndex();
+
+    if (screenshots.length === 0 || activeIndex < 0) return;
+
+    var items = container.querySelectorAll('.preview-item');
+    if (activeIndex >= items.length) {
+        // DOM out of sync, fall back to full render
+        App.renderAllPreviews();
+        return;
+    }
+
+    var canvas = items[activeIndex].querySelector('canvas');
+    if (!canvas) return;
+
+    App.renderCanvas(canvas, screenshots[activeIndex]);
+};
+
+// Re-render all canvases without rebuilding the DOM structure
+App.renderAllCanvases = function() {
+    var container = document.getElementById('previewsContainer');
+    var screenshots = App.getActiveScreenshots();
+    var items = container.querySelectorAll('.preview-item');
+
+    if (screenshots.length !== items.length) {
+        // DOM out of sync, fall back to full render
+        App.renderAllPreviews();
+        return;
+    }
+
+    for (var i = 0; i < screenshots.length; i++) {
+        var canvas = items[i].querySelector('canvas');
+        if (canvas) {
+            App.renderCanvas(canvas, screenshots[i]);
+        }
+    }
+};
+
 App.renderCanvas = function(canvas, screenshot) {
     var ctx = canvas.getContext('2d');
     var format = App.FORMATS[App.currentFormat];
