@@ -10,7 +10,7 @@
 
     /* Card/Surface */
     --card: #262626;             /* neutral-800, lighter for better contrast */
-    --card-foreground: #fafafa;  /* neutral-50 */
+    --card-foreground: #d4d4d4;  /* neutral-300, matches foreground */
 
     /* Muted */
     --muted: #2f2f2f;            /* between neutral-800 and 700 */
@@ -30,23 +30,23 @@
     --ring-shadow: 0 0 0 3px rgba(82, 82, 82, 0.3);
 
     /* Primary */
-    --primary: #fafafa;          /* neutral-50 */
+    --primary: #d4d4d4;          /* neutral-300, softer */
     --primary-foreground: #171717; /* neutral-900 */
 
     /* Secondary */
     --secondary: #404040;        /* neutral-700 */
-    --secondary-foreground: #fafafa; /* neutral-50 */
+    --secondary-foreground: #d4d4d4; /* neutral-300 */
 
     /* Accent */
     --accent: #404040;           /* neutral-700 */
-    --accent-foreground: #fafafa; /* neutral-50 */
+    --accent-foreground: #d4d4d4; /* neutral-300 */
 
     /* Destructive */
     --destructive: #dc2626;      /* red-600, brighter */
-    --destructive-foreground: #fafafa;
+    --destructive-foreground: #d4d4d4;
 
     /* Text */
-    --foreground: #fafafa;       /* neutral-50 */
+    --foreground: #d4d4d4;       /* neutral-300, softer contrast */
     --foreground-muted: #a3a3a3; /* neutral-400, more visible */
 
     /* Radius */
@@ -71,7 +71,7 @@
 
     /* Card/Surface */
     --card: #ffffff;             /* white - keep for cards */
-    --card-foreground: #0a0a0a;  /* neutral-950 */
+    --card-foreground: #262626;  /* neutral-800, matches foreground */
 
     /* Muted */
     --muted: #ebebeb;            /* between neutral-100 and 200 */
@@ -91,22 +91,22 @@
     --ring-shadow: 0 0 0 3px rgba(115, 115, 115, 0.3);
 
     /* Primary */
-    --primary: #171717;          /* neutral-900 */
+    --primary: #262626;          /* neutral-800, slightly softer */
     --primary-foreground: #fafafa; /* neutral-50 */
 
     /* Secondary */
     --secondary: #ebebeb;        /* between neutral-100 and 200 */
-    --secondary-foreground: #171717; /* neutral-900 */
+    --secondary-foreground: #262626; /* neutral-800 */
 
     /* Accent */
     --accent: #e5e5e5;           /* neutral-200 */
-    --accent-foreground: #171717; /* neutral-900 */
+    --accent-foreground: #262626; /* neutral-800 */
 
     /* Destructive */
     --destructive: #dc2626;
     --destructive-foreground: #fafafa;
 
     /* Text */
-    --foreground: #0a0a0a;       /* neutral-950 */
+    --foreground: #262626;       /* neutral-800, slightly softer contrast */
     --foreground-muted: #525252; /* neutral-600, darker for better readability */
 }

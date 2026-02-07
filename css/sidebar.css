@@ -248,9 +248,13 @@ body.panels-hidden .mini-sidebar {
 .size-item input[type="checkbox"] {
     width: 14px;
     height: 14px;
-    accent-color: var(--foreground);
+    accent-color: var(--background);
     border-radius: var(--radius-sm);
     cursor: pointer;
+}
+
+:root.light .size-item input[type="checkbox"] {
+    accent-color: var(--foreground);
 }
 
 .size-item span {

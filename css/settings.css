@@ -29,7 +29,6 @@
 .settings-tabs {
     display: flex;
     height: var(--header-height);
-    border-bottom: 1px solid var(--border-subtle);
     box-sizing: border-box;
 }
 
@@ -44,14 +43,16 @@
     border: none;
     font-size: 12px;
     font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     color: var(--foreground-muted);
     cursor: pointer;
     transition: color var(--transition-fast), background var(--transition-fast);
 }
 
 .settings-tab svg {
-    width: 14px;
-    height: 14px;
+    width: 15px;
+    height: 15px;
 }
 
 .settings-tab:hover {
