@@ -46,7 +46,7 @@
     font-weight: 500;
     color: var(--foreground-muted);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: color var(--transition-fast), background var(--transition-fast);
 }
 
 .settings-tab svg {
@@ -56,6 +56,14 @@
 
 .settings-tab:hover {
     color: var(--foreground);
+}
+
+.settings-tab:active {
+    transform: scale(0.97);
+}
+
+.settings-tab:focus-visible {
+    box-shadow: var(--ring-shadow);
 }
 
 .settings-tab.active {
@@ -95,15 +103,21 @@
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
 }
 
 .btn-apply-all:hover:not(:disabled) {
-    opacity: 0.9;
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+    border-color: var(--secondary);
+}
+
+.btn-apply-all:active:not(:disabled) {
+    transform: scale(0.98);
 }
 
 .btn-apply-all:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
 }
 
@@ -112,7 +126,7 @@
 }
 
 .btn-apply-all.loading svg {
-    animation: spin 1s linear infinite;
+    animation: spin 0.7s linear infinite;
 }
 
 .settings-section {
@@ -160,10 +174,12 @@
     color: var(--foreground);
 }
 
-.btn-apply-section:focus,
 .btn-apply-section:active {
+    transform: scale(0.9);
+}
+
+.btn-apply-section:focus {
     outline: none;
-    background: transparent;
 }
 
 .btn-apply-section svg {
@@ -214,11 +230,19 @@
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: background var(--transition-fast);
+    transition: background var(--transition-fast), transform var(--transition-fast);
 }
 
 .choose-image-btn:hover {
     background: var(--muted);
+}
+
+.choose-image-btn:active {
+    transform: scale(0.98);
+}
+
+.choose-image-btn:focus-visible {
+    box-shadow: var(--ring-shadow);
 }
 
 /* Logo Upload */
@@ -236,13 +260,17 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: background var(--transition-fast), border-color var(--transition-fast);
     overflow: hidden;
 }
 
 .logo-preview:hover {
     border-color: var(--ring);
     background: var(--muted);
+}
+
+.logo-preview:active {
+    transform: scale(0.99);
 }
 
 .logo-preview img {

@@ -48,12 +48,17 @@
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: opacity var(--transition-fast);
+    transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
     transform: translateY(-1px);
 }
 
 .add-screenshot-btn:hover {
-    opacity: 0.9;
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+}
+
+.add-screenshot-btn:active {
+    transform: translateY(-1px) scale(0.97);
 }
 
 .add-screenshot-btn:focus-visible {
@@ -78,7 +83,7 @@
     color: var(--foreground);
     font-size: 14px;
     cursor: pointer;
-    transition: border-color var(--transition-fast);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .format-select:hover {
@@ -88,7 +93,7 @@
 .format-select:focus {
     outline: none;
     border-color: var(--ring);
-    box-shadow: 0 0 0 3px rgba(63, 63, 70, 0.3);
+    box-shadow: var(--ring-shadow);
 }
 
 /* Preview language select - always visible when multiple languages */
@@ -102,7 +107,7 @@
     color: var(--foreground);
     font-size: 14px;
     cursor: pointer;
-    transition: border-color var(--transition-fast);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .preview-language-select:hover {
@@ -112,7 +117,7 @@
 .preview-language-select:focus {
     outline: none;
     border-color: var(--ring);
-    box-shadow: 0 0 0 3px rgba(63, 63, 70, 0.3);
+    box-shadow: var(--ring-shadow);
 }
 
 /* Hide when single language */

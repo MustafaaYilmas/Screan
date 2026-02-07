@@ -27,6 +27,7 @@
     /* Ring (focus) */
     --ring: #525252;             /* neutral-600 */
     --ring-offset: #171717;
+    --ring-shadow: 0 0 0 3px rgba(82, 82, 82, 0.3);
 
     /* Primary */
     --primary: #fafafa;          /* neutral-50 */
@@ -87,6 +88,7 @@
     /* Ring (focus) */
     --ring: #737373;             /* neutral-500, more visible */
     --ring-offset: #ffffff;      /* white */
+    --ring-shadow: 0 0 0 3px rgba(115, 115, 115, 0.3);
 
     /* Primary */
     --primary: #171717;          /* neutral-900 */

@@ -25,7 +25,7 @@
     position: relative;
     flex-shrink: 0;
     cursor: pointer;
-    border-radius: 20px;
+    border-radius: var(--radius-lg);
     padding: 8px;
     transition: opacity var(--transition-base), outline var(--transition-base);
     opacity: 0.5;
@@ -44,7 +44,7 @@
     background: transparent;
     outline: 2px solid color-mix(in srgb, var(--ring) 70%, transparent);
     outline-offset: 4px;
-    border-radius: 16px;
+    border-radius: var(--radius-lg);
 }
 
 :root.light .preview-item.active {
@@ -58,7 +58,7 @@
 
 .preview-item canvas {
     display: block;
-    border-radius: 16px;
+    border-radius: var(--radius-lg);
 }
 
 /* Delete button on preview */
@@ -78,7 +78,7 @@
     color: var(--foreground-muted);
     cursor: pointer;
     opacity: 0;
-    transition: all var(--transition-fast);
+    transition: opacity var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
 }
 
 .preview-item:hover .preview-delete-btn {
@@ -89,6 +89,11 @@
     background: var(--destructive);
     border-color: var(--destructive);
     color: var(--destructive-foreground);
+    transform: translateX(-50%) scale(1.1);
+}
+
+.preview-delete-btn:active {
+    transform: translateX(-50%) scale(0.95);
 }
 
 /* Empty State */
@@ -101,6 +106,13 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 4px;
+    animation: fadeIn var(--transition-base) ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -48%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
 }
 
 .empty-state p {
@@ -116,6 +128,10 @@
 }
 
 /* Drag Over State (file upload) */
+.previews-wrapper {
+    transition: background var(--transition-base);
+}
+
 .previews-wrapper.drag-over {
     background: var(--muted);
     outline: 2px dashed var(--ring);

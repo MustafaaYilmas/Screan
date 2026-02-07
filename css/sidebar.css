@@ -40,8 +40,13 @@ body.panels-hidden .mini-sidebar {
     font-size: 10px;
     font-weight: 500;
     color: var(--foreground-muted);
-    opacity: 0.6;
+    opacity: 0.8;
     padding: 12px 0 16px;
+    transition: opacity var(--transition-fast);
+}
+
+.version-number:hover {
+    opacity: 1;
 }
 
 .mini-sidebar-btn {
@@ -55,7 +60,7 @@ body.panels-hidden .mini-sidebar {
     border-radius: var(--radius);
     color: var(--foreground-muted);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: background var(--transition-fast), color var(--transition-fast);
     text-decoration: none;
 }
 
@@ -64,10 +69,23 @@ body.panels-hidden .mini-sidebar {
     color: var(--foreground);
 }
 
+.mini-sidebar-btn:active {
+    transform: scale(0.9);
+}
+
+.mini-sidebar-btn:focus-visible {
+    box-shadow: var(--ring-shadow);
+}
+
 .mini-sidebar-btn svg,
 .mini-sidebar-btn [data-lucide] {
     width: 18px;
     height: 18px;
+}
+
+.mini-sidebar-btn .icon-sun,
+.mini-sidebar-btn .icon-moon {
+    transition: opacity var(--transition-base);
 }
 
 .mini-sidebar-btn .icon-sun {
@@ -167,7 +185,7 @@ body.panels-hidden .mini-sidebar {
     padding: 10px 8px;
     border-radius: var(--radius);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: background var(--transition-fast);
 }
 
 .platform-header:hover {
@@ -197,7 +215,7 @@ body.panels-hidden .mini-sidebar {
     min-width: 20px;
     height: 20px;
     padding: 0 6px;
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -220,7 +238,7 @@ body.panels-hidden .mini-sidebar {
     padding: 6px 8px;
     border-radius: var(--radius);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: background var(--transition-fast);
 }
 
 .size-item:hover {
@@ -260,15 +278,20 @@ body.panels-hidden .mini-sidebar {
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: opacity var(--transition-fast);
+    transition: background var(--transition-fast), transform var(--transition-fast);
 }
 
 .btn-export:hover:not(:disabled) {
-    opacity: 0.9;
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+}
+
+.btn-export:active:not(:disabled) {
+    transform: scale(0.98);
 }
 
 .btn-export:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
 }
 
