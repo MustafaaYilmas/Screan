@@ -59,8 +59,12 @@
     color: var(--foreground);
 }
 
+.settings-tab:active svg {
+    transform: scale(0.93);
+}
+
 .settings-tab:active {
-    transform: scale(0.97);
+    font-size: 11.2px;
 }
 
 .settings-tab:focus-visible {
