@@ -209,7 +209,7 @@ App.updateLanguageSelect = function() {
 
             if (canRemove) {
                 var removeBtn = document.createElement('button');
-                removeBtn.className = 'remove-lang';
+                removeBtn.className = 'remove-lang icon-btn';
                 removeBtn.title = 'Remove';
                 removeBtn.dataset.lang = langCode;
                 removeBtn.innerHTML = '<i data-lucide="trash-2"></i>';

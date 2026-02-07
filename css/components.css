@@ -19,10 +19,10 @@
 }
 
 /* ============================================
-   Position Buttons (Text Style)
+   Button Group (segmented control container)
    ============================================ */
 
-.position-text-buttons {
+.btn-group {
     display: flex;
     gap: 2px;
     height: 34px;
@@ -34,7 +34,11 @@
     width: fit-content;
 }
 
-.position-text-btn {
+/* ============================================
+   Button Group Item (button inside a group)
+   ============================================ */
+
+.btn-group-item {
     width: 28px;
     height: 100%;
     display: flex;
@@ -48,22 +52,112 @@
     transition: color var(--transition-fast), background var(--transition-fast);
 }
 
-.position-text-btn:hover {
+.btn-group-item:hover {
     color: var(--foreground);
     background: var(--muted);
 }
 
-.position-text-btn:active {
+.btn-group-item:active {
     transform: scale(0.92);
 }
 
-.position-text-btn:focus-visible {
+.btn-group-item:focus-visible {
     box-shadow: var(--ring-shadow);
 }
 
-.position-text-btn.active {
+.btn-group-item.active {
     background: var(--foreground);
     color: var(--background);
+}
+
+.btn-group-item:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.btn-group-item:disabled:hover {
+    background: transparent;
+    color: var(--foreground-muted);
+}
+
+.btn-group-item:disabled.active {
+    background: var(--foreground);
+    color: var(--background);
+}
+
+/* Size button overrides */
+.size-btn {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* ============================================
+   Icon Button (34×34 square button with icon)
+   ============================================ */
+
+.icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius);
+    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+    background: var(--input);
+    border: 1px solid var(--input-border);
+    flex-shrink: 0;
+    cursor: pointer;
+    color: var(--foreground-muted);
+}
+
+.icon-btn:hover {
+    background: var(--muted);
+    color: var(--foreground);
+    border-color: var(--ring);
+}
+
+.icon-btn:active {
+    transform: scale(0.92);
+}
+
+.icon-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Add language button overrides */
+.add-lang-btn:hover:not(.disabled) {
+    background: var(--muted);
+    color: var(--foreground);
+    border-color: var(--ring);
+}
+
+.add-lang-btn:hover.disabled {
+    background: var(--input);
+    color: var(--foreground-muted);
+    border-color: var(--input-border);
+}
+
+.add-lang-btn:active:not(.disabled) {
+    transform: scale(0.92);
+}
+
+.add-lang-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* API key toggle overrides */
+.api-key-toggle .icon-hide {
+    display: none;
+}
+
+.api-key-toggle.visible .icon-show {
+    display: none;
+}
+
+.api-key-toggle.visible .icon-hide {
+    display: block;
 }
 
 /* ============================================
@@ -122,69 +216,6 @@
 
 .range-slider::-moz-range-thumb:active {
     transform: scale(1.3);
-}
-
-/* ============================================
-   Align Buttons
-   ============================================ */
-
-.align-buttons {
-    display: flex;
-    gap: 2px;
-    height: 34px;
-    background: var(--input);
-    border: 1px solid var(--input-border);
-    border-radius: var(--radius);
-    padding: 2px;
-    box-sizing: border-box;
-    width: fit-content;
-}
-
-.align-btn {
-    width: 28px;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: none;
-    border-radius: calc(var(--radius) - 2px);
-    color: var(--foreground-muted);
-    cursor: pointer;
-    transition: color var(--transition-fast), background var(--transition-fast);
-}
-
-.align-btn:hover {
-    color: var(--foreground);
-    background: var(--muted);
-}
-
-.align-btn:active {
-    transform: scale(0.92);
-}
-
-.align-btn:focus-visible {
-    box-shadow: var(--ring-shadow);
-}
-
-.align-btn.active {
-    background: var(--foreground);
-    color: var(--background);
-}
-
-.align-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.align-btn:disabled:hover {
-    background: transparent;
-    color: var(--foreground-muted);
-}
-
-.align-btn:disabled.active {
-    background: var(--foreground);
-    color: var(--background);
 }
 
 /* ============================================
@@ -271,66 +302,6 @@
     outline: none;
     border-color: var(--ring);
     box-shadow: var(--ring-shadow);
-}
-
-.size-buttons {
-    display: flex;
-    gap: 2px;
-    height: 34px;
-    background: var(--input);
-    border: 1px solid var(--input-border);
-    border-radius: var(--radius);
-    padding: 2px;
-    box-sizing: border-box;
-}
-
-.size-btn {
-    width: 28px;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: none;
-    border-radius: calc(var(--radius) - 2px);
-    color: var(--foreground-muted);
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: color var(--transition-fast), background var(--transition-fast);
-}
-
-.size-btn:hover {
-    color: var(--foreground);
-    background: var(--muted);
-}
-
-.size-btn:active {
-    transform: scale(0.92);
-}
-
-.size-btn:focus-visible {
-    box-shadow: var(--ring-shadow);
-}
-
-.size-btn.active {
-    background: var(--foreground);
-    color: var(--background);
-}
-
-.size-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.size-btn:disabled:hover {
-    background: transparent;
-    color: var(--foreground-muted);
-}
-
-.size-btn:disabled.active {
-    background: var(--foreground);
-    color: var(--background);
 }
 
 /* ============================================
@@ -431,54 +402,6 @@
 
 .color-preset-btn:focus-visible {
     box-shadow: var(--ring-shadow);
-}
-
-/* ============================================
-   Slider
-   ============================================ */
-
-.slider-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.slider {
-    flex: 1;
-    height: 4px;
-    background: var(--input);
-    border-radius: 2px;
-    appearance: none;
-    cursor: pointer;
-}
-
-.slider::-webkit-slider-thumb {
-    appearance: none;
-    width: 14px;
-    height: 14px;
-    background: var(--foreground);
-    border-radius: 50%;
-    cursor: pointer;
-    transition: transform var(--transition-fast);
-}
-
-.slider::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
-}
-
-.slider::-webkit-slider-thumb:active {
-    transform: scale(1.3);
-}
-
-.slider:focus-visible::-webkit-slider-thumb {
-    box-shadow: var(--ring-shadow);
-}
-
-.slider-value {
-    min-width: 40px;
-    font-size: 13px;
-    color: var(--foreground-muted);
-    text-align: right;
 }
 
 /* ============================================
@@ -642,135 +565,6 @@
     flex: 1;
 }
 
-.remove-lang {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: var(--radius);
-    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
-    background: var(--input);
-    border: 1px solid var(--input-border);
-    flex-shrink: 0;
-    cursor: pointer;
-    color: var(--foreground-muted);
-}
-
-.remove-lang:hover {
-    background: var(--muted);
-    color: var(--foreground);
-    border-color: var(--ring);
-}
-
-.remove-lang:active {
-    transform: scale(0.92);
-}
-
-.remove-lang svg {
-    width: 14px;
-    height: 14px;
-}
-
-.add-lang-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: var(--radius);
-    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
-    background: var(--input);
-    border: 1px solid var(--input-border);
-    flex-shrink: 0;
-    cursor: pointer;
-    color: var(--foreground-muted);
-}
-
-.add-lang-btn:hover:not(.disabled) {
-    background: var(--muted);
-    color: var(--foreground);
-    border-color: var(--ring);
-}
-
-.add-lang-btn:active:not(.disabled) {
-    transform: scale(0.92);
-}
-
-.add-lang-btn.disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.add-lang-btn svg {
-    width: 14px;
-    height: 14px;
-}
-
-.translate-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.translate-label {
-    font-size: 12px;
-    color: var(--foreground-muted);
-}
-
-.translate-btn {
-    width: 34px;
-    height: 34px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--input);
-    border: 1px solid var(--input-border);
-    border-radius: var(--radius);
-    color: var(--foreground-muted);
-    cursor: pointer;
-    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
-    flex-shrink: 0;
-}
-
-.translate-btn:hover:not(:disabled):not(.loading) {
-    background: var(--muted);
-    color: var(--foreground);
-    border-color: var(--ring);
-}
-
-.translate-btn:active:not(:disabled):not(.loading) {
-    transform: scale(0.92);
-}
-
-.translate-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.translate-btn.loading {
-    pointer-events: none;
-}
-
-.translate-btn.loading svg {
-    animation: spin 0.7s linear infinite;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.translate-btn svg {
-    width: 14px;
-    height: 14px;
-}
-
-
 /* ============================================
    API Key Input Row
    ============================================ */
@@ -811,46 +605,4 @@
 
 .api-key-row {
     gap: 6px;
-}
-
-.api-key-toggle {
-    width: 34px;
-    height: 34px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--input);
-    border: 1px solid var(--input-border);
-    border-radius: var(--radius);
-    color: var(--foreground-muted);
-    cursor: pointer;
-    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
-    flex-shrink: 0;
-}
-
-.api-key-toggle:hover {
-    color: var(--foreground);
-    background: var(--muted);
-    border-color: var(--ring);
-}
-
-.api-key-toggle:active {
-    transform: scale(0.92);
-}
-
-.api-key-toggle svg {
-    width: 14px;
-    height: 14px;
-}
-
-.api-key-toggle .icon-hide {
-    display: none;
-}
-
-.api-key-toggle.visible .icon-show {
-    display: none;
-}
-
-.api-key-toggle.visible .icon-hide {
-    display: block;
 }
