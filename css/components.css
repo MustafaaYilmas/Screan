@@ -203,10 +203,10 @@
     height: auto;
     min-height: 44px;
     padding: 8px 12px;
-    resize: none;
+    resize: vertical;
     line-height: 1.4;
     font-family: inherit;
-    font-weight: 600;
+    font-weight: 400;
 }
 
 /* ============================================
