@@ -149,12 +149,25 @@ App.updateTranslateButtonState = function() {
     App.updateTranslateFooterVisibility();
 };
 
+// Toggle API key section open/closed
+App.toggleApiKeySection = function(forceOpen) {
+    var header = document.getElementById('apiKeyHeader');
+    var content = document.getElementById('apiKeyContent');
+    if (!header || !content) return;
+
+    var shouldOpen = forceOpen !== undefined ? forceOpen : !header.classList.contains('expanded');
+    header.classList.toggle('expanded', shouldOpen);
+    content.classList.toggle('expanded', shouldOpen);
+};
+
+
 // Initialize AI translation events
 App.initAITranslateEvents = function() {
     var translateBtn = document.getElementById('translateAllBtn');
     var apiKeyInput = document.getElementById('apiKeyInput');
     var apiKeyRow = document.getElementById('apiKeyRow');
     var apiKeyToggle = document.getElementById('apiKeyToggle');
+    var apiKeyHeader = document.getElementById('apiKeyHeader');
 
     // Load saved API key and show row if exists
     if (apiKeyInput) {
@@ -164,7 +177,14 @@ App.initAITranslateEvents = function() {
         }
     }
 
-    // API key input change - auto-save
+    // API key section toggle
+    if (apiKeyHeader) {
+        apiKeyHeader.addEventListener('click', function() {
+            App.toggleApiKeySection();
+        });
+    }
+
+    // API key input change - auto-save + update status
     if (apiKeyInput) {
         apiKeyInput.addEventListener('input', function() {
             var key = apiKeyInput.value.trim();
@@ -192,8 +212,9 @@ App.initAITranslateEvents = function() {
         translateBtn.addEventListener('click', function() {
             if (translateBtn.disabled) return;
 
-            // If no API key, focus the input field
+            // If no API key, open the section and focus the input field
             if (!App.hasApiKey()) {
+                App.toggleApiKeySection(true);
                 if (apiKeyInput) {
                     apiKeyInput.focus();
                 }

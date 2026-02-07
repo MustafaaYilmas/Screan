@@ -194,6 +194,38 @@
     padding: 0 20px 20px;
 }
 
+/* Collapsible section header */
+.section-header-toggle {
+    cursor: pointer;
+    user-select: none;
+}
+
+.section-chevron {
+    width: 14px;
+    height: 14px;
+    color: var(--foreground-muted);
+    transition: transform var(--transition-fast), color var(--transition-fast);
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+}
+
+.section-chevron:hover {
+    color: var(--foreground);
+}
+
+.section-header-toggle.expanded .section-chevron {
+    transform: rotate(180deg);
+}
+
+/* Collapsible content */
+.section-collapsible {
+    display: none;
+}
+
+.section-collapsible.expanded {
+    display: block;
+}
+
 
 /* Image Upload */
 .image-upload {

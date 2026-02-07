@@ -34,6 +34,7 @@ App.initLanguageEvents = function() {
         addLangBtn.addEventListener('click', function() {
             // Require API key before adding a language
             if (!App.hasApiKey()) {
+                App.toggleApiKeySection(true);
                 var apiKeyInput = document.getElementById('apiKeyInput');
                 if (apiKeyInput) apiKeyInput.focus();
                 return;

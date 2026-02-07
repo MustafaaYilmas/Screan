@@ -54,7 +54,7 @@
                 <a href="https://github.com/cassardp/Screan#readme" target="_blank" rel="noopener" class="mini-sidebar-btn" title="View on GitHub">
                     <i data-lucide="github"></i>
                 </a>
-                <span class="version-number">0.61</span>
+                <span class="version-number">0.62</span>
             </div>
         </aside>
 
@@ -335,12 +335,13 @@
                 <!-- Localize Tab -->
                 <div class="settings-tab-content" id="localizeTab">
                     <section class="settings-section" id="translationSection">
-                        <div class="section-header">
-                            <span class="section-title">API Key</span>
+                        <div class="section-header section-header-toggle" id="apiKeyHeader">
+                            <span class="section-title">Claude API Key</span>
+                            <i data-lucide="chevron-down" class="section-chevron"></i>
                         </div>
-                        <div class="section-content">
+                        <div class="section-content section-collapsible" id="apiKeyContent">
                             <div class="api-key-row" id="apiKeyRow">
-                                <input type="password" id="apiKeyInput" class="api-key-input" placeholder="Claude API Key (local use only)">
+                                <input type="password" id="apiKeyInput" class="api-key-input" placeholder="Stays on your device">
                                 <button class="api-key-toggle" id="apiKeyToggle" type="button" title="Show/Hide API key">
                                     <i data-lucide="eye" class="icon-show"></i>
                                     <i data-lucide="eye-off" class="icon-hide"></i>
