@@ -28,42 +28,50 @@ App.FONT_SIZES = {
     'iphone': {
         small:  [90, 60],
         medium: [120, 72],
-        large:  [132, 80]
+        large:  [132, 80],
+        xlarge: [160, 96]
     },
     'ipad': {
         small:  [90, 60],
         medium: [120, 72],
-        large:  [132, 80]
+        large:  [132, 80],
+        xlarge: [160, 96]
     },
     'ipad-11': {
         small:  [90, 60],
         medium: [120, 72],
-        large:  [132, 80]
+        large:  [132, 80],
+        xlarge: [160, 96]
     },
     'mac': {
         small:  [90, 60],
         medium: [120, 72],
-        large:  [132, 80]
+        large:  [132, 80],
+        xlarge: [160, 96]
     },
     'mac-2880': {
         small:  [90, 60],
         medium: [120, 72],
-        large:  [132, 80]
+        large:  [132, 80],
+        xlarge: [160, 96]
     },
     'android-phone': {
         small:  [90, 60],
         medium: [120, 72],
-        large:  [132, 80]
+        large:  [132, 80],
+        xlarge: [160, 96]
     },
     'android-tablet': {
         small:  [90, 60],
         medium: [120, 72],
-        large:  [132, 80]
+        large:  [132, 80],
+        xlarge: [160, 96]
     },
     'android-tablet-7': {
         small:  [90, 60],
         medium: [120, 72],
-        large:  [132, 80]
+        large:  [132, 80],
+        xlarge: [160, 96]
     }
 };
 
