@@ -176,10 +176,12 @@
 
 .btn-apply-section:active {
     transform: scale(0.9);
+    background: transparent;
 }
 
 .btn-apply-section:focus {
     outline: none;
+    background: transparent;
 }
 
 .btn-apply-section svg {
