@@ -26,14 +26,21 @@ App.handleScreenshots = function(files) {
                     height: img.height,
                     settings: settings
                 });
-                if (isFirst) {
-                    platformData.activeIndex = 0;
-                }
+                // Select the newly added screenshot
+                platformData.activeIndex = platformData.screenshots.length - 1;
                 App.updateSettingsUI();
                 App.renderAllPreviews();
                 App.updateExportButton();
                 App.updateSidebarCounts();
                 App.Storage.scheduleSave();
+
+                // Scroll to center the new preview
+                var container = document.getElementById('previewsContainer');
+                var items = container.querySelectorAll('.preview-item');
+                var lastItem = items[items.length - 1];
+                if (lastItem) {
+                    lastItem.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                }
             };
             img.src = e.target.result;
         };
@@ -71,6 +78,11 @@ App.selectScreenshot = function(index) {
     items.forEach(function(item, i) {
         item.classList.toggle('active', i === index);
     });
+
+    // Scroll to center the selected preview
+    if (items[index]) {
+        items[index].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
 
     // Switch to Style tab when selecting a screenshot
     var styleTab = document.querySelector('.settings-tab[data-tab="style"]');
