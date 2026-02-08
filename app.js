@@ -47,6 +47,14 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     App.updateSettingsUI();
     App.renderAllPreviews();
+
+    // Scroll to active screenshot on load
+    var container = document.getElementById('previewsContainer');
+    var activeIndex = App.getActiveIndex();
+    var items = container.querySelectorAll('.preview-item');
+    if (items[activeIndex]) {
+        items[activeIndex].scrollIntoView({ inline: 'center', block: 'nearest' });
+    }
 });
 
 // Throttle resize with requestAnimationFrame to avoid excessive renders

@@ -155,6 +155,8 @@ App.updateSettingsUI = function() {
     var spacingSlider = document.getElementById('spacingSlider');
     if (spacingSlider) {
         spacingSlider.value = App.spacingToSliderValue(settings.textSpacing != null ? settings.textSpacing : 33);
+        var spacingValueEl = document.getElementById('spacingValue');
+        if (spacingValueEl) spacingValueEl.textContent = spacingSlider.value;
     }
 
     App.updateTextFieldsState();

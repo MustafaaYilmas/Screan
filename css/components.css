@@ -161,13 +161,32 @@
 }
 
 /* ============================================
-   Range Slider (generic)
+   Slider Row (range + value in pill)
    ============================================ */
 
-.slider-container {
+.slider-row {
     display: flex;
     align-items: center;
-    min-width: 170px;
+    height: 34px;
+    padding: 0 12px;
+    background: var(--input);
+    border-radius: var(--radius);
+    box-sizing: border-box;
+    gap: 10px;
+}
+
+.slider-track-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.slider-value {
+    font-size: 13px;
+    color: var(--foreground);
+    min-width: 24px;
+    text-align: right;
+    flex-shrink: 0;
 }
 
 .range-slider {

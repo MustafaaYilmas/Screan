@@ -314,8 +314,9 @@ App.initEventListeners = function() {
         spacingSlider.addEventListener('input', function() {
             var settings = App.getActiveSettings();
             if (!settings) return;
-
             settings.textSpacing = parseInt(this.value, 10);
+            var spacingValueEl = document.getElementById('spacingValue');
+            if (spacingValueEl) spacingValueEl.textContent = this.value;
             App.renderActivePreview();
         });
 
