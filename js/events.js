@@ -9,6 +9,10 @@ App.renderAndSave = function() {
     App.renderActivePreview();
     App.updateSectionApplyButtons();
     App.Storage.scheduleSave();
+    // Re-render after fonts finish loading (Google Fonts may load weight on demand)
+    document.fonts.ready.then(function() {
+        App.renderActivePreview();
+    });
 };
 
 App.normalizeHex = function(value) {
