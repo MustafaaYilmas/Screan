@@ -262,6 +262,10 @@ App.applySectionToAll = function(section) {
     App.renderAllCanvases();
     App.updateSettingsUI();
     App.Storage.scheduleSave();
+    // Re-render after fonts finish loading (Google Fonts may load weight on demand)
+    document.fonts.ready.then(function() {
+        App.renderAllCanvases();
+    });
 };
 
 App.moveScreenshot = function(fromIndex, toIndex) {
