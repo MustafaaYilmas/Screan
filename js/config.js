@@ -76,11 +76,91 @@ App.FONT_SIZES = {
 };
 
 App.FONTS = {
-    'sf-pro': { name: 'SF Pro', family: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif' },
-    'sf-rounded': { name: 'SF Rounded', family: 'ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, sans-serif' },
-    'sf-mono': { name: 'SF Mono', family: 'ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco, monospace' },
-    'new-york': { name: 'New York', family: 'ui-serif, "New York", Georgia, serif' },
-    'inter': { name: 'Inter', family: 'Inter, -apple-system, sans-serif' }
+    // macOS system fonts
+    'sf-pro': { name: 'SF Pro', family: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif', os: 'mac' },
+    'sf-rounded': { name: 'SF Rounded', family: 'ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, sans-serif', os: 'mac' },
+    'sf-mono': { name: 'SF Mono', family: 'ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco, monospace', os: 'mac' },
+    'new-york': { name: 'New York', family: 'ui-serif, "New York", Georgia, serif', os: 'mac' },
+    // Windows system fonts
+    'segoe-ui': { name: 'Segoe UI', family: '"Segoe UI", Tahoma, Geneva, sans-serif', os: 'windows' },
+    'segoe-ui-semibold': { name: 'Segoe UI Semibold', family: '"Segoe UI Semibold", "Segoe UI", sans-serif', os: 'windows' },
+    'consolas': { name: 'Consolas', family: 'Consolas, "Courier New", monospace', os: 'windows' },
+    'cambria': { name: 'Cambria', family: 'Cambria, Georgia, serif', os: 'windows' },
+    'calibri': { name: 'Calibri', family: 'Calibri, "Gill Sans", sans-serif', os: 'windows' },
+    // Google Fonts — Sans-serif
+    'inter': { name: 'Inter', family: 'Inter, sans-serif' },
+    'roboto': { name: 'Roboto', family: 'Roboto, sans-serif' },
+    'poppins': { name: 'Poppins', family: 'Poppins, sans-serif' },
+    'montserrat': { name: 'Montserrat', family: 'Montserrat, sans-serif' },
+    'dm-sans': { name: 'DM Sans', family: '"DM Sans", sans-serif' },
+    'outfit': { name: 'Outfit', family: 'Outfit, sans-serif' },
+    'raleway': { name: 'Raleway', family: 'Raleway, sans-serif' },
+    'work-sans': { name: 'Work Sans', family: '"Work Sans", sans-serif' },
+    'nunito-sans': { name: 'Nunito Sans', family: '"Nunito Sans", sans-serif' },
+    // Google Fonts — Serif
+    'ibm-plex-serif': { name: 'IBM Plex Serif', family: '"IBM Plex Serif", serif' },
+    'bitter': { name: 'Bitter', family: 'Bitter, serif' }
+};
+
+// Detect user OS
+App.IS_MAC = navigator.platform ? /Mac/.test(navigator.platform) : /Mac/.test(navigator.userAgent);
+App.IS_WINDOWS = navigator.platform ? /Win/.test(navigator.platform) : /Win/.test(navigator.userAgent);
+
+// Populate font <select> elements dynamically, filtering system fonts by OS
+App.populateFontSelects = function() {
+    var selects = [document.getElementById('titleFont'), document.getElementById('bodyFont')];
+    var systemLabel = App.IS_WINDOWS ? 'Windows' : (App.IS_MAC ? 'macOS' : 'System');
+    var osFilter = App.IS_WINDOWS ? 'windows' : 'mac';
+
+    // Build groups
+    var systemFonts = [];
+    var sansFonts = [];
+    var serifFonts = [];
+
+    Object.keys(App.FONTS).forEach(function(key) {
+        var font = App.FONTS[key];
+        if (font.os) {
+            if (font.os === osFilter) systemFonts.push({ key: key, name: font.name });
+        } else if (font.family.indexOf('serif') !== -1 && font.family.indexOf('sans-serif') === -1) {
+            serifFonts.push({ key: key, name: font.name });
+        } else {
+            sansFonts.push({ key: key, name: font.name });
+        }
+    });
+
+    selects.forEach(function(select) {
+        select.innerHTML = '';
+
+        var systemGroup = document.createElement('optgroup');
+        systemGroup.label = systemLabel;
+        systemFonts.forEach(function(f) {
+            var opt = document.createElement('option');
+            opt.value = f.key;
+            opt.textContent = f.name;
+            systemGroup.appendChild(opt);
+        });
+        select.appendChild(systemGroup);
+
+        var sansGroup = document.createElement('optgroup');
+        sansGroup.label = 'Sans-serif';
+        sansFonts.forEach(function(f) {
+            var opt = document.createElement('option');
+            opt.value = f.key;
+            opt.textContent = f.name;
+            sansGroup.appendChild(opt);
+        });
+        select.appendChild(sansGroup);
+
+        var serifGroup = document.createElement('optgroup');
+        serifGroup.label = 'Serif';
+        serifFonts.forEach(function(f) {
+            var opt = document.createElement('option');
+            opt.value = f.key;
+            opt.textContent = f.name;
+            serifGroup.appendChild(opt);
+        });
+        select.appendChild(serifGroup);
+    });
 };
 
 App.PRESETS = {

@@ -33,6 +33,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Initialize format dropdown for default platform
     App.updateFormatDropdown();
 
+    // Populate font selects (filtered by OS)
+    App.populateFontSelects();
+
     App.initEventListeners();
     App.initDragDrop();
     App.initReorder();

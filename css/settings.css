@@ -79,6 +79,7 @@
 .settings-tab-content {
     display: none;
     padding-top: 8px;
+    padding-bottom: 120px;
 }
 
 .settings-tab-content.active {
