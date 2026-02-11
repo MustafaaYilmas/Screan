@@ -7,7 +7,7 @@ var App = window.App || {};
 App.FORMATS = {
     // iOS - App Store (catégories officielles App Store Connect)
     'iphone-6.9': { width: 1290, height: 2796, name: 'iPhone 6.9"', cornerRadius: 0.10 },
-    'iphone-6.5': { width: 1290, height: 2796, name: 'iPhone 6.5"', cornerRadius: 0.10 },
+    'iphone-6.5': { width: 1242, height: 2688, name: 'iPhone 6.5"', cornerRadius: 0.10 },
     'iphone-6.3': { width: 1206, height: 2622, name: 'iPhone 6.3"', cornerRadius: 0.10 },
     'iphone-6.1': { width: 1179, height: 2556, name: 'iPhone 6.1"', cornerRadius: 0.10 },
     'iphone-5.5': { width: 1242, height: 2208, name: 'iPhone 5.5"', cornerRadius: 0.08 },
@@ -230,6 +230,7 @@ App.DEFAULT_SETTINGS = {
     deviceFrameColor: '#000000',
     // Other settings
     addShadow: true,
+    hideScreenshot: false,
     preset: 'top',
     textAlign: 'center',
     textSpacing: 33

@@ -142,6 +142,7 @@ App.updateSettingsUI = function() {
 
     // Other settings
     document.getElementById('addShadow').checked = settings.addShadow;
+    document.getElementById('hideScreenshot').checked = settings.hideScreenshot || false;
 
     document.querySelectorAll('.position-text-btn').forEach(function(btn) {
         btn.classList.toggle('active', btn.dataset.preset === settings.preset);
@@ -237,7 +238,8 @@ App.applySectionToAll = function(section) {
         settingsToApply = {
             preset: currentSettings.preset,
             textSpacing: currentSettings.textSpacing,
-            textAlign: currentSettings.textAlign
+            textAlign: currentSettings.textAlign,
+            hideScreenshot: currentSettings.hideScreenshot
         };
     } else if (section === 'title') {
         settingsToApply = {

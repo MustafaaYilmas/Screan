@@ -298,6 +298,15 @@ App.initEventListeners = function() {
         }
     });
 
+    // Hide screenshot toggle
+    document.getElementById('hideScreenshot').addEventListener('change', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            settings.hideScreenshot = e.target.checked;
+            App.renderAndSave();
+        }
+    });
+
     // Position presets (text buttons)
     document.querySelectorAll('.position-text-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {

@@ -158,6 +158,11 @@ App.renderCanvas = function(canvas, screenshot) {
 };
 
 App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, settings, format, textLayout) {
+    // Hide screenshot if toggled
+    if (settings.hideScreenshot) {
+        return { imgY: 0, imgH: 0 };
+    }
+
     // Fixed horizontal margin (4% on each side = 92% width)
     var horizontalMargin = format.horizontalMargin || 0.87;
     var imgW = canvasW * horizontalMargin;
@@ -431,7 +436,10 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatK
     // Determine text start position using margin-based layout
     // Text is vertically centered within the text zone, respecting min margins
     var startY;
-    if (preset.cropBottom) {
+    if (settings.hideScreenshot) {
+        // No screenshot: center text vertically on entire canvas
+        startY = (canvasH - tl.totalTextHeight) / 2;
+    } else if (preset.cropBottom) {
         // Preset "top": text zone is [0, imgY], center text with margins
         var zoneHeight = screenshotInfo.imgY;
         startY = tl.margin + (zoneHeight - 2 * tl.margin - tl.totalTextHeight) / 2;
