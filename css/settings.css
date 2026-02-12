@@ -195,6 +195,41 @@
     height: 14px;
 }
 
+/* Import content section */
+.import-content-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.import-content-row .import-platform-select {
+    flex: 1;
+}
+
+.btn-import-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    padding: 0 10px;
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--foreground);
+    font-size: 12px;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.btn-import-action:hover {
+    background: var(--muted);
+}
+
+.btn-import-action svg {
+    width: 14px;
+    height: 14px;
+}
+
 .section-content {
     padding: 0 20px 20px;
 }
