@@ -8,7 +8,6 @@ var App = window.App || {};
 App.renderAndSave = function() {
     App.renderActivePreview();
     App.updateSectionApplyButtons();
-    App.updateImportButtons();
     App.Storage.scheduleSave();
     // Re-render after fonts finish loading (Google Fonts may load weight on demand)
     document.fonts.ready.then(function() {
@@ -399,22 +398,6 @@ App.initEventListeners = function() {
             App.applySectionToAll(section);
             this.blur();
         });
-    });
-
-    // Import content from platform - current screenshot
-    document.getElementById('importContentBtn').addEventListener('click', function() {
-        var select = document.getElementById('importPlatformSelect');
-        if (select.value) {
-            App.importContentFromPlatform(select.value, false);
-        }
-    });
-
-    // Import content from platform - all screenshots
-    document.getElementById('importContentAllBtn').addEventListener('click', function() {
-        var select = document.getElementById('importPlatformSelect');
-        if (select.value) {
-            App.importContentFromPlatform(select.value, true);
-        }
     });
 
     // Toggle panels (sidebar + settings) - desktop only

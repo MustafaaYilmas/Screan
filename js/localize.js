@@ -337,16 +337,44 @@ App.loadContentFromLanguage = function(settings, langCode) {
 };
 
 // Initialize content for all languages when adding a new screenshot
+// If another platform already has content at the same index, copy it
 App.initializeScreenshotContent = function(settings) {
     settings.content = {};
 
-    var languages = App.state.languages || ['en'];
-    languages.forEach(function(langCode) {
-        settings.content[langCode] = {
-            headline: App.DEFAULT_SETTINGS.content.en.headline,
-            subheadline: App.DEFAULT_SETTINGS.content.en.subheadline
-        };
+    // Chercher du contenu existant sur une autre plateforme au même index
+    var activePlatform = App.state.activePlatform;
+    var activeScreenshots = App.getActiveScreenshots();
+    var newIndex = activeScreenshots.length; // index que le nouveau screenshot aura
+    var existingContent = null;
+
+    Object.keys(App.state.platforms).forEach(function(platformKey) {
+        if (existingContent) return;
+        if (platformKey === activePlatform) return;
+        var screenshots = App.state.platforms[platformKey].screenshots;
+        if (newIndex < screenshots.length && screenshots[newIndex].settings.content) {
+            existingContent = screenshots[newIndex].settings.content;
+        }
     });
+
+    var languages = App.state.languages || ['en'];
+    if (existingContent) {
+        // Copier le contenu de l'autre plateforme
+        languages.forEach(function(langCode) {
+            var src = existingContent[langCode];
+            settings.content[langCode] = {
+                headline: src ? (src.headline || '') : '',
+                subheadline: src ? (src.subheadline || '') : ''
+            };
+        });
+    } else {
+        // Texte par défaut
+        languages.forEach(function(langCode) {
+            settings.content[langCode] = {
+                headline: App.DEFAULT_SETTINGS.content.en.headline,
+                subheadline: App.DEFAULT_SETTINGS.content.en.subheadline
+            };
+        });
+    }
 
     // Set active content from active language
     var activeLang = App.state.activeLanguage || 'en';

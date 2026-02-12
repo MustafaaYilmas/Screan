@@ -98,7 +98,6 @@ App.updateSettingsUI = function() {
     var screenshots = App.getActiveScreenshots();
 
     App.updateSectionApplyButtons();
-    App.updateImportButtons();
 
     // Update language tabs
     if (typeof App.updateLanguageTabs === 'function') {
@@ -271,116 +270,6 @@ App.applySectionToAll = function(section) {
     });
 };
 
-// Get platforms (other than active) that have screenshots with different content
-App.getImportablePlatforms = function() {
-    var activePlatform = App.state.activePlatform;
-    var activeScreenshots = App.getActiveScreenshots();
-    var activeCount = activeScreenshots.length;
-    var result = [];
-
-    Object.keys(App.state.platforms).forEach(function(platformKey) {
-        if (platformKey === activePlatform) return;
-        var screenshots = App.state.platforms[platformKey].screenshots;
-        if (screenshots.length === 0) return;
-        if (screenshots.length !== activeCount) return;
-
-        // Vérifier que le contenu diffère sur au moins un screenshot
-        var hasDifference = false;
-        for (var i = 0; i < activeCount; i++) {
-            var sourceContent = screenshots[i].settings.content || {};
-            var targetContent = activeScreenshots[i].settings.content || {};
-            var allLangs = {};
-            Object.keys(sourceContent).forEach(function(l) { allLangs[l] = true; });
-            Object.keys(targetContent).forEach(function(l) { allLangs[l] = true; });
-            var langs = Object.keys(allLangs);
-            for (var j = 0; j < langs.length; j++) {
-                var lang = langs[j];
-                var s = sourceContent[lang] || {};
-                var t = targetContent[lang] || {};
-                if ((s.headline || '') !== (t.headline || '') ||
-                    (s.subheadline || '') !== (t.subheadline || '')) {
-                    hasDifference = true;
-                    break;
-                }
-            }
-            if (hasDifference) break;
-        }
-        if (!hasDifference) return;
-
-        result.push(platformKey);
-    });
-
-    return result;
-};
-
-// Import all text content (headline + subheadline) from another platform's screenshots
-App.importContentFromPlatform = function(sourcePlatformKey, applyAll) {
-    var sourceScreenshots = App.state.platforms[sourcePlatformKey].screenshots;
-    var targetScreenshots = App.getActiveScreenshots();
-    var activeLang = App.state.activeLanguage || 'en';
-
-    function copyContent(source, target) {
-        if (!source.settings.content) return;
-        if (!target.settings.content) target.settings.content = {};
-
-        // Copy headline + subheadline for all languages
-        Object.keys(source.settings.content).forEach(function(lang) {
-            if (!target.settings.content[lang]) {
-                target.settings.content[lang] = { headline: '', subheadline: '' };
-            }
-            target.settings.content[lang].headline = source.settings.content[lang].headline || '';
-            target.settings.content[lang].subheadline = source.settings.content[lang].subheadline || '';
-        });
-
-        // Update active mirror fields
-        if (source.settings.content[activeLang]) {
-            target.settings.headline = source.settings.content[activeLang].headline || '';
-            target.settings.subheadline = source.settings.content[activeLang].subheadline || '';
-        }
-    }
-
-    if (applyAll) {
-        var count = Math.min(sourceScreenshots.length, targetScreenshots.length);
-        for (var i = 0; i < count; i++) {
-            copyContent(sourceScreenshots[i], targetScreenshots[i]);
-        }
-    } else {
-        var activeIndex = App.getActiveIndex();
-        if (activeIndex < sourceScreenshots.length) {
-            copyContent(sourceScreenshots[activeIndex], targetScreenshots[activeIndex]);
-        }
-    }
-
-    App.updateSettingsUI();
-    App.renderAllCanvases();
-    App.Storage.scheduleSave();
-};
-
-// Update visibility of import content section and populate platform select
-App.updateImportButtons = function() {
-    var section = document.getElementById('importContentSection');
-    if (!section) return;
-
-    var platforms = App.getImportablePlatforms();
-    var show = platforms.length > 0;
-    section.style.display = show ? '' : 'none';
-
-    if (show) {
-        var select = document.getElementById('importPlatformSelect');
-        var currentValue = select.value;
-        select.innerHTML = '';
-        platforms.forEach(function(platformKey) {
-            var opt = document.createElement('option');
-            opt.value = platformKey;
-            opt.textContent = App.PLATFORM_FAMILIES[platformKey].name;
-            select.appendChild(opt);
-        });
-        // Preserve selection if still valid
-        if (platforms.indexOf(currentValue) !== -1) {
-            select.value = currentValue;
-        }
-    }
-};
 
 App.moveScreenshot = function(fromIndex, toIndex) {
     var screenshots = App.getActiveScreenshots();
