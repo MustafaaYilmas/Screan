@@ -271,10 +271,11 @@ App.applySectionToAll = function(section) {
     });
 };
 
-// Get platforms (other than active) that have screenshots
+// Get platforms (other than active) that have screenshots with different content
 App.getImportablePlatforms = function() {
     var activePlatform = App.state.activePlatform;
-    var activeCount = App.getActiveScreenshots().length;
+    var activeScreenshots = App.getActiveScreenshots();
+    var activeCount = activeScreenshots.length;
     var result = [];
 
     Object.keys(App.state.platforms).forEach(function(platformKey) {
@@ -282,6 +283,30 @@ App.getImportablePlatforms = function() {
         var screenshots = App.state.platforms[platformKey].screenshots;
         if (screenshots.length === 0) return;
         if (screenshots.length !== activeCount) return;
+
+        // Vérifier que le contenu diffère sur au moins un screenshot
+        var hasDifference = false;
+        for (var i = 0; i < activeCount; i++) {
+            var sourceContent = screenshots[i].settings.content || {};
+            var targetContent = activeScreenshots[i].settings.content || {};
+            var allLangs = {};
+            Object.keys(sourceContent).forEach(function(l) { allLangs[l] = true; });
+            Object.keys(targetContent).forEach(function(l) { allLangs[l] = true; });
+            var langs = Object.keys(allLangs);
+            for (var j = 0; j < langs.length; j++) {
+                var lang = langs[j];
+                var s = sourceContent[lang] || {};
+                var t = targetContent[lang] || {};
+                if ((s.headline || '') !== (t.headline || '') ||
+                    (s.subheadline || '') !== (t.subheadline || '')) {
+                    hasDifference = true;
+                    break;
+                }
+            }
+            if (hasDifference) break;
+        }
+        if (!hasDifference) return;
+
         result.push(platformKey);
     });
 
