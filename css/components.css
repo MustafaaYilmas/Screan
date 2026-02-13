@@ -1,21 +1,29 @@
 /* ============================================
-   Layout Section
+   Setting Row (label + control, used across all tabs)
    ============================================ */
 
-.layout-row {
+.setting-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 6px;
     margin-bottom: 12px;
 }
 
-.layout-row:last-child {
+.setting-row:last-child {
     margin-bottom: 0;
 }
 
-.layout-label {
+.setting-row .slider-row,
+.setting-row .color-input-wrap {
+    flex: 1;
+}
+
+.setting-label {
     font-size: 13px;
     color: var(--foreground-muted);
+    min-width: 76px;
+    flex-shrink: 0;
 }
 
 /* ============================================
@@ -423,22 +431,6 @@
    Color Controls
    ============================================ */
 
-.color-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-}
-
-.color-row:last-child {
-    margin-bottom: 0;
-}
-
-.color-label {
-    font-size: 13px;
-    color: var(--foreground-muted);
-}
-
 .color-input-wrap {
     display: flex;
     align-items: center;
@@ -624,12 +616,6 @@
    Localize Section - Language Chips
    ============================================ */
 
-.add-language-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
 /* Active languages: vertical list */
 .language-list {
     display: flex;
@@ -637,10 +623,8 @@
     gap: 8px;
 }
 
-.language-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+.language-list .setting-row {
+    margin-bottom: 0;
 }
 
 .language-item {
@@ -684,16 +668,6 @@
     flex: 1;
 }
 
-/* ============================================
-   API Key Input Row
-   ============================================ */
-
-.api-key-row {
-    display: flex;
-    align-items: center;
-    margin-top: 10px;
-}
-
 .api-key-input {
     flex: 1;
     height: 34px;
@@ -720,8 +694,4 @@
 
 .api-key-input::placeholder {
     color: var(--foreground-muted);
-}
-
-.api-key-row {
-    gap: 6px;
 }

@@ -272,6 +272,7 @@ App.initEventListeners = function() {
             settings.bgGradient = e.target.checked;
             document.getElementById('gradientColorRow').style.display = e.target.checked ? 'flex' : 'none';
             document.getElementById('gradientAngleRow').style.display = e.target.checked ? 'flex' : 'none';
+            document.getElementById('bgColorLabel').textContent = e.target.checked ? 'Start' : 'Color';
             App.renderAndSave();
         }
     });
@@ -362,8 +363,9 @@ App.initEventListeners = function() {
     document.getElementById('hideScreenshot').addEventListener('change', function(e) {
         var settings = App.getActiveSettings();
         if (settings) {
-            settings.hideScreenshot = e.target.checked;
-            App.updateScreenshotOptionsVisibility(e.target.checked);
+            settings.hideScreenshot = !e.target.checked;
+
+            App.updateScreenshotOptionsVisibility(!e.target.checked);
             App.renderAndSave();
         }
     });

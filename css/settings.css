@@ -41,7 +41,7 @@
     padding: 12px 16px;
     background: var(--background-subtle);
     border: none;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -55,8 +55,9 @@
     height: 15px;
 }
 
-.settings-tab:hover {
+.settings-tab:not(.active):hover {
     color: var(--foreground);
+    background: var(--muted);
 }
 
 .settings-tab:active svg {
@@ -71,9 +72,21 @@
     box-shadow: var(--ring-shadow);
 }
 
+.settings-tab:not(.active) + .settings-tab:not(.active) {
+    border-left: 1px solid var(--border-subtle);
+}
+
+.settings-tab .tab-label {
+    display: none;
+}
+
 .settings-tab.active {
     color: var(--foreground);
     background: transparent;
+}
+
+.settings-tab.active .tab-label {
+    display: inline;
 }
 
 .settings-tab-content {

@@ -96,10 +96,10 @@ App.selectScreenshot = function(index) {
         items[index].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
     }
 
-    // Switch to Style tab when selecting a screenshot
-    var styleTab = document.querySelector('.settings-tab[data-tab="style"]');
-    if (styleTab && !styleTab.classList.contains('active')) {
-        styleTab.click();
+    // Switch to Content tab when selecting a screenshot
+    var contentTab = document.querySelector('.settings-tab[data-tab="content"]');
+    if (contentTab && !contentTab.classList.contains('active')) {
+        contentTab.click();
     }
 
     App.updateSettingsUI();
@@ -165,6 +165,7 @@ App.updateSettingsUI = function() {
     document.getElementById('bgGradient').checked = settings.bgGradient || false;
     document.getElementById('gradientColorRow').style.display = settings.bgGradient ? 'flex' : 'none';
     document.getElementById('gradientAngleRow').style.display = settings.bgGradient ? 'flex' : 'none';
+    document.getElementById('bgColorLabel').textContent = settings.bgGradient ? 'Start' : 'Color';
     document.getElementById('bgGradientColor').value = settings.bgGradientColor || '#ffffff';
     document.getElementById('bgGradientColorHex').value = (settings.bgGradientColor || '#ffffff').toUpperCase();
     var gradientAngleSlider = document.getElementById('bgGradientAngleSlider');
@@ -182,7 +183,8 @@ App.updateSettingsUI = function() {
 
     // Other settings
     document.getElementById('addShadow').checked = settings.addShadow;
-    document.getElementById('hideScreenshot').checked = settings.hideScreenshot || false;
+    document.getElementById('hideScreenshot').checked = !(settings.hideScreenshot || false);
+
     App.updateScreenshotOptionsVisibility(settings.hideScreenshot || false);
 
     document.querySelectorAll('.position-text-btn').forEach(function(btn) {
@@ -229,6 +231,7 @@ App.updateTextFieldsState = function() {
 
 App.updateScreenshotOptionsVisibility = function(hidden) {
     var display = hidden ? 'none' : 'flex';
+    document.getElementById('positionRow').style.display = display;
     document.getElementById('showBorderRow').style.display = display;
     document.getElementById('deviceFrameColorRow').style.display = hidden ? 'none' : (document.getElementById('addDeviceFrame').checked ? 'flex' : 'none');
     document.getElementById('displayShadowRow').style.display = display;
@@ -237,11 +240,11 @@ App.updateScreenshotOptionsVisibility = function(hidden) {
 
 // Keys for each section
 App.SECTION_KEYS = {
-    layout: ['preset', 'textSpacing', 'textAlign', 'screenshotOffsetX'],
+    layout: ['textSpacing', 'textAlign'],
     title: ['titleFont', 'titleSize', 'titleColor', 'titleWeight', 'titleUppercase'],
     body: ['bodyFont', 'bodySize', 'bodyColor', 'bodyWeight', 'bodyUppercase'],
     background: ['bgColor', 'bgGradient', 'bgGradientColor', 'bgGradientAngle'],
-    device: ['hideScreenshot', 'addDeviceFrame', 'deviceFrameColor', 'addShadow']
+    device: ['preset', 'hideScreenshot', 'addDeviceFrame', 'deviceFrameColor', 'addShadow', 'screenshotOffsetX']
 };
 
 // Check if a section's settings match across all screenshots
@@ -280,10 +283,12 @@ App.applySectionToAll = function(section) {
 
     if (section === 'device') {
         settingsToApply = {
+            preset: currentSettings.preset,
             hideScreenshot: currentSettings.hideScreenshot,
             addDeviceFrame: currentSettings.addDeviceFrame,
             deviceFrameColor: currentSettings.deviceFrameColor,
-            addShadow: currentSettings.addShadow
+            addShadow: currentSettings.addShadow,
+            screenshotOffsetX: currentSettings.screenshotOffsetX
         };
     } else if (section === 'background') {
         settingsToApply = {
@@ -294,10 +299,8 @@ App.applySectionToAll = function(section) {
         };
     } else if (section === 'layout') {
         settingsToApply = {
-            preset: currentSettings.preset,
             textSpacing: currentSettings.textSpacing,
-            textAlign: currentSettings.textAlign,
-            screenshotOffsetX: currentSettings.screenshotOffsetX
+            textAlign: currentSettings.textAlign
         };
     } else if (section === 'title') {
         settingsToApply = {

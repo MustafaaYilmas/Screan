@@ -199,7 +199,7 @@ App.updateLanguageSelect = function() {
             var canRemove = langCode !== 'en' && languages.length > 1;
 
             var row = document.createElement('div');
-            row.className = 'language-row';
+            row.className = 'setting-row';
 
             var item = document.createElement('div');
             item.className = 'language-item' + (langCode === activeLang ? ' active' : '');
