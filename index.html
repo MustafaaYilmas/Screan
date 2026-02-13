@@ -54,7 +54,7 @@
                 <a href="https://github.com/cassardp/Screan#readme" target="_blank" rel="noopener" class="mini-sidebar-btn" title="View on GitHub">
                     <i data-lucide="github"></i>
                 </a>
-                <span class="version-number">0.76</span>
+                <span class="version-number">0.77</span>
             </div>
         </aside>
 
@@ -211,13 +211,21 @@
                                     <option value="semibold">Semi-bold</option>
                                     <option value="bold" selected>Bold</option>
                                 </select>
+                                <button class="uppercase-btn" id="titleUppercase" title="Uppercase">
+                                    <i data-lucide="case-sensitive" class="icon-mixed"></i>
+                                    <i data-lucide="case-upper" class="icon-uppercase"></i>
+                                </button>
                             </div>
                             <div class="text-options-row">
-                                <div class="size-buttons btn-group">
-                                    <button class="size-btn btn-group-item" data-size="small" data-target="title">S</button>
-                                    <button class="size-btn btn-group-item active" data-size="medium" data-target="title">M</button>
-                                    <button class="size-btn btn-group-item" data-size="large" data-target="title">L</button>
-                                    <button class="size-btn btn-group-item" data-size="xlarge" data-target="title">XL</button>
+                                <div class="size-input-wrap">
+                                    <select id="titleSizeSelect" class="size-select">
+                                        <option value="90">S</option>
+                                        <option value="120" selected>M</option>
+                                        <option value="132">L</option>
+                                        <option value="160">XL</option>
+                                        <option value="custom">Custom</option>
+                                    </select>
+                                    <input type="number" id="titleSizeInput" class="size-input" value="120" min="1" step="1">
                                 </div>
                                 <div class="color-input-wrap">
                                     <input type="color" id="titleColor" value="#ffffff">
@@ -247,13 +255,21 @@
                                     <option value="semibold">Semi-bold</option>
                                     <option value="bold">Bold</option>
                                 </select>
+                                <button class="uppercase-btn" id="bodyUppercase" title="Uppercase">
+                                    <i data-lucide="case-sensitive" class="icon-mixed"></i>
+                                    <i data-lucide="case-upper" class="icon-uppercase"></i>
+                                </button>
                             </div>
                             <div class="text-options-row">
-                                <div class="size-buttons btn-group">
-                                    <button class="size-btn btn-group-item" data-size="small" data-target="body">S</button>
-                                    <button class="size-btn btn-group-item active" data-size="medium" data-target="body">M</button>
-                                    <button class="size-btn btn-group-item" data-size="large" data-target="body">L</button>
-                                    <button class="size-btn btn-group-item" data-size="xlarge" data-target="body">XL</button>
+                                <div class="size-input-wrap">
+                                    <select id="bodySizeSelect" class="size-select">
+                                        <option value="60">S</option>
+                                        <option value="72" selected>M</option>
+                                        <option value="80">L</option>
+                                        <option value="96">XL</option>
+                                        <option value="custom">Custom</option>
+                                    </select>
+                                    <input type="number" id="bodySizeInput" class="size-input" value="72" min="1" step="1">
                                 </div>
                                 <div class="color-input-wrap">
                                     <input type="color" id="bodyColor" value="#ffffff">

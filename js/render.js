@@ -302,25 +302,6 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
     return { imgY: imgY, imgH: imgH };
 };
 
-App.getFontSizeKey = function(formatKey) {
-    if (formatKey.startsWith('iphone')) {
-        return 'iphone';
-    } else if (formatKey === 'ipad-11') {
-        return 'ipad-11';
-    } else if (formatKey.startsWith('ipad')) {
-        return 'ipad';
-    } else if (formatKey.startsWith('android-phone')) {
-        return 'android-phone';
-    } else if (formatKey === 'android-tablet-7') {
-        return 'android-tablet-7';
-    } else if (formatKey.startsWith('android-tablet')) {
-        return 'android-tablet';
-    } else if (formatKey === 'mac-2880') {
-        return 'mac-2880';
-    } else {
-        return 'mac';
-    }
-};
 
 // Word wrap helper function
 App.wrapText = function(ctx, text, maxWidth) {
@@ -357,13 +338,8 @@ App.wrapText = function(ctx, text, maxWidth) {
 };
 
 App.calculateTextLayout = function(ctx, canvasW, canvasH, settings, format, formatKey) {
-    var fontSizeKey = App.getFontSizeKey(formatKey || App.currentFormat);
-
-    var titleSize = settings.titleSize || 'medium';
-    var bodySize = settings.bodySize || 'medium';
-
-    var headlineFontSize = App.FONT_SIZES[fontSizeKey][titleSize][0];
-    var subheadlineFontSize = App.FONT_SIZES[fontSizeKey][bodySize][1];
+    var headlineFontSize = App.migrateFontSize(settings.titleSize, 'title');
+    var subheadlineFontSize = App.migrateFontSize(settings.bodySize, 'body');
 
     var lineSpacing = headlineFontSize * 0.35;
 
@@ -380,15 +356,34 @@ App.calculateTextLayout = function(ctx, canvasW, canvasH, settings, format, form
     var horizontalPadding = canvasW * 0.065;
     var maxTextWidth = canvasW - (horizontalPadding * 2);
 
+    // Prepare text (uppercase transform if enabled)
+    var headlineText = settings.headline || '';
+    var subheadlineText = settings.subheadline || '';
+    var titleLetterSpacing = 0;
+    var bodyLetterSpacing = 0;
+
+    if (settings.titleUppercase) {
+        headlineText = headlineText.toUpperCase();
+        titleLetterSpacing = headlineFontSize * 0.05;
+    }
+    if (settings.bodyUppercase) {
+        subheadlineText = subheadlineText.toUpperCase();
+        bodyLetterSpacing = subheadlineFontSize * 0.05;
+    }
+
     // Wrap headline text (multiline support)
     ctx.font = titleWeightValue + ' ' + headlineFontSize + 'px ' + titleFontConfig.family;
-    var headlineLines = settings.headline ? App.wrapText(ctx, settings.headline, maxTextWidth) : [];
+    ctx.letterSpacing = titleLetterSpacing + 'px';
+    var headlineLines = headlineText ? App.wrapText(ctx, headlineText, maxTextWidth) : [];
     var titleLineSpacing = headlineFontSize * 0.15;
 
     // Wrap subheadline text
     ctx.font = bodyWeightValue + ' ' + subheadlineFontSize + 'px ' + bodyFontConfig.family;
-    var subheadlineLines = settings.subheadline ? App.wrapText(ctx, settings.subheadline, maxTextWidth) : [];
+    ctx.letterSpacing = bodyLetterSpacing + 'px';
+    var subheadlineLines = subheadlineText ? App.wrapText(ctx, subheadlineText, maxTextWidth) : [];
     var bodyLineSpacing = subheadlineFontSize * 0.3;
+
+    ctx.letterSpacing = '0px';
 
     // Calculate total text block height
     var totalTextHeight = 0;
@@ -472,6 +467,7 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatK
     if (tl.headlineLines.length > 0) {
         ctx.fillStyle = settings.titleColor || '#ffffff';
         ctx.font = tl.titleWeightValue + ' ' + tl.headlineFontSize + 'px ' + tl.titleFontFamily;
+        ctx.letterSpacing = (settings.titleUppercase ? tl.headlineFontSize * 0.05 : 0) + 'px';
         for (var i = 0; i < tl.headlineLines.length; i++) {
             ctx.fillText(tl.headlineLines[i], textX, startY);
             startY += tl.headlineFontSize + (i < tl.headlineLines.length - 1 ? tl.titleLineSpacing : 0);
@@ -486,10 +482,12 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatK
         ctx.globalAlpha = 0.9;
         ctx.fillStyle = settings.bodyColor || '#ffffff';
         ctx.font = tl.bodyWeightValue + ' ' + tl.subheadlineFontSize + 'px ' + tl.bodyFontFamily;
+        ctx.letterSpacing = (settings.bodyUppercase ? tl.subheadlineFontSize * 0.05 : 0) + 'px';
         for (var i = 0; i < tl.subheadlineLines.length; i++) {
             ctx.fillText(tl.subheadlineLines[i], textX, startY);
             startY += tl.subheadlineFontSize + tl.bodyLineSpacing;
         }
         ctx.globalAlpha = 1;
+        ctx.letterSpacing = '0px';
     }
 };

@@ -23,56 +23,17 @@ App.FORMATS = {
     'android-tablet-10': { width: 1600, height: 2560, name: 'Tablet 10"', cornerRadius: 0.04 }
 };
 
-// Font sizes: [title, body] for each size variant
-App.FONT_SIZES = {
-    'iphone': {
-        small:  [90, 60],
-        medium: [120, 72],
-        large:  [132, 80],
-        xlarge: [160, 96]
-    },
-    'ipad': {
-        small:  [90, 60],
-        medium: [120, 72],
-        large:  [132, 80],
-        xlarge: [160, 96]
-    },
-    'ipad-11': {
-        small:  [90, 60],
-        medium: [120, 72],
-        large:  [132, 80],
-        xlarge: [160, 96]
-    },
-    'mac': {
-        small:  [90, 60],
-        medium: [120, 72],
-        large:  [132, 80],
-        xlarge: [160, 96]
-    },
-    'mac-2880': {
-        small:  [90, 60],
-        medium: [120, 72],
-        large:  [132, 80],
-        xlarge: [160, 96]
-    },
-    'android-phone': {
-        small:  [90, 60],
-        medium: [120, 72],
-        large:  [132, 80],
-        xlarge: [160, 96]
-    },
-    'android-tablet': {
-        small:  [90, 60],
-        medium: [120, 72],
-        large:  [132, 80],
-        xlarge: [160, 96]
-    },
-    'android-tablet-7': {
-        small:  [90, 60],
-        medium: [120, 72],
-        large:  [132, 80],
-        xlarge: [160, 96]
-    }
+// Legacy size name to pixel conversion (for migrating old data)
+App.LEGACY_FONT_SIZES = {
+    title: { small: 90, medium: 120, large: 132, xlarge: 160 },
+    body:  { small: 60, medium: 72,  large: 80,  xlarge: 96 }
+};
+
+// Convert legacy named size to pixel value
+App.migrateFontSize = function(size, target) {
+    if (typeof size === 'number') return size;
+    var map = App.LEGACY_FONT_SIZES[target];
+    return (map && map[size]) || (target === 'title' ? 120 : 72);
 };
 
 App.FONTS = {
@@ -212,14 +173,16 @@ App.DEFAULT_SETTINGS = {
     subheadline: 'Your story starts here',
     // Title settings
     titleFont: 'sf-rounded',
-    titleSize: 'medium',
+    titleSize: 120,
     titleColor: '#ffffff',
     titleWeight: 'bold',
+    titleUppercase: false,
     // Body settings
     bodyFont: 'sf-rounded',
-    bodySize: 'medium',
+    bodySize: 72,
     bodyColor: '#ffffff',
     bodyWeight: 'medium',
+    bodyUppercase: false,
     // Background settings
     bgColor: '#75B7E7',
     bgGradient: false,

@@ -85,10 +85,105 @@
     color: var(--background);
 }
 
-/* Size button overrides */
-.size-btn {
+/* Uppercase toggle button */
+.uppercase-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background: var(--input);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius);
+    color: var(--foreground-muted);
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.uppercase-btn:hover {
+    color: var(--foreground);
+    border-color: var(--ring);
+    background: var(--muted);
+}
+
+.uppercase-btn .icon-uppercase {
+    display: none;
+}
+
+.uppercase-btn.active .icon-mixed {
+    display: none;
+}
+
+.uppercase-btn.active .icon-uppercase {
+    display: block;
+}
+
+.uppercase-btn.active {
+    color: var(--foreground);
+}
+
+/* Size select + custom input */
+.size-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.size-select {
+    width: 68px;
+    height: 34px;
+    padding: 0 6px;
+    background: var(--input);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius);
+    color: var(--foreground);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.size-select:hover {
+    border-color: var(--ring);
+    background: var(--muted);
+}
+
+.size-select:focus {
+    outline: none;
+    border-color: var(--ring);
+}
+
+.size-input {
+    width: 56px;
+    height: 34px;
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius);
+    background: var(--input);
+    color: var(--foreground);
+    font-size: 13px;
+    text-align: center;
+    padding: 0 4px;
+    -moz-appearance: textfield;
+}
+
+.size-input::-webkit-outer-spin-button,
+.size-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.size-input:hover {
+    border-color: var(--ring);
+}
+
+.size-input:focus {
+    outline: none;
+    border-color: var(--ring);
+}
+
+.size-unit {
     font-size: 12px;
-    font-weight: 600;
+    color: var(--foreground-muted);
 }
 
 /* ============================================
@@ -301,6 +396,7 @@
 
 .font-select {
     flex: 1;
+    min-width: 0;
     height: 34px;
     padding: 0 10px;
     background: var(--input);

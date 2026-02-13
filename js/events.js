@@ -110,30 +110,72 @@ App.initEventListeners = function() {
         }
     });
 
-    // Size buttons
-    document.querySelectorAll('.size-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            var settings = App.getActiveSettings();
-            if (!settings) return;
-
-            var target = btn.dataset.target;
-            var size = btn.dataset.size;
-
-            // Update active state
-            document.querySelectorAll('.size-btn[data-target="' + target + '"]').forEach(function(b) {
-                b.classList.remove('active');
-            });
-            btn.classList.add('active');
-
-            // Update settings
-            if (target === 'title') {
-                settings.titleSize = size;
-            } else if (target === 'body') {
-                settings.bodySize = size;
-            }
-
+    // Title size select — updates input + settings
+    document.getElementById('titleSizeSelect').addEventListener('change', function(e) {
+        var settings = App.getActiveSettings();
+        if (!settings) return;
+        if (e.target.value !== 'custom') {
+            var val = parseInt(e.target.value, 10);
+            settings.titleSize = val;
+            document.getElementById('titleSizeInput').value = val;
             App.renderAndSave();
-        });
+        }
+    });
+
+    // Title size input — updates select (custom if no match) + settings
+    document.getElementById('titleSizeInput').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        if (!settings) return;
+        var val = parseInt(e.target.value, 10);
+        if (val > 0) {
+            settings.titleSize = val;
+            App.syncSizeSelect('titleSizeSelect', val);
+            App.renderAndSave();
+        }
+    });
+
+    // Body size select — updates input + settings
+    document.getElementById('bodySizeSelect').addEventListener('change', function(e) {
+        var settings = App.getActiveSettings();
+        if (!settings) return;
+        if (e.target.value !== 'custom') {
+            var val = parseInt(e.target.value, 10);
+            settings.bodySize = val;
+            document.getElementById('bodySizeInput').value = val;
+            App.renderAndSave();
+        }
+    });
+
+    // Body size input — updates select (custom if no match) + settings
+    document.getElementById('bodySizeInput').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        if (!settings) return;
+        var val = parseInt(e.target.value, 10);
+        if (val > 0) {
+            settings.bodySize = val;
+            App.syncSizeSelect('bodySizeSelect', val);
+            App.renderAndSave();
+        }
+    });
+
+    // Title uppercase toggle
+    document.getElementById('titleUppercase').addEventListener('click', function() {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            settings.titleUppercase = !settings.titleUppercase;
+            this.classList.toggle('active', settings.titleUppercase);
+            App.renderAndSave();
+        }
+    });
+
+    // Body uppercase toggle
+    document.getElementById('bodyUppercase').addEventListener('click', function() {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            settings.bodyUppercase = !settings.bodyUppercase;
+            this.classList.toggle('active', settings.bodyUppercase);
+            App.renderAndSave();
+        }
     });
 
     // Title color - color picker

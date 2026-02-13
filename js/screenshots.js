@@ -93,6 +93,29 @@ App.selectScreenshot = function(index) {
     App.updateSettingsUI();
 };
 
+// Sync select dropdown to match a pixel value (or 'custom' if no match)
+App.syncSizeSelect = function(selectId, px) {
+    var select = document.getElementById(selectId);
+    var matched = false;
+    for (var i = 0; i < select.options.length; i++) {
+        if (select.options[i].value !== 'custom' && parseInt(select.options[i].value, 10) === px) {
+            select.value = select.options[i].value;
+            matched = true;
+            break;
+        }
+    }
+    if (!matched) {
+        select.value = 'custom';
+    }
+};
+
+// Sync both select and input for a given target (title or body)
+App.syncSizeUI = function(target, sizeValue) {
+    var px = App.migrateFontSize(sizeValue, target);
+    document.getElementById(target + 'SizeInput').value = px;
+    App.syncSizeSelect(target + 'SizeSelect', px);
+};
+
 App.updateSettingsUI = function() {
     var settings = App.getActiveSettings() || App.DEFAULT_SETTINGS;
     var screenshots = App.getActiveScreenshots();
@@ -110,21 +133,19 @@ App.updateSettingsUI = function() {
 
     // Title settings
     document.getElementById('titleFont').value = settings.titleFont || 'sf-rounded';
-    document.querySelectorAll('.size-btn[data-target="title"]').forEach(function(btn) {
-        btn.classList.toggle('active', btn.dataset.size === (settings.titleSize || 'medium'));
-    });
+    App.syncSizeUI('title', settings.titleSize);
     document.getElementById('titleColor').value = settings.titleColor || '#ffffff';
     document.getElementById('titleColorHex').value = (settings.titleColor || '#ffffff').toUpperCase();
     document.getElementById('titleWeight').value = settings.titleWeight || 'bold';
+    document.getElementById('titleUppercase').classList.toggle('active', !!settings.titleUppercase);
 
     // Body settings
     document.getElementById('bodyFont').value = settings.bodyFont || 'sf-rounded';
-    document.querySelectorAll('.size-btn[data-target="body"]').forEach(function(btn) {
-        btn.classList.toggle('active', btn.dataset.size === (settings.bodySize || 'medium'));
-    });
+    App.syncSizeUI('body', settings.bodySize);
     document.getElementById('bodyColor').value = settings.bodyColor || '#ffffff';
     document.getElementById('bodyColorHex').value = (settings.bodyColor || '#ffffff').toUpperCase();
     document.getElementById('bodyWeight').value = settings.bodyWeight || 'medium';
+    document.getElementById('bodyUppercase').classList.toggle('active', !!settings.bodyUppercase);
 
     // Background settings
     document.getElementById('bgColor1').value = settings.bgColor;
@@ -181,8 +202,8 @@ App.updateTextFieldsState = function() {
 // Keys for each section
 App.SECTION_KEYS = {
     layout: ['preset', 'textSpacing', 'textAlign'],
-    title: ['titleFont', 'titleSize', 'titleColor', 'titleWeight'],
-    body: ['bodyFont', 'bodySize', 'bodyColor', 'bodyWeight'],
+    title: ['titleFont', 'titleSize', 'titleColor', 'titleWeight', 'titleUppercase'],
+    body: ['bodyFont', 'bodySize', 'bodyColor', 'bodyWeight', 'bodyUppercase'],
     background: ['bgColor', 'bgGradient', 'bgGradientColor', 'bgGradientAngle'],
     device: ['addDeviceFrame', 'deviceFrameColor', 'addShadow']
 };
