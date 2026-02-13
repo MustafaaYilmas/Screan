@@ -516,4 +516,126 @@ App.initEventListeners = function() {
 
     // Language management (defined in localize.js)
     App.initLanguageEvents();
+
+    // Projects management
+    App.initProjectEvents();
+};
+
+// ============================================
+// Project Event Handlers
+// ============================================
+
+App.initProjectEvents = function() {
+    var projectMenu = document.getElementById('projectMenu');
+    var menuTargetId = null;
+
+    // Add new project
+    document.getElementById('addProjectBtn').addEventListener('click', function() {
+        App.createProject('New App');
+    });
+
+    // Click on project item (delegate from projectsList)
+    document.getElementById('projectsList').addEventListener('click', function(e) {
+        var menuBtn = e.target.closest('.project-menu-btn');
+        var item = e.target.closest('.project-item');
+
+        if (menuBtn && item) {
+            // Show context menu
+            e.stopPropagation();
+            menuTargetId = item.getAttribute('data-project-id');
+            var rect = menuBtn.getBoundingClientRect();
+            projectMenu.style.display = 'block';
+            projectMenu.style.left = rect.right + 'px';
+            projectMenu.style.top = rect.top + 'px';
+
+            // Adjust if menu goes off screen
+            requestAnimationFrame(function() {
+                var menuRect = projectMenu.getBoundingClientRect();
+                if (menuRect.right > window.innerWidth) {
+                    projectMenu.style.left = (rect.left - menuRect.width) + 'px';
+                }
+                if (menuRect.bottom > window.innerHeight) {
+                    projectMenu.style.top = (window.innerHeight - menuRect.height - 8) + 'px';
+                }
+            });
+            return;
+        }
+
+        if (item) {
+            var projectId = item.getAttribute('data-project-id');
+            App.switchProject(projectId);
+        }
+    });
+
+    // Context menu actions
+    projectMenu.addEventListener('click', function(e) {
+        var action = e.target.getAttribute('data-action');
+        if (!action || !menuTargetId) return;
+
+        projectMenu.style.display = 'none';
+
+        if (action === 'rename') {
+            App._startProjectRename(menuTargetId);
+        } else if (action === 'duplicate') {
+            App.duplicateProject(menuTargetId);
+        } else if (action === 'delete') {
+            App.deleteProject(menuTargetId);
+        }
+
+        menuTargetId = null;
+    });
+
+    // Close context menu on click outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.project-menu') && !e.target.closest('.project-menu-btn')) {
+            projectMenu.style.display = 'none';
+            menuTargetId = null;
+        }
+    });
+};
+
+// Inline rename for a project
+App._startProjectRename = function(projectId) {
+    var item = document.querySelector('.project-item[data-project-id="' + projectId + '"]');
+    if (!item) return;
+
+    var nameSpan = item.querySelector('.project-name');
+    if (!nameSpan) return;
+
+    var currentName = nameSpan.textContent;
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'project-rename-input';
+    input.value = currentName;
+
+    nameSpan.replaceWith(input);
+    input.focus();
+    input.select();
+
+    var committed = false;
+    var commit = function(save) {
+        if (committed) return;
+        committed = true;
+        var newName = save ? (input.value.trim() || currentName) : currentName;
+        var newSpan = document.createElement('span');
+        newSpan.className = 'project-name';
+        newSpan.textContent = newName;
+        newSpan.title = newName;
+        input.replaceWith(newSpan);
+
+        if (save && newName !== currentName) {
+            App.renameProject(projectId, newName);
+        }
+    };
+
+    input.addEventListener('blur', function() { commit(true); });
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            commit(true);
+        }
+        if (e.key === 'Escape') {
+            commit(false);
+        }
+    });
 };

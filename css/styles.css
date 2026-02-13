@@ -8,5 +8,7 @@
 @import 'sidebar.css';
 @import 'previews.css';
 @import 'settings.css';
-@import 'components.css';
+@import 'forms.css';
+@import 'buttons.css';
+@import 'localize.css';
 @import 'modal.css';

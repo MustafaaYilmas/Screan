@@ -1,5 +1,6 @@
 // ============================================
 // IndexedDB Storage for Screenshots & Settings
+// Multi-project support
 // ============================================
 
 var App = window.App || {};
@@ -8,13 +9,13 @@ App.Storage = {
     DB_NAME: 'screan-db',
     DB_VERSION: 1,
     STORE_NAME: 'screenshots',
+    META_KEY: 'projects-meta',
     db: null,
 
     // Initialize the database
     init: function() {
         var self = this;
         return new Promise(function(resolve, reject) {
-            // Check if IndexedDB is available
             if (!window.indexedDB) {
                 console.warn('IndexedDB not available, persistence disabled');
                 resolve(false);
@@ -42,37 +43,46 @@ App.Storage = {
         });
     },
 
-    // Save all state to IndexedDB
-    saveAll: function() {
+    // Generate a unique project ID
+    _generateProjectId: function() {
+        return 'project-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    },
+
+    // Serialize platforms data (strip Image objects)
+    _serializePlatforms: function() {
+        var platformsData = {};
+        Object.keys(App.state.platforms).forEach(function(platformKey) {
+            var platform = App.state.platforms[platformKey];
+            platformsData[platformKey] = {
+                screenshots: platform.screenshots.map(function(screenshot) {
+                    return {
+                        src: screenshot.src,
+                        width: screenshot.width,
+                        height: screenshot.height,
+                        settings: screenshot.settings
+                    };
+                }),
+                activeIndex: platform.activeIndex,
+                exportFormats: platform.exportFormats
+            };
+        });
+        return platformsData;
+    },
+
+    // Save a project to IndexedDB
+    saveProject: function(projectId) {
         var self = this;
         if (!self.db) return Promise.resolve(false);
 
         return new Promise(function(resolve, reject) {
             try {
-                // Prepare data for serialization (exclude Image objects)
-                var platformsData = {};
-                Object.keys(App.state.platforms).forEach(function(platformKey) {
-                    var platform = App.state.platforms[platformKey];
-                    platformsData[platformKey] = {
-                        screenshots: platform.screenshots.map(function(screenshot) {
-                            return {
-                                src: screenshot.src,
-                                width: screenshot.width,
-                                height: screenshot.height,
-                                settings: screenshot.settings
-                            };
-                        }),
-                        activeIndex: platform.activeIndex,
-                        exportFormats: platform.exportFormats
-                    };
-                });
-
                 var data = {
-                    id: 'app-state',
-                    platforms: platformsData,
+                    id: projectId,
+                    name: App.activeProjectName || 'My App',
+                    createdAt: App.activeProjectCreatedAt || Date.now(),
+                    platforms: self._serializePlatforms(),
                     activePlatform: App.state.activePlatform,
                     currentFormat: App.currentFormat,
-                    // Global language settings
                     languages: App.state.languages || ['en'],
                     activeLanguage: App.state.activeLanguage || 'en',
                     timestamp: Date.now()
@@ -82,23 +92,20 @@ App.Storage = {
                 var store = transaction.objectStore(self.STORE_NAME);
                 var request = store.put(data);
 
-                request.onsuccess = function() {
-                    resolve(true);
-                };
-
+                request.onsuccess = function() { resolve(true); };
                 request.onerror = function(event) {
-                    console.warn('Error saving to IndexedDB:', event.target.error);
+                    console.warn('Error saving project:', event.target.error);
                     resolve(false);
                 };
             } catch (e) {
-                console.warn('Error preparing data for IndexedDB:', e);
+                console.warn('Error preparing project data:', e);
                 resolve(false);
             }
         });
     },
 
-    // Load all state from IndexedDB
-    loadAll: function() {
+    // Load a project from IndexedDB into App.state
+    loadProject: function(projectId) {
         var self = this;
         if (!self.db) return Promise.resolve(false);
 
@@ -106,7 +113,7 @@ App.Storage = {
             try {
                 var transaction = self.db.transaction([self.STORE_NAME], 'readonly');
                 var store = transaction.objectStore(self.STORE_NAME);
-                var request = store.get('app-state');
+                var request = store.get(projectId);
 
                 request.onsuccess = function(event) {
                     var data = event.target.result;
@@ -115,10 +122,14 @@ App.Storage = {
                         return;
                     }
 
+                    // Set project info
+                    App.activeProjectId = projectId;
+                    App.activeProjectName = data.name || 'My App';
+                    App.activeProjectCreatedAt = data.createdAt || Date.now();
+
                     // Restore state
                     App.state.activePlatform = data.activePlatform || 'iphone';
                     App.currentFormat = data.currentFormat || 'iphone-6.9';
-                    // Restore global language settings
                     App.state.languages = data.languages || ['en'];
                     App.state.activeLanguage = data.activeLanguage || 'en';
 
@@ -130,14 +141,17 @@ App.Storage = {
                         imagesToLoad += data.platforms[platformKey].screenshots.length;
                     });
 
+                    // Restore all platform metadata first
+                    Object.keys(App.state.platforms).forEach(function(platformKey) {
+                        var savedPlatform = data.platforms[platformKey];
+                        if (savedPlatform) {
+                            App.state.platforms[platformKey].activeIndex = savedPlatform.activeIndex || 0;
+                            App.state.platforms[platformKey].exportFormats = savedPlatform.exportFormats || [];
+                            App.state.platforms[platformKey].screenshots = [];
+                        }
+                    });
+
                     if (imagesToLoad === 0) {
-                        // Restore platform data without screenshots
-                        Object.keys(data.platforms).forEach(function(platformKey) {
-                            if (App.state.platforms[platformKey]) {
-                                App.state.platforms[platformKey].activeIndex = data.platforms[platformKey].activeIndex || 0;
-                                App.state.platforms[platformKey].exportFormats = data.platforms[platformKey].exportFormats || [];
-                            }
-                        });
                         self._restoreUI();
                         resolve(true);
                         return;
@@ -147,10 +161,6 @@ App.Storage = {
                     Object.keys(data.platforms).forEach(function(platformKey) {
                         var savedPlatform = data.platforms[platformKey];
                         if (!App.state.platforms[platformKey]) return;
-
-                        App.state.platforms[platformKey].activeIndex = savedPlatform.activeIndex || 0;
-                        App.state.platforms[platformKey].exportFormats = savedPlatform.exportFormats || [];
-                        App.state.platforms[platformKey].screenshots = [];
 
                         savedPlatform.screenshots.forEach(function(savedScreenshot, index) {
                             var img = new Image();
@@ -183,13 +193,279 @@ App.Storage = {
                 };
 
                 request.onerror = function(event) {
-                    console.warn('Error loading from IndexedDB:', event.target.error);
+                    console.warn('Error loading project:', event.target.error);
                     resolve(false);
                 };
             } catch (e) {
-                console.warn('Error reading from IndexedDB:', e);
+                console.warn('Error reading project:', e);
                 resolve(false);
             }
+        });
+    },
+
+    // Delete a project from IndexedDB
+    deleteProject: function(projectId) {
+        var self = this;
+        if (!self.db) return Promise.resolve(false);
+
+        return new Promise(function(resolve, reject) {
+            try {
+                var transaction = self.db.transaction([self.STORE_NAME], 'readwrite');
+                var store = transaction.objectStore(self.STORE_NAME);
+                var request = store.delete(projectId);
+
+                request.onsuccess = function() { resolve(true); };
+                request.onerror = function(event) {
+                    console.warn('Error deleting project:', event.target.error);
+                    resolve(false);
+                };
+            } catch (e) {
+                console.warn('Error deleting project:', e);
+                resolve(false);
+            }
+        });
+    },
+
+    // Duplicate a project in IndexedDB
+    duplicateProject: function(projectId) {
+        var self = this;
+        if (!self.db) return Promise.resolve(null);
+
+        return new Promise(function(resolve, reject) {
+            try {
+                var transaction = self.db.transaction([self.STORE_NAME], 'readonly');
+                var store = transaction.objectStore(self.STORE_NAME);
+                var request = store.get(projectId);
+
+                request.onsuccess = function(event) {
+                    var data = event.target.result;
+                    if (!data) { resolve(null); return; }
+
+                    var newId = self._generateProjectId();
+                    var clone = JSON.parse(JSON.stringify(data));
+                    clone.id = newId;
+                    clone.name = (data.name || 'My App') + ' (copy)';
+                    clone.createdAt = Date.now();
+                    clone.timestamp = Date.now();
+
+                    var writeTx = self.db.transaction([self.STORE_NAME], 'readwrite');
+                    var writeStore = writeTx.objectStore(self.STORE_NAME);
+                    var putReq = writeStore.put(clone);
+
+                    putReq.onsuccess = function() { resolve(newId); };
+                    putReq.onerror = function(event) {
+                        console.warn('Error duplicating project:', event.target.error);
+                        resolve(null);
+                    };
+                };
+
+                request.onerror = function() { resolve(null); };
+            } catch (e) {
+                console.warn('Error duplicating project:', e);
+                resolve(null);
+            }
+        });
+    },
+
+    // Load projects meta-data
+    loadProjectsMeta: function() {
+        var self = this;
+        if (!self.db) return Promise.resolve(null);
+
+        return new Promise(function(resolve, reject) {
+            try {
+                var transaction = self.db.transaction([self.STORE_NAME], 'readonly');
+                var store = transaction.objectStore(self.STORE_NAME);
+                var request = store.get(self.META_KEY);
+
+                request.onsuccess = function(event) {
+                    resolve(event.target.result || null);
+                };
+                request.onerror = function() { resolve(null); };
+            } catch (e) {
+                resolve(null);
+            }
+        });
+    },
+
+    // Save projects meta-data
+    saveProjectsMeta: function() {
+        var self = this;
+        if (!self.db) return Promise.resolve(false);
+
+        return new Promise(function(resolve, reject) {
+            try {
+                var data = {
+                    id: self.META_KEY,
+                    activeProjectId: App.activeProjectId,
+                    projectOrder: App.projects.map(function(p) { return p.id; })
+                };
+
+                var transaction = self.db.transaction([self.STORE_NAME], 'readwrite');
+                var store = transaction.objectStore(self.STORE_NAME);
+                var request = store.put(data);
+
+                request.onsuccess = function() { resolve(true); };
+                request.onerror = function(event) {
+                    console.warn('Error saving projects meta:', event.target.error);
+                    resolve(false);
+                };
+            } catch (e) {
+                console.warn('Error saving projects meta:', e);
+                resolve(false);
+            }
+        });
+    },
+
+    // Get project name from IndexedDB (for building projects list)
+    _getProjectName: function(projectId) {
+        var self = this;
+        if (!self.db) return Promise.resolve(null);
+
+        return new Promise(function(resolve) {
+            try {
+                var transaction = self.db.transaction([self.STORE_NAME], 'readonly');
+                var store = transaction.objectStore(self.STORE_NAME);
+                var request = store.get(projectId);
+
+                request.onsuccess = function(event) {
+                    var data = event.target.result;
+                    resolve(data ? { id: data.id, name: data.name || 'My App' } : null);
+                };
+                request.onerror = function() { resolve(null); };
+            } catch (e) { resolve(null); }
+        });
+    },
+
+    // Build projects list from meta + IndexedDB
+    listProjects: function() {
+        var self = this;
+        return self.loadProjectsMeta().then(function(meta) {
+            if (!meta || !meta.projectOrder) return [];
+
+            var promises = meta.projectOrder.map(function(id) {
+                return self._getProjectName(id);
+            });
+
+            return Promise.all(promises).then(function(results) {
+                return results.filter(function(r) { return r !== null; });
+            });
+        });
+    },
+
+    // Migrate legacy app-state to a project
+    migrateFromLegacy: function() {
+        var self = this;
+        if (!self.db) return Promise.resolve(false);
+
+        return new Promise(function(resolve, reject) {
+            try {
+                var transaction = self.db.transaction([self.STORE_NAME], 'readonly');
+                var store = transaction.objectStore(self.STORE_NAME);
+                var request = store.get('app-state');
+
+                request.onsuccess = function(event) {
+                    var data = event.target.result;
+                    if (!data || !data.platforms) {
+                        resolve(false);
+                        return;
+                    }
+
+                    // Create a new project from legacy data
+                    var newId = self._generateProjectId();
+                    var projectData = {
+                        id: newId,
+                        name: 'My App',
+                        createdAt: data.timestamp || Date.now(),
+                        platforms: data.platforms,
+                        activePlatform: data.activePlatform || 'iphone',
+                        currentFormat: data.currentFormat || 'iphone-6.9',
+                        languages: data.languages || ['en'],
+                        activeLanguage: data.activeLanguage || 'en',
+                        timestamp: Date.now()
+                    };
+
+                    var metaData = {
+                        id: self.META_KEY,
+                        activeProjectId: newId,
+                        projectOrder: [newId]
+                    };
+
+                    // Write project + meta, delete legacy key
+                    var writeTx = self.db.transaction([self.STORE_NAME], 'readwrite');
+                    var writeStore = writeTx.objectStore(self.STORE_NAME);
+                    writeStore.put(projectData);
+                    writeStore.put(metaData);
+                    writeStore.delete('app-state');
+
+                    writeTx.oncomplete = function() {
+                        App.activeProjectId = newId;
+                        App.activeProjectName = 'My App';
+                        App.activeProjectCreatedAt = projectData.createdAt;
+                        App.projects = [{ id: newId, name: 'My App' }];
+                        resolve(true);
+                    };
+
+                    writeTx.onerror = function(event) {
+                        console.warn('Migration error:', event.target.error);
+                        resolve(false);
+                    };
+                };
+
+                request.onerror = function() { resolve(false); };
+            } catch (e) {
+                console.warn('Migration error:', e);
+                resolve(false);
+            }
+        });
+    },
+
+    // Save all state (current project + meta)
+    saveAll: function() {
+        var self = this;
+        if (!self.db || !App.activeProjectId) return Promise.resolve(false);
+
+        return Promise.all([
+            self.saveProject(App.activeProjectId),
+            self.saveProjectsMeta()
+        ]).then(function(results) {
+            return results[0] && results[1];
+        });
+    },
+
+    // Load all state (meta → active project, with migration fallback)
+    loadAll: function() {
+        var self = this;
+        if (!self.db) return Promise.resolve(false);
+
+        return self.loadProjectsMeta().then(function(meta) {
+            if (meta && meta.activeProjectId && meta.projectOrder) {
+                // Existing multi-project data
+                App.activeProjectId = meta.activeProjectId;
+                return self.listProjects().then(function(projects) {
+                    App.projects = projects;
+                    return self.loadProject(meta.activeProjectId);
+                });
+            }
+
+            // Try legacy migration
+            return self.migrateFromLegacy().then(function(migrated) {
+                if (migrated) {
+                    return self.loadProject(App.activeProjectId);
+                }
+
+                // First launch: create default project
+                var newId = self._generateProjectId();
+                App.activeProjectId = newId;
+                App.activeProjectName = 'My App';
+                App.activeProjectCreatedAt = Date.now();
+                App.projects = [{ id: newId, name: 'My App' }];
+
+                return self.saveAll().then(function() {
+                    self._restoreUI();
+                    return true;
+                });
+            });
         });
     },
 
@@ -230,6 +506,11 @@ App.Storage = {
         if (typeof App.updateLanguageSelect === 'function') {
             App.updateLanguageSelect();
         }
+
+        // Update projects list in sidebar
+        if (typeof App.updateProjectsList === 'function') {
+            App.updateProjectsList();
+        }
     },
 
     // Clear all stored data
@@ -241,12 +522,9 @@ App.Storage = {
             try {
                 var transaction = self.db.transaction([self.STORE_NAME], 'readwrite');
                 var store = transaction.objectStore(self.STORE_NAME);
-                var request = store.delete('app-state');
+                var request = store.clear();
 
-                request.onsuccess = function() {
-                    resolve(true);
-                };
-
+                request.onsuccess = function() { resolve(true); };
                 request.onerror = function(event) {
                     console.warn('Error clearing IndexedDB:', event.target.error);
                     resolve(false);

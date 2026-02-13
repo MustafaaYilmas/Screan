@@ -54,7 +54,7 @@
                 <a href="https://github.com/cassardp/Screan#readme" target="_blank" rel="noopener" class="mini-sidebar-btn" title="View on GitHub">
                     <i data-lucide="github"></i>
                 </a>
-                <span class="version-number">0.84</span>
+                <span class="version-number">0.85</span>
             </div>
         </aside>
 
@@ -66,8 +66,23 @@
             </div>
 
             <nav class="sidebar-nav">
-                <!-- Futur sélecteur de projets -->
+                <div class="projects-header">
+                    <span class="projects-title">Projects</span>
+                    <button class="projects-add-btn" id="addProjectBtn" title="New project">
+                        <i data-lucide="plus"></i>
+                    </button>
+                </div>
+                <div class="projects-list" id="projectsList">
+                    <!-- Generated dynamically -->
+                </div>
             </nav>
+
+            <!-- Project context menu -->
+            <div class="project-menu" id="projectMenu" style="display: none;">
+                <button data-action="rename"><i data-lucide="pencil"></i> Rename</button>
+                <button data-action="duplicate"><i data-lucide="copy"></i> Duplicate</button>
+                <button data-action="delete" class="danger"><i data-lucide="trash-2"></i> Delete</button>
+            </div>
 
             <div class="sidebar-bottom">
                 <div class="platforms-section" id="platformsSection">

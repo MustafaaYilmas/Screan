@@ -1,0 +1,83 @@
+/* ============================================
+   Localize Section - Language Chips
+   ============================================ */
+
+/* Active languages: vertical list */
+.language-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.language-list .setting-row {
+    margin-bottom: 0;
+}
+
+.language-item {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    height: 34px;
+    padding: 0 12px;
+    background: var(--input);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius);
+    color: var(--foreground-muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.language-item:hover {
+    background: var(--muted);
+    color: var(--foreground);
+    border-color: var(--ring);
+}
+
+.language-item:active {
+    transform: scale(0.98);
+}
+
+.language-item:focus-visible {
+    box-shadow: var(--ring-shadow);
+}
+
+.language-item.active {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border-color: var(--primary);
+}
+
+.language-item .chip-name {
+    flex: 1;
+}
+
+.api-key-input {
+    flex: 1;
+    height: 34px;
+    padding: 0 12px;
+    background: var(--input);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius);
+    color: var(--foreground);
+    font-size: 13px;
+    box-sizing: border-box;
+    transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.api-key-input:hover {
+    border-color: var(--ring);
+    background: var(--muted);
+}
+
+.api-key-input:focus {
+    outline: none;
+    border-color: var(--ring);
+    box-shadow: var(--ring-shadow);
+}
+
+.api-key-input::placeholder {
+    color: var(--foreground-muted);
+}

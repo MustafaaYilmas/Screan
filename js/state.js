@@ -4,6 +4,12 @@
 
 var App = window.App || {};
 
+// Active project info
+App.activeProjectId = null;
+App.activeProjectName = 'My App';
+App.activeProjectCreatedAt = null;
+App.projects = []; // [{id, name}, ...]
+
 App.state = {
     activePlatform: 'iphone',
     // Global language settings (shared across all platforms)
@@ -212,4 +218,213 @@ App.updateFormatDropdown = function() {
     // Set current format to first of this platform
     App.setCurrentFormat(family.formats[0]);
     select.value = family.formats[0];
+};
+
+// ============================================
+// Multi-Project Management
+// ============================================
+
+// Reset state to defaults (before loading a new project)
+App.resetStateToDefaults = function() {
+    App.state.activePlatform = 'iphone';
+    App.state.languages = ['en'];
+    App.state.activeLanguage = 'en';
+    App.currentFormat = 'iphone-6.9';
+
+    Object.keys(App.state.platforms).forEach(function(platformKey) {
+        var family = App.PLATFORM_FAMILIES[platformKey];
+        App.state.platforms[platformKey] = {
+            screenshots: [],
+            activeIndex: 0,
+            exportFormats: family ? family.defaultExport.slice() : []
+        };
+    });
+};
+
+// Switch to another project
+App.switchProject = function(projectId) {
+    if (projectId === App.activeProjectId) return Promise.resolve();
+
+    // Flush pending save immediately
+    if (App.Storage._saveTimeout) {
+        clearTimeout(App.Storage._saveTimeout);
+        App.Storage._saveTimeout = null;
+    }
+
+    return App.Storage.saveProject(App.activeProjectId).then(function() {
+        App.resetStateToDefaults();
+        App.activeProjectId = projectId;
+
+        // Update meta
+        return App.Storage.saveProjectsMeta();
+    }).then(function() {
+        return App.Storage.loadProject(projectId);
+    }).then(function() {
+        App.updateSettingsUI();
+        App.renderAllPreviews();
+        App.updateProjectsList();
+    });
+};
+
+// Create a new project
+App.createProject = function(name) {
+    // Flush pending save
+    if (App.Storage._saveTimeout) {
+        clearTimeout(App.Storage._saveTimeout);
+        App.Storage._saveTimeout = null;
+    }
+
+    return App.Storage.saveProject(App.activeProjectId).then(function() {
+        App.resetStateToDefaults();
+
+        var newId = App.Storage._generateProjectId();
+        App.activeProjectId = newId;
+        App.activeProjectName = name || 'New App';
+        App.activeProjectCreatedAt = Date.now();
+
+        App.projects.push({ id: newId, name: App.activeProjectName });
+
+        return App.Storage.saveAll();
+    }).then(function() {
+        App.Storage._restoreUI();
+        App.updateSettingsUI();
+        App.renderAllPreviews();
+    });
+};
+
+// Delete a project
+App.deleteProject = function(projectId) {
+    if (App.projects.length <= 1) {
+        alert('Cannot delete the only project');
+        return Promise.resolve();
+    }
+
+    if (!confirm('Delete this project? This cannot be undone.')) {
+        return Promise.resolve();
+    }
+
+    return App.Storage.deleteProject(projectId).then(function() {
+        // Remove from projects list
+        App.projects = App.projects.filter(function(p) { return p.id !== projectId; });
+
+        // If deleting the active project, switch to another one
+        if (projectId === App.activeProjectId) {
+            var nextProject = App.projects[0];
+            App.resetStateToDefaults();
+            App.activeProjectId = nextProject.id;
+
+            return App.Storage.saveProjectsMeta().then(function() {
+                return App.Storage.loadProject(nextProject.id);
+            }).then(function() {
+                App.updateSettingsUI();
+                App.renderAllPreviews();
+                App.updateProjectsList();
+            });
+        } else {
+            return App.Storage.saveProjectsMeta().then(function() {
+                App.updateProjectsList();
+            });
+        }
+    });
+};
+
+// Duplicate a project
+App.duplicateProject = function(projectId) {
+    // Save current project first
+    if (App.Storage._saveTimeout) {
+        clearTimeout(App.Storage._saveTimeout);
+        App.Storage._saveTimeout = null;
+    }
+
+    return App.Storage.saveProject(App.activeProjectId).then(function() {
+        return App.Storage.duplicateProject(projectId);
+    }).then(function(newId) {
+        if (!newId) return;
+
+        // Find original name
+        var original = App.projects.find(function(p) { return p.id === projectId; });
+        var newName = (original ? original.name : 'My App') + ' (copy)';
+
+        App.projects.push({ id: newId, name: newName });
+
+        // Switch to the new project
+        App.resetStateToDefaults();
+        App.activeProjectId = newId;
+
+        return App.Storage.saveProjectsMeta().then(function() {
+            return App.Storage.loadProject(newId);
+        }).then(function() {
+            App.updateSettingsUI();
+            App.renderAllPreviews();
+            App.updateProjectsList();
+        });
+    });
+};
+
+// Rename a project
+App.renameProject = function(projectId, newName) {
+    if (!newName || !newName.trim()) return Promise.resolve();
+    newName = newName.trim();
+
+    // Update in projects list cache
+    var project = App.projects.find(function(p) { return p.id === projectId; });
+    if (project) project.name = newName;
+
+    // If renaming the active project, update the active name and save
+    if (projectId === App.activeProjectId) {
+        App.activeProjectName = newName;
+        App.Storage.scheduleSave();
+        return Promise.resolve();
+    }
+
+    // Renaming an inactive project: update directly in IndexedDB
+    return new Promise(function(resolve) {
+        var transaction = App.Storage.db.transaction([App.Storage.STORE_NAME], 'readwrite');
+        var store = transaction.objectStore(App.Storage.STORE_NAME);
+        var request = store.get(projectId);
+
+        request.onsuccess = function(event) {
+            var data = event.target.result;
+            if (data) {
+                data.name = newName;
+                store.put(data);
+            }
+            resolve();
+        };
+        request.onerror = function() { resolve(); };
+    });
+};
+
+// Update the projects list in the sidebar
+App.updateProjectsList = function() {
+    var container = document.getElementById('projectsList');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    App.projects.forEach(function(project) {
+        var item = document.createElement('div');
+        item.className = 'project-item' + (project.id === App.activeProjectId ? ' active' : '');
+        item.setAttribute('data-project-id', project.id);
+
+        var nameSpan = document.createElement('span');
+        nameSpan.className = 'project-name';
+        nameSpan.textContent = project.name;
+        nameSpan.title = project.name;
+
+        var menuBtn = document.createElement('button');
+        menuBtn.className = 'project-menu-btn';
+        menuBtn.title = 'Options';
+        menuBtn.innerHTML = '<i data-lucide="ellipsis"></i>';
+
+        item.appendChild(nameSpan);
+        item.appendChild(menuBtn);
+        container.appendChild(item);
+    });
+
+    // Re-create Lucide icons for the new elements
+    var icons = Array.from(container.querySelectorAll('[data-lucide]'));
+    if (icons.length > 0) {
+        lucide.createIcons({ nodes: icons });
+    }
 };

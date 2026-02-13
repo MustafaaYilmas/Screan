@@ -1,0 +1,214 @@
+/* ============================================
+   Button Group (segmented control container)
+   ============================================ */
+
+.btn-group {
+    display: flex;
+    gap: 2px;
+    height: 34px;
+    background: var(--input);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius);
+    padding: 2px;
+    box-sizing: border-box;
+    width: fit-content;
+}
+
+/* ============================================
+   Button Group Item (button inside a group)
+   ============================================ */
+
+.btn-group-item {
+    width: 28px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: calc(var(--radius) - 2px);
+    color: var(--foreground-muted);
+    cursor: pointer;
+    transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.btn-group-item:hover {
+    color: var(--foreground);
+    background: var(--muted);
+}
+
+.btn-group-item:active {
+    transform: scale(0.92);
+}
+
+.btn-group-item:focus-visible {
+    box-shadow: var(--ring-shadow);
+}
+
+.btn-group-item.active {
+    background: var(--primary);
+    color: var(--primary-foreground);
+}
+
+.btn-group-item:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.btn-group-item:disabled:hover {
+    background: transparent;
+    color: var(--foreground-muted);
+}
+
+.btn-group-item:disabled.active {
+    background: var(--primary);
+    color: var(--primary-foreground);
+}
+
+/* Uppercase toggle button */
+.uppercase-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background: var(--input);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius);
+    color: var(--foreground-muted);
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.uppercase-btn:hover {
+    color: var(--foreground);
+    border-color: var(--ring);
+    background: var(--muted);
+}
+
+.uppercase-btn .icon-uppercase {
+    display: none;
+}
+
+.uppercase-btn.active .icon-mixed {
+    display: none;
+}
+
+.uppercase-btn.active .icon-uppercase {
+    display: block;
+}
+
+.uppercase-btn.active {
+    color: var(--foreground);
+}
+
+/* ============================================
+   Icon Button (34x34 square button with icon)
+   ============================================ */
+
+.icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius);
+    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+    background: var(--input);
+    border: 1px solid var(--input-border);
+    flex-shrink: 0;
+    cursor: pointer;
+    color: var(--foreground-muted);
+}
+
+.icon-btn:hover {
+    background: var(--muted);
+    color: var(--foreground);
+    border-color: var(--ring);
+}
+
+.icon-btn:active {
+    transform: scale(0.92);
+}
+
+.icon-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Add language button overrides */
+.add-lang-btn:hover:not(.disabled) {
+    background: var(--muted);
+    color: var(--foreground);
+    border-color: var(--ring);
+}
+
+.add-lang-btn:hover.disabled {
+    background: var(--input);
+    color: var(--foreground-muted);
+    border-color: var(--input-border);
+}
+
+.add-lang-btn:active:not(.disabled) {
+    transform: scale(0.92);
+}
+
+.add-lang-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* API key toggle overrides */
+.api-key-toggle .icon-hide {
+    display: none;
+}
+
+.api-key-toggle.visible .icon-show {
+    display: none;
+}
+
+.api-key-toggle.visible .icon-hide {
+    display: block;
+}
+
+/* ============================================
+   Button Row
+   ============================================ */
+
+.button-row {
+    display: flex;
+    gap: 6px;
+}
+
+.option-btn {
+    flex: 1;
+    padding: 8px 10px;
+    background: var(--input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--foreground-muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.option-btn:hover {
+    background: var(--muted);
+    color: var(--foreground);
+    border-color: var(--ring);
+}
+
+.option-btn:active {
+    transform: scale(0.97);
+}
+
+.option-btn:focus-visible {
+    box-shadow: var(--ring-shadow);
+}
+
+.option-btn.active {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border-color: var(--primary);
+}
