@@ -199,7 +199,25 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
         imgY = canvasH * screenshotY;
     }
 
+    // Apply rotation around screenshot center
+    var rotation = settings.screenshotRotation || 0;
+    var hasRotation = rotation !== 0;
+    var centerX = imgX + imgW / 2;
+    var centerY = imgY + imgH / 2;
+
     ctx.save();
+
+    // Clip to canvas bounds BEFORE rotation
+    ctx.beginPath();
+    ctx.rect(0, 0, canvasW, canvasH);
+    ctx.clip();
+
+    // Apply rotation after canvas clip
+    if (hasRotation) {
+        ctx.translate(centerX, centerY);
+        ctx.rotate(rotation * Math.PI / 180);
+        ctx.translate(-centerX, -centerY);
+    }
 
     if (settings.addShadow) {
         ctx.save();
@@ -212,60 +230,18 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
         ctx.shadowOffsetY = shadowOffset;
 
         ctx.beginPath();
-        if (preset.cropTop) {
-            ctx.moveTo(imgX, 0);
-            ctx.lineTo(imgX + imgW, 0);
-            ctx.lineTo(imgX + imgW, imgY + imgH - radius);
-            ctx.quadraticCurveTo(imgX + imgW, imgY + imgH, imgX + imgW - radius, imgY + imgH);
-            ctx.lineTo(imgX + radius, imgY + imgH);
-            ctx.quadraticCurveTo(imgX, imgY + imgH, imgX, imgY + imgH - radius);
-            ctx.lineTo(imgX, 0);
-        } else if (preset.cropBottom) {
-            ctx.moveTo(imgX + radius, imgY);
-            ctx.lineTo(imgX + imgW - radius, imgY);
-            ctx.quadraticCurveTo(imgX + imgW, imgY, imgX + imgW, imgY + radius);
-            ctx.lineTo(imgX + imgW, canvasH);
-            ctx.lineTo(imgX, canvasH);
-            ctx.lineTo(imgX, imgY + radius);
-            ctx.quadraticCurveTo(imgX, imgY, imgX + radius, imgY);
-        } else {
-            ctx.roundRect(imgX, imgY, imgW, imgH, radius);
-        }
+        ctx.roundRect(imgX, imgY, imgW, imgH, radius);
         ctx.fillStyle = '#000';
         ctx.fill();
         ctx.restore();
     }
 
+    // Clip and draw screenshot image
+    ctx.save();
     ctx.beginPath();
-    ctx.rect(0, 0, canvasW, canvasH);
-    ctx.clip();
-
-    ctx.beginPath();
-    if (preset.cropTop) {
-        var bottomRadius = Math.min(radius, imgH);
-        var clipTopY = Math.max(0, imgY);
-        ctx.moveTo(imgX, clipTopY);
-        ctx.lineTo(imgX + imgW, clipTopY);
-        ctx.lineTo(imgX + imgW, imgY + imgH - bottomRadius);
-        ctx.quadraticCurveTo(imgX + imgW, imgY + imgH, imgX + imgW - bottomRadius, imgY + imgH);
-        ctx.lineTo(imgX + bottomRadius, imgY + imgH);
-        ctx.quadraticCurveTo(imgX, imgY + imgH, imgX, imgY + imgH - bottomRadius);
-        ctx.lineTo(imgX, clipTopY);
-    } else if (preset.cropBottom) {
-        var topRadius = Math.min(radius, imgH);
-        ctx.moveTo(imgX + topRadius, imgY);
-        ctx.lineTo(imgX + imgW - topRadius, imgY);
-        ctx.quadraticCurveTo(imgX + imgW, imgY, imgX + imgW, imgY + topRadius);
-        ctx.lineTo(imgX + imgW, canvasH + 10);
-        ctx.lineTo(imgX, canvasH + 10);
-        ctx.lineTo(imgX, imgY + topRadius);
-        ctx.quadraticCurveTo(imgX, imgY, imgX + topRadius, imgY);
-    } else {
-        ctx.roundRect(imgX, imgY, imgW, imgH, radius);
-    }
+    ctx.roundRect(imgX, imgY, imgW, imgH, radius);
     ctx.clip();
     ctx.drawImage(screenshot.image, imgX, imgY, imgW, imgH);
-
     ctx.restore();
 
     // Device frame (completely outside the image)
@@ -274,38 +250,15 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
         var frameOffset = frameWidth / 2;
         var frameRadius = radius + frameOffset;
 
-        ctx.save();
         ctx.strokeStyle = settings.deviceFrameColor;
         ctx.lineWidth = frameWidth;
 
         ctx.beginPath();
-        if (preset.cropTop) {
-            // Frame pour bottom preset (crop top)
-            var frameTopY = Math.max(0, imgY);
-            var bottomRadius = Math.min(radius, imgH);
-            ctx.moveTo(imgX - frameOffset, frameTopY);
-            ctx.lineTo(imgX - frameOffset, imgY + imgH - bottomRadius);
-            ctx.quadraticCurveTo(imgX - frameOffset, imgY + imgH + frameOffset, imgX + bottomRadius, imgY + imgH + frameOffset);
-            ctx.lineTo(imgX + imgW - bottomRadius, imgY + imgH + frameOffset);
-            ctx.quadraticCurveTo(imgX + imgW + frameOffset, imgY + imgH + frameOffset, imgX + imgW + frameOffset, imgY + imgH - bottomRadius);
-            ctx.lineTo(imgX + imgW + frameOffset, frameTopY);
-        } else if (preset.cropBottom) {
-            // Frame pour top preset (crop bottom)
-            var frameBottomY = Math.min(canvasH, imgY + imgH);
-            var topRadius = Math.min(radius, imgH);
-            ctx.moveTo(imgX - frameOffset, frameBottomY);
-            ctx.lineTo(imgX - frameOffset, imgY + topRadius);
-            ctx.quadraticCurveTo(imgX - frameOffset, imgY - frameOffset, imgX + topRadius, imgY - frameOffset);
-            ctx.lineTo(imgX + imgW - topRadius, imgY - frameOffset);
-            ctx.quadraticCurveTo(imgX + imgW + frameOffset, imgY - frameOffset, imgX + imgW + frameOffset, imgY + topRadius);
-            ctx.lineTo(imgX + imgW + frameOffset, frameBottomY);
-        } else {
-            // Frame complet pour center
-            ctx.roundRect(imgX - frameOffset, imgY - frameOffset, imgW + frameWidth, imgH + frameWidth, frameRadius);
-        }
+        ctx.roundRect(imgX - frameOffset, imgY - frameOffset, imgW + frameWidth, imgH + frameWidth, frameRadius);
         ctx.stroke();
-        ctx.restore();
     }
+
+    ctx.restore();
 
     return { imgY: imgY, imgH: imgH };
 };

@@ -418,6 +418,23 @@ App.initEventListeners = function() {
         });
     }
 
+    // Screenshot rotation slider
+    var screenshotRotationSlider = document.getElementById('screenshotRotationSlider');
+    if (screenshotRotationSlider) {
+        screenshotRotationSlider.addEventListener('input', function() {
+            var settings = App.getActiveSettings();
+            if (!settings) return;
+            settings.screenshotRotation = parseInt(this.value, 10);
+            var valEl = document.getElementById('screenshotRotationValue');
+            if (valEl) valEl.textContent = this.value + '°';
+            App.renderActivePreview();
+        });
+
+        screenshotRotationSlider.addEventListener('change', function() {
+            App.Storage.scheduleSave();
+        });
+    }
+
     // Text alignment
     document.querySelectorAll('.align-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {

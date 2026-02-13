@@ -211,6 +211,14 @@ App.updateSettingsUI = function() {
         if (offsetXValEl) offsetXValEl.textContent = screenshotOffsetXSlider.value;
     }
 
+    // Screenshot rotation slider
+    var screenshotRotationSlider = document.getElementById('screenshotRotationSlider');
+    if (screenshotRotationSlider) {
+        screenshotRotationSlider.value = settings.screenshotRotation || 0;
+        var rotationValEl = document.getElementById('screenshotRotationValue');
+        if (rotationValEl) rotationValEl.textContent = (settings.screenshotRotation || 0) + '°';
+    }
+
     App.updateTextFieldsState();
 };
 
@@ -236,6 +244,7 @@ App.updateScreenshotOptionsVisibility = function(hidden) {
     document.getElementById('deviceFrameColorRow').style.display = hidden ? 'none' : (document.getElementById('addDeviceFrame').checked ? 'flex' : 'none');
     document.getElementById('displayShadowRow').style.display = display;
     document.getElementById('screenshotOffsetXRow').style.display = display;
+    document.getElementById('screenshotRotationRow').style.display = display;
 };
 
 // Keys for each section
@@ -244,7 +253,7 @@ App.SECTION_KEYS = {
     title: ['titleFont', 'titleSize', 'titleColor', 'titleWeight', 'titleUppercase'],
     body: ['bodyFont', 'bodySize', 'bodyColor', 'bodyWeight', 'bodyUppercase'],
     background: ['bgColor', 'bgGradient', 'bgGradientColor', 'bgGradientAngle'],
-    device: ['preset', 'hideScreenshot', 'addDeviceFrame', 'deviceFrameColor', 'addShadow', 'screenshotOffsetX']
+    device: ['preset', 'hideScreenshot', 'addDeviceFrame', 'deviceFrameColor', 'addShadow', 'screenshotOffsetX', 'screenshotRotation']
 };
 
 // Check if a section's settings match across all screenshots
@@ -288,7 +297,8 @@ App.applySectionToAll = function(section) {
             addDeviceFrame: currentSettings.addDeviceFrame,
             deviceFrameColor: currentSettings.deviceFrameColor,
             addShadow: currentSettings.addShadow,
-            screenshotOffsetX: currentSettings.screenshotOffsetX
+            screenshotOffsetX: currentSettings.screenshotOffsetX,
+            screenshotRotation: currentSettings.screenshotRotation
         };
     } else if (section === 'background') {
         settingsToApply = {
