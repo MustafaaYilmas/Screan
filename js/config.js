@@ -196,7 +196,8 @@ App.DEFAULT_SETTINGS = {
     hideScreenshot: false,
     preset: 'top',
     textAlign: 'center',
-    textSpacing: 33
+    textGap: 35,
+    screenshotOffsetY: 33
 };
 
 App.FONT_WEIGHTS = {

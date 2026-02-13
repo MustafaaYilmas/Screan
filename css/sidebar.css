@@ -209,8 +209,8 @@ body.panels-hidden .mini-sidebar {
 
 .screenshot-count {
     font-size: 12px;
-    color: var(--background);
-    background: var(--foreground);
+    color: var(--primary-foreground);
+    background: var(--primary);
     font-weight: 500;
     min-width: 20px;
     height: 20px;
@@ -248,13 +248,9 @@ body.panels-hidden .mini-sidebar {
 .size-item input[type="checkbox"] {
     width: 14px;
     height: 14px;
-    accent-color: var(--background);
+    accent-color: var(--foreground-muted);
     border-radius: var(--radius-sm);
     cursor: pointer;
-}
-
-:root.light .size-item input[type="checkbox"] {
-    accent-color: var(--foreground);
 }
 
 .size-item span {

@@ -194,7 +194,8 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
             imgY = canvasH - textLayout.totalZoneHeight - imgH;
         }
     } else {
-        var spacingValue = App.spacingToSliderValue(settings.textSpacing != null ? settings.textSpacing : 33);
+        var offsetY = settings.screenshotOffsetY != null ? settings.screenshotOffsetY : (settings.textSpacing != null ? settings.textSpacing : 33);
+        var spacingValue = App.spacingToSliderValue(offsetY);
         var screenshotY = App.getSpacingScreenshotY(preset.screenshotY, spacingValue);
         imgY = canvasH * screenshotY;
     }
@@ -302,7 +303,8 @@ App.calculateTextLayout = function(ctx, canvasW, canvasH, settings, format, form
     var headlineFontSize = App.migrateFontSize(settings.titleSize, 'title');
     var subheadlineFontSize = App.migrateFontSize(settings.bodySize, 'body');
 
-    var lineSpacing = headlineFontSize * 0.35;
+    var textGap = settings.textGap != null ? settings.textGap : 35;
+    var lineSpacing = headlineFontSize * (0.1 + (textGap / 100) * 1.4);
 
     // Get font families and weights
     var titleFontKey = settings.titleFont || 'sf-pro';
@@ -360,8 +362,9 @@ App.calculateTextLayout = function(ctx, canvasW, canvasH, settings, format, form
         totalTextHeight += bodyLineSpacing * (subheadlineLines.length - 1);
     }
 
-    // Spacing margin
-    var spacingValue = App.spacingToSliderValue(settings.textSpacing != null ? settings.textSpacing : 33);
+    // Spacing margin (uses screenshotOffsetY, migrated from textSpacing)
+    var offsetY = settings.screenshotOffsetY != null ? settings.screenshotOffsetY : (settings.textSpacing != null ? settings.textSpacing : 33);
+    var spacingValue = App.spacingToSliderValue(offsetY);
     var marginRatio = App.getSpacingMargin(spacingValue);
     var margin = canvasH * marginRatio;
 

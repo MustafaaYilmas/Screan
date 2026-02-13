@@ -4,6 +4,55 @@
 
 var App = window.App || {};
 
+// Reusable slider component: binds range input + editable value label
+App.initSlider = function(config) {
+    var slider = document.getElementById(config.id + 'Slider');
+    var valueEl = document.getElementById(config.id + 'Value');
+    if (!slider || !valueEl) return;
+
+    slider.addEventListener('input', function() {
+        var settings = App.getActiveSettings();
+        if (!settings) return;
+        settings[config.settingsKey] = parseInt(this.value, 10);
+        valueEl.textContent = this.value;
+        App.renderActivePreview();
+    });
+    slider.addEventListener('change', function() {
+        App.Storage.scheduleSave();
+    });
+
+    valueEl.addEventListener('click', function() {
+        var input = document.createElement('input');
+        input.type = 'number';
+        input.className = 'slider-value-input';
+        input.value = slider.value;
+        input.min = slider.min;
+        input.max = slider.max;
+        input.step = slider.step;
+        valueEl.replaceWith(input);
+        input.focus();
+        input.select();
+
+        var commit = function() {
+            var val = parseInt(input.value, 10);
+            if (isNaN(val)) val = config.defaultValue;
+            val = Math.max(parseInt(slider.min), Math.min(parseInt(slider.max), val));
+            slider.value = val;
+            var settings = App.getActiveSettings();
+            if (settings) settings[config.settingsKey] = val;
+            valueEl.textContent = val;
+            input.replaceWith(valueEl);
+            App.renderActivePreview();
+            App.Storage.scheduleSave();
+        };
+        input.addEventListener('blur', commit);
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); commit(); }
+            if (e.key === 'Escape') { valueEl.textContent = slider.value; input.replaceWith(valueEl); }
+        });
+    });
+};
+
 // Helper to render and save after settings change (only active canvas)
 App.renderAndSave = function() {
     App.renderActivePreview();
@@ -278,21 +327,7 @@ App.initEventListeners = function() {
     });
 
     // Gradient angle slider
-    var gradientAngleSlider = document.getElementById('bgGradientAngleSlider');
-    if (gradientAngleSlider) {
-        gradientAngleSlider.addEventListener('input', function() {
-            var settings = App.getActiveSettings();
-            if (!settings) return;
-            settings.bgGradientAngle = parseInt(this.value, 10);
-            var valEl = document.getElementById('bgGradientAngleValue');
-            if (valEl) valEl.textContent = this.value + '°';
-            App.renderActivePreview();
-        });
-
-        gradientAngleSlider.addEventListener('change', function() {
-            App.Storage.scheduleSave();
-        });
-    }
+    App.initSlider({ id: 'bgGradientAngle', settingsKey: 'bgGradientAngle', defaultValue: 180 });
 
     // Gradient end color - color picker
     document.getElementById('bgGradientColor').addEventListener('input', function(e) {
@@ -384,56 +419,17 @@ App.initEventListeners = function() {
         });
     });
 
-    // Spacing slider
-    var spacingSlider = document.getElementById('spacingSlider');
-    if (spacingSlider) {
-        spacingSlider.addEventListener('input', function() {
-            var settings = App.getActiveSettings();
-            if (!settings) return;
-            settings.textSpacing = parseInt(this.value, 10);
-            var spacingValueEl = document.getElementById('spacingValue');
-            if (spacingValueEl) spacingValueEl.textContent = this.value;
-            App.renderActivePreview();
-        });
-
-        spacingSlider.addEventListener('change', function() {
-            App.Storage.scheduleSave();
-        });
-    }
+    // Text gap slider (spacing between title and body)
+    App.initSlider({ id: 'textGap', settingsKey: 'textGap', defaultValue: 35 });
 
     // Screenshot horizontal offset slider
-    var screenshotOffsetXSlider = document.getElementById('screenshotOffsetXSlider');
-    if (screenshotOffsetXSlider) {
-        screenshotOffsetXSlider.addEventListener('input', function() {
-            var settings = App.getActiveSettings();
-            if (!settings) return;
-            settings.screenshotOffsetX = parseInt(this.value, 10);
-            var valEl = document.getElementById('screenshotOffsetXValue');
-            if (valEl) valEl.textContent = this.value;
-            App.renderActivePreview();
-        });
+    App.initSlider({ id: 'screenshotOffsetX', settingsKey: 'screenshotOffsetX', defaultValue: 0 });
 
-        screenshotOffsetXSlider.addEventListener('change', function() {
-            App.Storage.scheduleSave();
-        });
-    }
+    // Screenshot vertical offset slider
+    App.initSlider({ id: 'screenshotOffsetY', settingsKey: 'screenshotOffsetY', defaultValue: 33 });
 
     // Screenshot rotation slider
-    var screenshotRotationSlider = document.getElementById('screenshotRotationSlider');
-    if (screenshotRotationSlider) {
-        screenshotRotationSlider.addEventListener('input', function() {
-            var settings = App.getActiveSettings();
-            if (!settings) return;
-            settings.screenshotRotation = parseInt(this.value, 10);
-            var valEl = document.getElementById('screenshotRotationValue');
-            if (valEl) valEl.textContent = this.value + '°';
-            App.renderActivePreview();
-        });
-
-        screenshotRotationSlider.addEventListener('change', function() {
-            App.Storage.scheduleSave();
-        });
-    }
+    App.initSlider({ id: 'screenshotRotation', settingsKey: 'screenshotRotation', defaultValue: 0 });
 
     // Text alignment
     document.querySelectorAll('.align-btn').forEach(function(btn) {

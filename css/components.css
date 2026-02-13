@@ -74,8 +74,8 @@
 }
 
 .btn-group-item.active {
-    background: var(--foreground);
-    color: var(--background);
+    background: var(--primary);
+    color: var(--primary-foreground);
 }
 
 .btn-group-item:disabled {
@@ -89,8 +89,8 @@
 }
 
 .btn-group-item:disabled.active {
-    background: var(--foreground);
-    color: var(--background);
+    background: var(--primary);
+    color: var(--primary-foreground);
 }
 
 /* Uppercase toggle button */
@@ -287,9 +287,39 @@
 .slider-value {
     font-size: 13px;
     color: var(--foreground);
-    min-width: 24px;
+    width: 38px;
     text-align: right;
     flex-shrink: 0;
+    cursor: text;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 2px 4px;
+}
+
+.slider-value-input {
+    font-size: 13px;
+    text-align: right;
+    width: 38px;
+    background: var(--input);
+    color: var(--foreground);
+    border: 1px solid var(--card);
+    border-radius: 4px;
+    padding: 2px 4px;
+    margin: 0;
+    outline: none;
+    box-shadow: none;
+    flex-shrink: 0;
+    -moz-appearance: textfield;
+}
+.slider-value-input:focus,
+.slider-value-input:focus-visible {
+    outline: none;
+    box-shadow: none;
+    border-color: var(--border);
+}
+.slider-value-input::-webkit-inner-spin-button,
+.slider-value-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
 }
 
 .range-slider {
@@ -309,7 +339,7 @@
     appearance: none;
     width: 14px;
     height: 14px;
-    background: var(--foreground);
+    background: var(--foreground-muted);
     border-radius: 50%;
     cursor: pointer;
     transition: transform var(--transition-fast);
@@ -330,7 +360,7 @@
 .range-slider::-moz-range-thumb {
     width: 14px;
     height: 14px;
-    background: var(--foreground);
+    background: var(--primary);
     border: none;
     border-radius: 50%;
     cursor: pointer;
@@ -562,13 +592,13 @@
 }
 
 .toggle input:checked + .toggle-slider {
-    background: var(--foreground);
-    border-color: var(--foreground);
+    background: var(--primary);
+    border-color: var(--primary);
 }
 
 .toggle input:checked + .toggle-slider::before {
     transform: translateX(16px);
-    background: var(--background);
+    background: var(--primary-foreground);
 }
 
 /* ============================================
@@ -607,9 +637,9 @@
 }
 
 .option-btn.active {
-    background: var(--foreground);
-    color: var(--background);
-    border-color: var(--foreground);
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border-color: var(--primary);
 }
 
 /* ============================================
@@ -659,9 +689,9 @@
 }
 
 .language-item.active {
-    background: var(--foreground);
-    color: var(--background);
-    border-color: var(--foreground);
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border-color: var(--primary);
 }
 
 .language-item .chip-name {

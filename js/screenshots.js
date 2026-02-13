@@ -4,6 +4,13 @@
 
 var App = window.App || {};
 
+App.syncSlider = function(id, value) {
+    var slider = document.getElementById(id + 'Slider');
+    var valueEl = document.getElementById(id + 'Value');
+    if (slider) slider.value = value;
+    if (valueEl) valueEl.textContent = value;
+};
+
 App.handleScreenshots = function(files) {
     var platformData = App.getActivePlatformData();
 
@@ -168,12 +175,7 @@ App.updateSettingsUI = function() {
     document.getElementById('bgColorLabel').textContent = settings.bgGradient ? 'Start' : 'Color';
     document.getElementById('bgGradientColor').value = settings.bgGradientColor || '#ffffff';
     document.getElementById('bgGradientColorHex').value = (settings.bgGradientColor || '#ffffff').toUpperCase();
-    var gradientAngleSlider = document.getElementById('bgGradientAngleSlider');
-    if (gradientAngleSlider) {
-        gradientAngleSlider.value = settings.bgGradientAngle != null ? settings.bgGradientAngle : 180;
-        var angleValEl = document.getElementById('bgGradientAngleValue');
-        if (angleValEl) angleValEl.textContent = gradientAngleSlider.value + '°';
-    }
+    App.syncSlider('bgGradientAngle', settings.bgGradientAngle != null ? settings.bgGradientAngle : 180);
 
     // Device frame settings
     document.getElementById('addDeviceFrame').checked = settings.addDeviceFrame;
@@ -195,29 +197,11 @@ App.updateSettingsUI = function() {
         btn.classList.toggle('active', btn.dataset.align === (settings.textAlign || 'center'));
     });
 
-    // Spacing slider
-    var spacingSlider = document.getElementById('spacingSlider');
-    if (spacingSlider) {
-        spacingSlider.value = App.spacingToSliderValue(settings.textSpacing != null ? settings.textSpacing : 33);
-        var spacingValueEl = document.getElementById('spacingValue');
-        if (spacingValueEl) spacingValueEl.textContent = spacingSlider.value;
-    }
-
-    // Screenshot offset X slider
-    var screenshotOffsetXSlider = document.getElementById('screenshotOffsetXSlider');
-    if (screenshotOffsetXSlider) {
-        screenshotOffsetXSlider.value = settings.screenshotOffsetX || 0;
-        var offsetXValEl = document.getElementById('screenshotOffsetXValue');
-        if (offsetXValEl) offsetXValEl.textContent = screenshotOffsetXSlider.value;
-    }
-
-    // Screenshot rotation slider
-    var screenshotRotationSlider = document.getElementById('screenshotRotationSlider');
-    if (screenshotRotationSlider) {
-        screenshotRotationSlider.value = settings.screenshotRotation || 0;
-        var rotationValEl = document.getElementById('screenshotRotationValue');
-        if (rotationValEl) rotationValEl.textContent = (settings.screenshotRotation || 0) + '°';
-    }
+    // Sliders
+    App.syncSlider('textGap', settings.textGap != null ? settings.textGap : 35);
+    App.syncSlider('screenshotOffsetX', settings.screenshotOffsetX || 0);
+    App.syncSlider('screenshotOffsetY', settings.screenshotOffsetY != null ? settings.screenshotOffsetY : (settings.textSpacing != null ? App.spacingToSliderValue(settings.textSpacing) : 33));
+    App.syncSlider('screenshotRotation', settings.screenshotRotation || 0);
 
     App.updateTextFieldsState();
 };
@@ -232,7 +216,7 @@ App.updateTextFieldsState = function() {
     document.getElementById('languageSection').style.display = hideText ? 'none' : 'block';
     document.getElementById('titleSection').style.display = hideText ? 'none' : 'block';
     document.getElementById('bodySection').style.display = hideText ? 'none' : 'block';
-    document.getElementById('spacingRow').style.display = hideText ? 'none' : 'flex';
+    document.getElementById('textGapRow').style.display = hideText ? 'none' : 'flex';
     document.getElementById('alignRow').style.display = hideText ? 'none' : 'flex';
 };
 
@@ -244,16 +228,17 @@ App.updateScreenshotOptionsVisibility = function(hidden) {
     document.getElementById('deviceFrameColorRow').style.display = hidden ? 'none' : (document.getElementById('addDeviceFrame').checked ? 'flex' : 'none');
     document.getElementById('displayShadowRow').style.display = display;
     document.getElementById('screenshotOffsetXRow').style.display = display;
+    document.getElementById('screenshotOffsetYRow').style.display = display;
     document.getElementById('screenshotRotationRow').style.display = display;
 };
 
 // Keys for each section
 App.SECTION_KEYS = {
-    layout: ['textSpacing', 'textAlign'],
+    layout: ['textGap', 'textAlign'],
     title: ['titleFont', 'titleSize', 'titleColor', 'titleWeight', 'titleUppercase'],
     body: ['bodyFont', 'bodySize', 'bodyColor', 'bodyWeight', 'bodyUppercase'],
     background: ['bgColor', 'bgGradient', 'bgGradientColor', 'bgGradientAngle'],
-    device: ['preset', 'hideScreenshot', 'addDeviceFrame', 'deviceFrameColor', 'addShadow', 'screenshotOffsetX', 'screenshotRotation']
+    device: ['preset', 'hideScreenshot', 'addDeviceFrame', 'deviceFrameColor', 'addShadow', 'screenshotOffsetX', 'screenshotOffsetY', 'screenshotRotation']
 };
 
 // Check if a section's settings match across all screenshots
@@ -298,6 +283,7 @@ App.applySectionToAll = function(section) {
             deviceFrameColor: currentSettings.deviceFrameColor,
             addShadow: currentSettings.addShadow,
             screenshotOffsetX: currentSettings.screenshotOffsetX,
+            screenshotOffsetY: currentSettings.screenshotOffsetY,
             screenshotRotation: currentSettings.screenshotRotation
         };
     } else if (section === 'background') {
@@ -309,7 +295,7 @@ App.applySectionToAll = function(section) {
         };
     } else if (section === 'layout') {
         settingsToApply = {
-            textSpacing: currentSettings.textSpacing,
+            textGap: currentSettings.textGap,
             textAlign: currentSettings.textAlign
         };
     } else if (section === 'title') {
