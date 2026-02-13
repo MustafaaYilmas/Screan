@@ -89,6 +89,8 @@ App.updateSidebarCounts = function() {
             badge.style.display = count > 0 ? 'inline-flex' : 'none';
         }
     });
+    // Also update the active platform badge in the toggle
+    App.updatePlatformToggleLabel();
 };
 
 App.selectPlatform = function(platformKey) {
@@ -98,6 +100,11 @@ App.selectPlatform = function(platformKey) {
     document.querySelectorAll('.platform-item').forEach(function(item) {
         item.classList.toggle('active', item.dataset.platform === platformKey);
     });
+
+    // Close platforms accordion and update toggle label
+    document.getElementById('platformsSection').classList.remove('open');
+    document.getElementById('platformsToggle').classList.remove('open');
+    App.updatePlatformToggleLabel();
 
     // Update format dropdown for active platform
     App.updateFormatDropdown();
@@ -109,6 +116,20 @@ App.selectPlatform = function(platformKey) {
     App.updateSettingsUI();
     App.renderAllPreviews();
     App.Storage.scheduleSave();
+};
+
+App.updatePlatformToggleLabel = function() {
+    var family = App.PLATFORM_FAMILIES[App.state.activePlatform];
+    var nameEl = document.getElementById('activePlatformName');
+    var countEl = document.getElementById('activePlatformCount');
+    if (nameEl && family) {
+        nameEl.textContent = family.name;
+    }
+    if (countEl) {
+        var count = App.state.platforms[App.state.activePlatform].screenshots.length;
+        countEl.textContent = count;
+        countEl.style.display = count > 0 ? 'inline-flex' : 'none';
+    }
 };
 
 App.updateEmptyStateText = function() {

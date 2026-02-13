@@ -54,7 +54,7 @@
                 <a href="https://github.com/cassardp/Screan#readme" target="_blank" rel="noopener" class="mini-sidebar-btn" title="View on GitHub">
                     <i data-lucide="github"></i>
                 </a>
-                <span class="version-number">0.83</span>
+                <span class="version-number">0.84</span>
             </div>
         </aside>
 
@@ -66,21 +66,34 @@
             </div>
 
             <nav class="sidebar-nav">
-                <!-- Apple App Store -->
-                <div class="nav-section" id="appStoreSection">
-                    <div class="nav-section-title">App Store</div>
-                </div>
-
-                <div class="nav-section" id="googlePlaySection">
-                    <div class="nav-section-title">Google Play</div>
-                </div>
+                <!-- Futur sélecteur de projets -->
             </nav>
 
-            <div class="sidebar-footer">
-                <button class="btn-export" id="exportBtn" disabled>
-                    <i data-lucide="download"></i>
-                    Export
-                </button>
+            <div class="sidebar-bottom">
+                <div class="platforms-section" id="platformsSection">
+                    <button class="platforms-toggle" id="platformsToggle">
+                        <span>Platforms</span>
+                        <i data-lucide="chevron-up"></i>
+                    </button>
+                    <div class="active-platform-preview" id="activePlatformPreview">
+                        <span class="active-platform-name" id="activePlatformName">iPhone</span>
+                        <span class="active-platform-count" id="activePlatformCount" style="display: none;">0</span>
+                    </div>
+                    <div class="platforms-list" id="platformsList">
+                        <div class="nav-section" id="appStoreSection">
+                            <div class="nav-section-title">App Store</div>
+                        </div>
+                        <div class="nav-section" id="googlePlaySection">
+                            <div class="nav-section-title">Google Play</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="sidebar-footer">
+                    <button class="btn-export" id="exportBtn" disabled>
+                        <i data-lucide="download"></i>
+                        Export
+                    </button>
+                </div>
             </div>
         </aside>
 

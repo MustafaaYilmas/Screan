@@ -444,6 +444,12 @@ App.initEventListeners = function() {
         });
     });
 
+    // Platforms accordion toggle
+    document.getElementById('platformsToggle').addEventListener('click', function() {
+        this.classList.toggle('open');
+        document.getElementById('platformsSection').classList.toggle('open');
+    });
+
     // Platform selection
     document.querySelectorAll('.platform-header').forEach(function(header) {
         header.addEventListener('click', function() {

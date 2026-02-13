@@ -208,6 +208,9 @@ App.Storage = {
             item.classList.toggle('active', item.dataset.platform === App.state.activePlatform);
         });
 
+        // Update toggle label with active platform name
+        App.updatePlatformToggleLabel();
+
         // Update format dropdown
         App.updateFormatDropdown();
 
