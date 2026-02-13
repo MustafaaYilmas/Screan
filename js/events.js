@@ -363,6 +363,7 @@ App.initEventListeners = function() {
         var settings = App.getActiveSettings();
         if (settings) {
             settings.hideScreenshot = e.target.checked;
+            App.updateScreenshotOptionsVisibility(e.target.checked);
             App.renderAndSave();
         }
     });

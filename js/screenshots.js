@@ -183,6 +183,7 @@ App.updateSettingsUI = function() {
     // Other settings
     document.getElementById('addShadow').checked = settings.addShadow;
     document.getElementById('hideScreenshot').checked = settings.hideScreenshot || false;
+    App.updateScreenshotOptionsVisibility(settings.hideScreenshot || false);
 
     document.querySelectorAll('.position-text-btn').forEach(function(btn) {
         btn.classList.toggle('active', btn.dataset.preset === settings.preset);
@@ -225,6 +226,14 @@ App.updateTextFieldsState = function() {
     document.getElementById('alignRow').style.display = hideText ? 'none' : 'flex';
 };
 
+
+App.updateScreenshotOptionsVisibility = function(hidden) {
+    var display = hidden ? 'none' : 'flex';
+    document.getElementById('showBorderRow').style.display = display;
+    document.getElementById('deviceFrameColorRow').style.display = hidden ? 'none' : (document.getElementById('addDeviceFrame').checked ? 'flex' : 'none');
+    document.getElementById('displayShadowRow').style.display = display;
+    document.getElementById('screenshotOffsetXRow').style.display = display;
+};
 
 // Keys for each section
 App.SECTION_KEYS = {
