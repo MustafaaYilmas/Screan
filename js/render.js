@@ -134,8 +134,12 @@ App.renderCanvas = function(canvas, screenshot) {
 
     // Draw background (solid or gradient)
     if (settings.bgGradient) {
-        // Gradient from top (bgColor) to bottom (bgGradientColor)
-        var gradient = ctx.createLinearGradient(0, 0, 0, h);
+        var angle = (settings.bgGradientAngle != null ? settings.bgGradientAngle : 180) * Math.PI / 180;
+        var cx = w / 2, cy = h / 2;
+        var len = Math.abs(w * Math.sin(angle)) + Math.abs(h * Math.cos(angle));
+        var dx = Math.sin(angle) * len / 2;
+        var dy = -Math.cos(angle) * len / 2;
+        var gradient = ctx.createLinearGradient(cx - dx, cy - dy, cx + dx, cy + dy);
         gradient.addColorStop(0, settings.bgColor);
         gradient.addColorStop(1, settings.bgGradientColor || '#ffffff');
         ctx.fillStyle = gradient;
@@ -172,6 +176,10 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
     var imgH = imgW / imgRatio;
 
     var imgX = (canvasW - imgW) / 2;
+    // Apply horizontal offset (-50 to +50 mapped to canvas width)
+    if (settings.screenshotOffsetX) {
+        imgX += canvasW * (settings.screenshotOffsetX / 100);
+    }
     var imgY;
     var radius = imgW * (format.cornerRadius || 0.1);
     if (preset.centered) {

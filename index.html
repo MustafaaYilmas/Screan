@@ -54,7 +54,7 @@
                 <a href="https://github.com/cassardp/Screan#readme" target="_blank" rel="noopener" class="mini-sidebar-btn" title="View on GitHub">
                     <i data-lucide="github"></i>
                 </a>
-                <span class="version-number">0.77</span>
+                <span class="version-number">0.78</span>
             </div>
         </aside>
 
@@ -167,8 +167,17 @@
                                     <span class="slider-value" id="spacingValue">33</span>
                                 </div>
                             </div>
+                            <div class="layout-row" id="screenshotOffsetXRow">
+                                <span class="layout-label">Offset X</span>
+                                <div class="slider-row">
+                                    <div class="slider-track-wrap">
+                                        <input type="range" id="screenshotOffsetXSlider" class="range-slider" min="-50" max="50" value="0" step="1">
+                                    </div>
+                                    <span class="slider-value" id="screenshotOffsetXValue">0</span>
+                                </div>
+                            </div>
                             <div class="layout-row" id="alignRow">
-                                <span class="layout-label">Align</span>
+                                <span class="layout-label">Align text</span>
                                 <div class="align-buttons btn-group" id="alignButtons">
                                     <button class="align-btn btn-group-item" data-align="left" title="Align left">
                                         <i data-lucide="align-left"></i>
@@ -180,13 +189,6 @@
                                         <i data-lucide="align-right"></i>
                                     </button>
                                 </div>
-                            </div>
-                            <div class="layout-row" id="hideScreenshotRow">
-                                <span class="layout-label">Hide screenshot</span>
-                                <label class="toggle">
-                                    <input type="checkbox" id="hideScreenshot">
-                                    <span class="toggle-slider"></span>
-                                </label>
                             </div>
                         </div>
                     </section>
@@ -303,6 +305,15 @@
                                     <input type="text" class="color-hex-input" id="bgGradientColorHex" value="#FFFFFF" maxlength="7">
                                 </div>
                             </div>
+                            <div class="color-row" id="gradientAngleRow" style="display: none;">
+                                <label class="color-label">Angle</label>
+                                <div class="slider-row">
+                                    <div class="slider-track-wrap">
+                                        <input type="range" id="bgGradientAngleSlider" class="range-slider" min="0" max="360" value="180" step="1">
+                                    </div>
+                                    <span class="slider-value" id="bgGradientAngleValue">180°</span>
+                                </div>
+                            </div>
                             <div class="color-row">
                                 <label class="color-label">Gradient</label>
                                 <label class="toggle">
@@ -313,16 +324,23 @@
                         </div>
                     </section>
 
-                    <!-- Device Frame -->
+                    <!-- Screenshot -->
                     <section class="settings-section" id="deviceFrameSection">
                         <div class="section-header">
-                            <span class="section-title">Device</span>
+                            <span class="section-title">Screenshot</span>
                             <span class="section-header-spacer"></span>
                             <button class="btn-apply-section" data-section="device" title="Apply to all">
                                 <i data-lucide="arrow-right-left"></i>
                             </button>
                         </div>
                         <div class="section-content">
+                            <div class="color-row" id="hideScreenshotRow">
+                                <label class="color-label">Hide</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="hideScreenshot">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
                             <div class="color-row">
                                 <label class="color-label">Show border</label>
                                 <label class="toggle">

@@ -98,7 +98,12 @@ App.renderCanvasForExport = function(canvas, ctx, screenshot, format, formatKey,
 
     // Draw background (solid or gradient)
     if (exportSettings.bgGradient) {
-        var gradient = ctx.createLinearGradient(0, 0, 0, h);
+        var angle = (exportSettings.bgGradientAngle != null ? exportSettings.bgGradientAngle : 180) * Math.PI / 180;
+        var cx = w / 2, cy = h / 2;
+        var len = Math.abs(w * Math.sin(angle)) + Math.abs(h * Math.cos(angle));
+        var dx = Math.sin(angle) * len / 2;
+        var dy = -Math.cos(angle) * len / 2;
+        var gradient = ctx.createLinearGradient(cx - dx, cy - dy, cx + dx, cy + dy);
         gradient.addColorStop(0, exportSettings.bgColor);
         gradient.addColorStop(1, exportSettings.bgGradientColor || '#ffffff');
         ctx.fillStyle = gradient;

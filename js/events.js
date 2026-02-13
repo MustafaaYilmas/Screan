@@ -271,9 +271,27 @@ App.initEventListeners = function() {
         if (settings) {
             settings.bgGradient = e.target.checked;
             document.getElementById('gradientColorRow').style.display = e.target.checked ? 'flex' : 'none';
+            document.getElementById('gradientAngleRow').style.display = e.target.checked ? 'flex' : 'none';
             App.renderAndSave();
         }
     });
+
+    // Gradient angle slider
+    var gradientAngleSlider = document.getElementById('bgGradientAngleSlider');
+    if (gradientAngleSlider) {
+        gradientAngleSlider.addEventListener('input', function() {
+            var settings = App.getActiveSettings();
+            if (!settings) return;
+            settings.bgGradientAngle = parseInt(this.value, 10);
+            var valEl = document.getElementById('bgGradientAngleValue');
+            if (valEl) valEl.textContent = this.value + '°';
+            App.renderActivePreview();
+        });
+
+        gradientAngleSlider.addEventListener('change', function() {
+            App.Storage.scheduleSave();
+        });
+    }
 
     // Gradient end color - color picker
     document.getElementById('bgGradientColor').addEventListener('input', function(e) {
@@ -376,6 +394,23 @@ App.initEventListeners = function() {
         });
 
         spacingSlider.addEventListener('change', function() {
+            App.Storage.scheduleSave();
+        });
+    }
+
+    // Screenshot horizontal offset slider
+    var screenshotOffsetXSlider = document.getElementById('screenshotOffsetXSlider');
+    if (screenshotOffsetXSlider) {
+        screenshotOffsetXSlider.addEventListener('input', function() {
+            var settings = App.getActiveSettings();
+            if (!settings) return;
+            settings.screenshotOffsetX = parseInt(this.value, 10);
+            var valEl = document.getElementById('screenshotOffsetXValue');
+            if (valEl) valEl.textContent = this.value;
+            App.renderActivePreview();
+        });
+
+        screenshotOffsetXSlider.addEventListener('change', function() {
             App.Storage.scheduleSave();
         });
     }

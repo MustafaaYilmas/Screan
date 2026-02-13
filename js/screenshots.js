@@ -15,8 +15,20 @@ App.handleScreenshots = function(files) {
             img.onload = function() {
                 var isFirst = platformData.screenshots.length === 0;
 
-                // Create settings with content for all global languages
-                var settings = Object.assign({}, App.DEFAULT_SETTINGS);
+                // Create settings: inherit from last existing screenshot, or use defaults
+                var existingScreenshots = platformData.screenshots;
+                var baseSettings;
+                if (existingScreenshots.length > 0) {
+                    var lastSettings = existingScreenshots[existingScreenshots.length - 1].settings;
+                    baseSettings = Object.assign({}, lastSettings);
+                    // Reset text content - will be initialized below
+                    delete baseSettings.content;
+                    delete baseSettings.headline;
+                    delete baseSettings.subheadline;
+                } else {
+                    baseSettings = Object.assign({}, App.DEFAULT_SETTINGS);
+                }
+                var settings = baseSettings;
                 App.initializeScreenshotContent(settings);
 
                 platformData.screenshots.push({
@@ -152,8 +164,15 @@ App.updateSettingsUI = function() {
     document.getElementById('bgColor1Hex').value = settings.bgColor.toUpperCase();
     document.getElementById('bgGradient').checked = settings.bgGradient || false;
     document.getElementById('gradientColorRow').style.display = settings.bgGradient ? 'flex' : 'none';
+    document.getElementById('gradientAngleRow').style.display = settings.bgGradient ? 'flex' : 'none';
     document.getElementById('bgGradientColor').value = settings.bgGradientColor || '#ffffff';
     document.getElementById('bgGradientColorHex').value = (settings.bgGradientColor || '#ffffff').toUpperCase();
+    var gradientAngleSlider = document.getElementById('bgGradientAngleSlider');
+    if (gradientAngleSlider) {
+        gradientAngleSlider.value = settings.bgGradientAngle != null ? settings.bgGradientAngle : 180;
+        var angleValEl = document.getElementById('bgGradientAngleValue');
+        if (angleValEl) angleValEl.textContent = gradientAngleSlider.value + '°';
+    }
 
     // Device frame settings
     document.getElementById('addDeviceFrame').checked = settings.addDeviceFrame;
@@ -181,6 +200,14 @@ App.updateSettingsUI = function() {
         if (spacingValueEl) spacingValueEl.textContent = spacingSlider.value;
     }
 
+    // Screenshot offset X slider
+    var screenshotOffsetXSlider = document.getElementById('screenshotOffsetXSlider');
+    if (screenshotOffsetXSlider) {
+        screenshotOffsetXSlider.value = settings.screenshotOffsetX || 0;
+        var offsetXValEl = document.getElementById('screenshotOffsetXValue');
+        if (offsetXValEl) offsetXValEl.textContent = screenshotOffsetXSlider.value;
+    }
+
     App.updateTextFieldsState();
 };
 
@@ -201,11 +228,11 @@ App.updateTextFieldsState = function() {
 
 // Keys for each section
 App.SECTION_KEYS = {
-    layout: ['preset', 'textSpacing', 'textAlign'],
+    layout: ['preset', 'textSpacing', 'textAlign', 'screenshotOffsetX'],
     title: ['titleFont', 'titleSize', 'titleColor', 'titleWeight', 'titleUppercase'],
     body: ['bodyFont', 'bodySize', 'bodyColor', 'bodyWeight', 'bodyUppercase'],
     background: ['bgColor', 'bgGradient', 'bgGradientColor', 'bgGradientAngle'],
-    device: ['addDeviceFrame', 'deviceFrameColor', 'addShadow']
+    device: ['hideScreenshot', 'addDeviceFrame', 'deviceFrameColor', 'addShadow']
 };
 
 // Check if a section's settings match across all screenshots
@@ -244,6 +271,7 @@ App.applySectionToAll = function(section) {
 
     if (section === 'device') {
         settingsToApply = {
+            hideScreenshot: currentSettings.hideScreenshot,
             addDeviceFrame: currentSettings.addDeviceFrame,
             deviceFrameColor: currentSettings.deviceFrameColor,
             addShadow: currentSettings.addShadow
@@ -260,7 +288,7 @@ App.applySectionToAll = function(section) {
             preset: currentSettings.preset,
             textSpacing: currentSettings.textSpacing,
             textAlign: currentSettings.textAlign,
-            hideScreenshot: currentSettings.hideScreenshot
+            screenshotOffsetX: currentSettings.screenshotOffsetX
         };
     } else if (section === 'title') {
         settingsToApply = {
