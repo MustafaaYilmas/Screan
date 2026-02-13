@@ -527,7 +527,29 @@ App.initEventListeners = function() {
 
 App.initProjectEvents = function() {
     var projectMenu = document.getElementById('projectMenu');
+    var projectsList = document.getElementById('projectsList');
     var menuTargetId = null;
+
+    // Hover: hide active highlight when hovering a different project
+    projectsList.addEventListener('mouseenter', function(e) {
+        var item = e.target.closest('.project-item');
+        if (item && !item.classList.contains('active')) {
+            projectsList.classList.add('hovering-other');
+        }
+    }, true);
+
+    projectsList.addEventListener('mouseover', function(e) {
+        var item = e.target.closest('.project-item');
+        if (item && !item.classList.contains('active')) {
+            projectsList.classList.add('hovering-other');
+        } else {
+            projectsList.classList.remove('hovering-other');
+        }
+    });
+
+    projectsList.addEventListener('mouseleave', function() {
+        projectsList.classList.remove('hovering-other');
+    });
 
     // Add new project
     document.getElementById('addProjectBtn').addEventListener('click', function() {

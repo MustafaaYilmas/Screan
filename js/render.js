@@ -22,7 +22,10 @@ App.renderAllPreviews = function() {
         return;
     }
 
-    if (emptyState) emptyState.style.display = 'none';
+    if (emptyState) {
+        emptyState.style.display = 'none';
+        emptyState.classList.remove('loading');
+    }
 
     var format = App.FORMATS[App.currentFormat];
     var wrapperHeight = wrapper.clientHeight;

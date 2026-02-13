@@ -251,19 +251,35 @@ App.switchProject = function(projectId) {
         App.Storage._saveTimeout = null;
     }
 
+    // Show loading state immediately
+    App.showLoadingState(true);
+    App.updateProjectsList();
+
     return App.Storage.saveProject(App.activeProjectId).then(function() {
         App.resetStateToDefaults();
         App.activeProjectId = projectId;
+
+        // Clear previews while loading
+        App.renderAllPreviews();
 
         // Update meta
         return App.Storage.saveProjectsMeta();
     }).then(function() {
         return App.Storage.loadProject(projectId);
     }).then(function() {
+        App.showLoadingState(false);
         App.updateSettingsUI();
         App.renderAllPreviews();
         App.updateProjectsList();
     });
+};
+
+App.showLoadingState = function(show) {
+    var emptyState = document.getElementById('emptyState');
+    if (emptyState) {
+        emptyState.style.display = show ? 'flex' : '';
+        emptyState.classList.toggle('loading', show);
+    }
 };
 
 // Create a new project

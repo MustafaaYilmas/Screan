@@ -222,6 +222,10 @@ body.panels-hidden .mini-sidebar {
     background: var(--muted);
 }
 
+.projects-list.hovering-other .project-item.active:not(:hover) {
+    background: transparent;
+}
+
 .project-name {
     flex: 1;
     font-size: 13px;
