@@ -303,14 +303,16 @@ App.applySectionToAll = function(section) {
             titleFont: currentSettings.titleFont,
             titleSize: currentSettings.titleSize,
             titleColor: currentSettings.titleColor,
-            titleWeight: currentSettings.titleWeight
+            titleWeight: currentSettings.titleWeight,
+            titleUppercase: currentSettings.titleUppercase
         };
     } else if (section === 'body') {
         settingsToApply = {
             bodyFont: currentSettings.bodyFont,
             bodySize: currentSettings.bodySize,
             bodyColor: currentSettings.bodyColor,
-            bodyWeight: currentSettings.bodyWeight
+            bodyWeight: currentSettings.bodyWeight,
+            bodyUppercase: currentSettings.bodyUppercase
         };
     }
 

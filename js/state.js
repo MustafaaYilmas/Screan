@@ -251,26 +251,29 @@ App.switchProject = function(projectId) {
         App.Storage._saveTimeout = null;
     }
 
-    // Show loading state immediately
+    // Update active state in sidebar immediately (no DOM rebuild)
+    document.querySelectorAll('.project-item').forEach(function(item) {
+        item.classList.toggle('active', item.getAttribute('data-project-id') === projectId);
+    });
     App.showLoadingState(true);
-    App.updateProjectsList();
+
+    // Clear existing previews immediately (keep spinner visible)
+    var container = document.getElementById('previewsContainer');
+    container.querySelectorAll('.preview-item').forEach(function(el) { el.remove(); });
 
     return App.Storage.saveProject(App.activeProjectId).then(function() {
         App.resetStateToDefaults();
         App.activeProjectId = projectId;
 
-        // Clear previews while loading
-        App.renderAllPreviews();
-
-        // Update meta
         return App.Storage.saveProjectsMeta();
     }).then(function() {
         return App.Storage.loadProject(projectId);
     }).then(function() {
-        App.showLoadingState(false);
-        App.updateSettingsUI();
-        App.renderAllPreviews();
-        App.updateProjectsList();
+        requestAnimationFrame(function() {
+            App.showLoadingState(false);
+            App.updateSettingsUI();
+            App.renderAllPreviews();
+        });
     });
 };
 
