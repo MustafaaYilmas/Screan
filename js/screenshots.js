@@ -51,6 +51,7 @@ App.handleScreenshots = function(files) {
                 App.renderAllPreviews();
                 App.updateExportButton();
                 App.updateSidebarCounts();
+                App.updatePlatformSelect();
                 App.Storage.scheduleSave();
                 App.Undo.scheduleCapture();
 
@@ -78,6 +79,7 @@ App.removeScreenshot = function(index) {
     App.renderAllPreviews();
     App.updateExportButton();
     App.updateSidebarCounts();
+    App.updatePlatformSelect();
     App.Storage.scheduleSave();
     App.Undo.scheduleCapture();
 };

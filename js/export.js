@@ -30,35 +30,31 @@ App.exportAll = async function() {
             var platformKey = platformKeys[p];
             var platform = App.state.platforms[platformKey];
 
-            // Skip platforms with no screenshots or no export formats
-            if (platform.screenshots.length === 0 || platform.exportFormats.length === 0) {
+            // Skip platforms with no screenshots
+            if (platform.screenshots.length === 0) {
                 continue;
             }
 
-            // Export each format for this platform
-            for (var i = 0; i < platform.exportFormats.length; i++) {
-                var formatKey = platform.exportFormats[i];
-                var format = App.FORMATS[formatKey];
-                tempCanvas.width = format.width;
-                tempCanvas.height = format.height;
+            var format = App.FORMATS[platformKey];
+            tempCanvas.width = format.width;
+            tempCanvas.height = format.height;
 
-                for (var j = 0; j < platform.screenshots.length; j++) {
-                    var langProgress = hasMultipleLanguages ? ' (' + langName + ')' : '';
-                    progressText.textContent = 'Exporting ' + format.name + ' - ' + (j + 1) + '/' + platform.screenshots.length + langProgress;
+            for (var j = 0; j < platform.screenshots.length; j++) {
+                var langProgress = hasMultipleLanguages ? ' (' + langName + ')' : '';
+                progressText.textContent = 'Exporting ' + format.name + ' - ' + (j + 1) + '/' + platform.screenshots.length + langProgress;
 
-                    // Render with language-specific content
-                    App.renderCanvasForExport(tempCanvas, tempCtx, platform.screenshots[j], format, formatKey, langCode);
+                // Render with language-specific content
+                App.renderCanvasForExport(tempCanvas, tempCtx, platform.screenshots[j], format, platformKey, langCode);
 
-                    await new Promise(function(r) { setTimeout(r, 50); });
+                await new Promise(function(r) { setTimeout(r, 50); });
 
-                    var blob = await new Promise(function(resolve) { tempCanvas.toBlob(resolve, 'image/png'); });
+                var blob = await new Promise(function(resolve) { tempCanvas.toBlob(resolve, 'image/png'); });
 
-                    // Build file path based on number of languages
-                    var filename = formatKey + '_' + (j + 1) + '.png';
-                    var folderPath = hasMultipleLanguages ? langCode + '/' + formatKey : formatKey;
+                // Build file path based on number of languages
+                var filename = platformKey + '_' + (j + 1) + '.png';
+                var folderPath = hasMultipleLanguages ? langCode + '/' + platformKey : platformKey;
 
-                    files.push({ blob: blob, filename: filename, folder: folderPath });
-                }
+                files.push({ blob: blob, filename: filename, folder: folderPath });
             }
         }
     }

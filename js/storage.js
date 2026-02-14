@@ -62,8 +62,7 @@ App.Storage = {
                         settings: screenshot.settings
                     };
                 }),
-                activeIndex: platform.activeIndex,
-                exportFormats: platform.exportFormats
+                activeIndex: platform.activeIndex
             };
         });
         return platformsData;
@@ -82,7 +81,6 @@ App.Storage = {
                     createdAt: App.activeProjectCreatedAt || Date.now(),
                     platforms: self._serializePlatforms(),
                     activePlatform: App.state.activePlatform,
-                    currentFormat: App.currentFormat,
                     languages: App.state.languages || ['en'],
                     activeLanguage: App.state.activeLanguage || 'en',
                     timestamp: Date.now()
@@ -129,7 +127,6 @@ App.Storage = {
 
                     // Restore state
                     App.state.activePlatform = data.activePlatform || 'iphone';
-                    App.currentFormat = data.currentFormat || 'iphone-6.9';
                     App.state.languages = data.languages || ['en'];
                     App.state.activeLanguage = data.activeLanguage || 'en';
 
@@ -146,7 +143,6 @@ App.Storage = {
                         var savedPlatform = data.platforms[platformKey];
                         if (savedPlatform) {
                             App.state.platforms[platformKey].activeIndex = savedPlatform.activeIndex || 0;
-                            App.state.platforms[platformKey].exportFormats = savedPlatform.exportFormats || [];
                             App.state.platforms[platformKey].screenshots = [];
                         }
                     });
@@ -379,7 +375,6 @@ App.Storage = {
                         createdAt: data.timestamp || Date.now(),
                         platforms: data.platforms,
                         activePlatform: data.activePlatform || 'iphone',
-                        currentFormat: data.currentFormat || 'iphone-6.9',
                         languages: data.languages || ['en'],
                         activeLanguage: data.activeLanguage || 'en',
                         timestamp: Date.now()
@@ -471,14 +466,6 @@ App.Storage = {
 
     // Restore UI after loading
     _restoreUI: function() {
-        // Restore export format checkboxes
-        Object.keys(App.state.platforms).forEach(function(platformKey) {
-            var formats = App.state.platforms[platformKey].exportFormats;
-            document.querySelectorAll('.size-item input[data-platform="' + platformKey + '"]').forEach(function(cb) {
-                cb.checked = formats.indexOf(cb.dataset.format) !== -1;
-            });
-        });
-
         // Update active platform in sidebar
         document.querySelectorAll('.platform-item').forEach(function(item) {
             item.classList.toggle('active', item.dataset.platform === App.state.activePlatform);
@@ -487,15 +474,8 @@ App.Storage = {
         // Update toggle label with active platform name
         App.updatePlatformToggleLabel();
 
-        // Update format dropdown
-        App.updateFormatDropdown();
-
-        // Set current format in dropdown if it matches current platform
-        var formatSelect = document.getElementById('formatSelect');
-        var options = Array.from(formatSelect.options).map(function(o) { return o.value; });
-        if (options.indexOf(App.currentFormat) !== -1) {
-            formatSelect.value = App.currentFormat;
-        }
+        // Update platform select in toolbar
+        App.updatePlatformSelect();
 
         // Update sidebar counts and export button
         App.updateSidebarCounts();

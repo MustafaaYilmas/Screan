@@ -27,7 +27,7 @@ App.renderAllPreviews = function() {
         emptyState.classList.remove('loading');
     }
 
-    var format = App.FORMATS[App.currentFormat];
+    var format = App.getActiveFormat();
     var wrapperHeight = wrapper.clientHeight;
     var wrapperWidth = wrapper.clientWidth;
     var maxCanvasHeight = wrapperHeight - 80;
@@ -127,7 +127,7 @@ App.renderAllCanvases = function() {
 
 App.renderCanvas = function(canvas, screenshot) {
     var ctx = canvas.getContext('2d');
-    var format = App.FORMATS[App.currentFormat];
+    var format = App.getActiveFormat();
     var settings = screenshot.settings;
     var preset = App.PRESETS[settings.preset];
     var w = format.width;
@@ -154,13 +154,13 @@ App.renderCanvas = function(canvas, screenshot) {
     // Pre-calculate text layout for dynamic screenshot positioning
     var textLayout = null;
     if (!preset.noText && (settings.headline || settings.subheadline)) {
-        textLayout = App.calculateTextLayout(ctx, w, h, settings, format, App.currentFormat);
+        textLayout = App.calculateTextLayout(ctx, w, h, settings, format, App.state.activePlatform);
     }
 
     var screenshotInfo = App.drawScreenshot(ctx, screenshot, w, h, preset, settings, format, textLayout);
 
     if (textLayout) {
-        App.drawText(ctx, w, h, preset, settings, format, App.currentFormat, screenshotInfo, textLayout);
+        App.drawText(ctx, w, h, preset, settings, format, App.state.activePlatform, screenshotInfo, textLayout);
     }
 };
 

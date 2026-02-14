@@ -16,38 +16,16 @@ App.state = {
     languages: ['en'],
     activeLanguage: 'en',
     platforms: {
-        'iphone': {
-            screenshots: [],
-            activeIndex: 0,
-            exportFormats: ['iphone-6.9', 'iphone-6.5']
-        },
-        'ipad': {
-            screenshots: [],
-            activeIndex: 0,
-            exportFormats: ['ipad-13']
-        },
-        'mac': {
-            screenshots: [],
-            activeIndex: 0,
-            exportFormats: ['mac-2880']
-        },
-        'android-phone': {
-            screenshots: [],
-            activeIndex: 0,
-            exportFormats: ['android-phone-1080']
-        },
-        'android-tablet': {
-            screenshots: [],
-            activeIndex: 0,
-            exportFormats: ['android-tablet-7']
-        }
+        'iphone': { screenshots: [], activeIndex: 0 },
+        'ipad': { screenshots: [], activeIndex: 0 },
+        'mac': { screenshots: [], activeIndex: 0 },
+        'android-phone': { screenshots: [], activeIndex: 0 },
+        'android-tablet': { screenshots: [], activeIndex: 0 }
     }
 };
 
-App.currentFormat = 'iphone-6.9';
-
-App.setCurrentFormat = function(format) {
-    App.currentFormat = format;
+App.getActiveFormat = function() {
+    return App.FORMATS[App.state.activePlatform];
 };
 
 App.getActivePlatformData = function() {
@@ -78,7 +56,7 @@ App.updateExportButton = function() {
 
     Object.keys(App.state.platforms).forEach(function(platformKey) {
         var platform = App.state.platforms[platformKey];
-        if (platform.screenshots.length > 0 && platform.exportFormats.length > 0) {
+        if (platform.screenshots.length > 0) {
             hasAnyExportable = true;
         }
     });
@@ -112,8 +90,8 @@ App.selectPlatform = function(platformKey) {
     document.getElementById('platformsToggle').classList.remove('open');
     App.updatePlatformToggleLabel();
 
-    // Update format dropdown for active platform
-    App.updateFormatDropdown();
+    // Update platform select in toolbar
+    App.updatePlatformSelect();
 
     // Update empty state text
     App.updateEmptyStateText();
@@ -167,57 +145,39 @@ App.initSidebarPlatforms = function() {
         header.innerHTML = '<span class="platform-name">' + family.name + '</span>' +
             '<span class="screenshot-count" style="display: none;">0</span>';
 
-        // Create sizes container
-        var sizesContainer = document.createElement('div');
-        sizesContainer.className = 'platform-sizes';
-
-        // Create checkboxes for each format
-        family.formats.forEach(function(formatKey) {
-            var format = App.FORMATS[formatKey];
-            var isDefault = family.defaultExport.indexOf(formatKey) !== -1;
-
-            // Extract display name (remove prefix like "iPhone ", "iPad ", etc.)
-            var displayName = format.name.replace(/^(iPhone|iPad|Mac|Phone|Tablet)\s*/i, '');
-
-            var label = document.createElement('label');
-            label.className = 'size-item';
-
-            var checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.setAttribute('data-platform', platformKey);
-            checkbox.setAttribute('data-format', formatKey);
-            if (isDefault) checkbox.checked = true;
-
-            var span = document.createElement('span');
-            span.textContent = displayName;
-
-            label.appendChild(checkbox);
-            label.appendChild(span);
-            sizesContainer.appendChild(label);
-        });
-
         platformItem.appendChild(header);
-        platformItem.appendChild(sizesContainer);
         section.appendChild(platformItem);
     });
 };
 
-App.updateFormatDropdown = function() {
+App.updatePlatformSelect = function() {
     var select = document.getElementById('formatSelect');
-    var family = App.PLATFORM_FAMILIES[App.state.activePlatform];
-
     select.innerHTML = '';
-    family.formats.forEach(function(formatKey) {
-        var format = App.FORMATS[formatKey];
+
+    var platformsWithScreenshots = [];
+    Object.keys(App.state.platforms).forEach(function(platformKey) {
+        if (App.state.platforms[platformKey].screenshots.length > 0) {
+            platformsWithScreenshots.push(platformKey);
+        }
+    });
+
+    // Always include the active platform
+    if (platformsWithScreenshots.indexOf(App.state.activePlatform) === -1) {
+        platformsWithScreenshots.push(App.state.activePlatform);
+    }
+
+    platformsWithScreenshots.forEach(function(platformKey) {
+        var family = App.PLATFORM_FAMILIES[platformKey];
         var option = document.createElement('option');
-        option.value = formatKey;
-        option.textContent = format.name;
+        option.value = platformKey;
+        option.textContent = family.name;
         select.appendChild(option);
     });
 
-    // Set current format to first of this platform
-    App.setCurrentFormat(family.formats[0]);
-    select.value = family.formats[0];
+    select.value = App.state.activePlatform;
+
+    // Hide select if only one platform has screenshots
+    select.style.display = platformsWithScreenshots.length > 1 ? '' : 'none';
 };
 
 // ============================================
@@ -229,14 +189,11 @@ App.resetStateToDefaults = function() {
     App.state.activePlatform = 'iphone';
     App.state.languages = ['en'];
     App.state.activeLanguage = 'en';
-    App.currentFormat = 'iphone-6.9';
 
     Object.keys(App.state.platforms).forEach(function(platformKey) {
-        var family = App.PLATFORM_FAMILIES[platformKey];
         App.state.platforms[platformKey] = {
             screenshots: [],
-            activeIndex: 0,
-            exportFormats: family ? family.defaultExport.slice() : []
+            activeIndex: 0
         };
     });
 

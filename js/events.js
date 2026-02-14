@@ -122,10 +122,9 @@ App.initEventListeners = function() {
     addBtn.addEventListener('click', function() { input.click(); });
     input.addEventListener('change', function(e) { App.handleScreenshots(e.target.files); });
 
-    // Format select
+    // Platform select (toolbar)
     document.getElementById('formatSelect').addEventListener('change', function(e) {
-        App.setCurrentFormat(e.target.value);
-        App.renderAllPreviews();
+        App.selectPlatform(e.target.value);
     });
 
     // Text inputs
@@ -464,34 +463,6 @@ App.initEventListeners = function() {
             var platformItem = header.closest('.platform-item');
             var platformKey = platformItem.dataset.platform;
             App.selectPlatform(platformKey);
-        });
-    });
-
-    // Export format checkboxes (per platform)
-    document.querySelectorAll('.size-item input[type="checkbox"]').forEach(function(cb) {
-        cb.addEventListener('change', function() {
-            var platformKey = cb.dataset.platform;
-            var platform = App.state.platforms[platformKey];
-
-            // Update exportFormats for this platform
-            platform.exportFormats = Array.from(
-                document.querySelectorAll('.size-item input[data-platform="' + platformKey + '"]:checked')
-            ).map(function(c) { return c.dataset.format; });
-
-            App.updateExportButton();
-            App.Storage.scheduleSave();
-        });
-
-        // Prevent click from bubbling to platform header
-        cb.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-    });
-
-    // Prevent label clicks from selecting platform
-    document.querySelectorAll('.size-item').forEach(function(label) {
-        label.addEventListener('click', function(e) {
-            e.stopPropagation();
         });
     });
 

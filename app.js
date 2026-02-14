@@ -33,8 +33,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Generate sidebar platforms from config
     App.initSidebarPlatforms();
 
-    // Initialize format dropdown for default platform
-    App.updateFormatDropdown();
+    // Initialize platform select in toolbar
+    App.updatePlatformSelect();
 
     // Populate font selects (filtered by OS)
     App.populateFontSelects();
