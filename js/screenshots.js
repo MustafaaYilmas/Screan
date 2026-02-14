@@ -180,6 +180,8 @@ App.updateSettingsUI = function() {
     document.getElementById('bgGradientColor').value = settings.bgGradientColor || '#ffffff';
     document.getElementById('bgGradientColorHex').value = (settings.bgGradientColor || '#ffffff').toUpperCase();
     App.syncSlider('bgGradientAngle', settings.bgGradientAngle != null ? settings.bgGradientAngle : 180);
+    App.updateBgImageUI(settings);
+    App.syncSlider('bgImageOpacity', settings.bgImageOpacity != null ? settings.bgImageOpacity : 100);
 
     // Device frame settings
     document.getElementById('addDeviceFrame').checked = settings.addDeviceFrame;
@@ -206,6 +208,7 @@ App.updateSettingsUI = function() {
     App.syncSlider('screenshotOffsetX', settings.screenshotOffsetX || 0);
     App.syncSlider('screenshotOffsetY', settings.screenshotOffsetY != null ? settings.screenshotOffsetY : (settings.textSpacing != null ? App.spacingToSliderValue(settings.textSpacing) : 33));
     App.syncSlider('screenshotRotation', settings.screenshotRotation || 0);
+    App.syncSlider('screenshotZoom', settings.screenshotZoom != null ? settings.screenshotZoom : 87);
 
     App.updateTextFieldsState();
 };
@@ -234,6 +237,28 @@ App.updateScreenshotOptionsVisibility = function(hidden) {
     document.getElementById('screenshotOffsetXRow').style.display = display;
     document.getElementById('screenshotOffsetYRow').style.display = display;
     document.getElementById('screenshotRotationRow').style.display = display;
+    document.getElementById('screenshotZoomRow').style.display = display;
+};
+
+// Update background image UI (upload button label, remove button, opacity row)
+App.updateBgImageUI = function(settings) {
+    var hasImage = !!(settings && settings.bgImage);
+    var uploadBtn = document.getElementById('bgImageUploadBtn');
+    var removeBtn = document.getElementById('bgImageRemoveBtn');
+    var label = document.getElementById('bgImageLabel');
+    var opacityRow = document.getElementById('bgImageOpacityRow');
+
+    if (hasImage) {
+        uploadBtn.classList.add('has-image');
+        label.textContent = 'Change';
+        removeBtn.style.display = 'flex';
+        opacityRow.style.display = 'flex';
+    } else {
+        uploadBtn.classList.remove('has-image');
+        label.textContent = 'Add';
+        removeBtn.style.display = 'none';
+        opacityRow.style.display = 'none';
+    }
 };
 
 // Keys for each section
@@ -241,8 +266,8 @@ App.SECTION_KEYS = {
     layout: ['textGap', 'textAlign'],
     title: ['titleFont', 'titleSize', 'titleColor', 'titleWeight', 'titleUppercase'],
     body: ['bodyFont', 'bodySize', 'bodyColor', 'bodyWeight', 'bodyUppercase'],
-    background: ['bgColor', 'bgGradient', 'bgGradientColor', 'bgGradientAngle'],
-    device: ['preset', 'hideScreenshot', 'addDeviceFrame', 'deviceFrameColor', 'addShadow', 'screenshotOffsetX', 'screenshotOffsetY', 'screenshotRotation']
+    background: ['bgColor', 'bgGradient', 'bgGradientColor', 'bgGradientAngle', 'bgImage', 'bgImageOpacity'],
+    device: ['preset', 'hideScreenshot', 'addDeviceFrame', 'deviceFrameColor', 'addShadow', 'screenshotOffsetX', 'screenshotOffsetY', 'screenshotRotation', 'screenshotZoom']
 };
 
 // Check if a section's settings match across all screenshots
@@ -288,14 +313,18 @@ App.applySectionToAll = function(section) {
             addShadow: currentSettings.addShadow,
             screenshotOffsetX: currentSettings.screenshotOffsetX,
             screenshotOffsetY: currentSettings.screenshotOffsetY,
-            screenshotRotation: currentSettings.screenshotRotation
+            screenshotRotation: currentSettings.screenshotRotation,
+            screenshotZoom: currentSettings.screenshotZoom
         };
     } else if (section === 'background') {
         settingsToApply = {
             bgColor: currentSettings.bgColor,
             bgGradient: currentSettings.bgGradient,
             bgGradientColor: currentSettings.bgGradientColor,
-            bgGradientAngle: currentSettings.bgGradientAngle
+            bgGradientAngle: currentSettings.bgGradientAngle,
+            bgImage: currentSettings.bgImage,
+            bgImageObj: currentSettings.bgImageObj,
+            bgImageOpacity: currentSettings.bgImageOpacity
         };
     } else if (section === 'layout') {
         settingsToApply = {

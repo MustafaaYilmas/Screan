@@ -55,11 +55,14 @@ App.Storage = {
             var platform = App.state.platforms[platformKey];
             platformsData[platformKey] = {
                 screenshots: platform.screenshots.map(function(screenshot) {
+                    // Clone settings and strip bgImageObj (non-serializable Image object)
+                    var settingsCopy = Object.assign({}, screenshot.settings);
+                    delete settingsCopy.bgImageObj;
                     return {
                         src: screenshot.src,
                         width: screenshot.width,
                         height: screenshot.height,
-                        settings: screenshot.settings
+                        settings: settingsCopy
                     };
                 }),
                 activeIndex: platform.activeIndex
@@ -168,6 +171,20 @@ App.Storage = {
                                     height: savedScreenshot.height,
                                     settings: savedScreenshot.settings
                                 };
+
+                                // Restore bgImageObj from bgImage base64
+                                var settings = savedScreenshot.settings;
+                                if (settings && settings.bgImage) {
+                                    var bgImg = new Image();
+                                    bgImg.onload = function() {
+                                        settings.bgImageObj = bgImg;
+                                        // Re-render if all images are loaded
+                                        if (typeof App.renderAllPreviews === 'function') {
+                                            App.renderAllPreviews();
+                                        }
+                                    };
+                                    bgImg.src = settings.bgImage;
+                                }
 
                                 imagesLoaded++;
                                 if (imagesLoaded === imagesToLoad) {

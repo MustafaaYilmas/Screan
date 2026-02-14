@@ -438,6 +438,50 @@ App.initEventListeners = function() {
     // Screenshot rotation slider
     App.initSlider({ id: 'screenshotRotation', settingsKey: 'screenshotRotation', defaultValue: 0 });
 
+    // Screenshot zoom slider
+    App.initSlider({ id: 'screenshotZoom', settingsKey: 'screenshotZoom', defaultValue: 87 });
+
+    // Background image opacity slider
+    App.initSlider({ id: 'bgImageOpacity', settingsKey: 'bgImageOpacity', defaultValue: 100 });
+
+    // Background image upload
+    document.getElementById('bgImageUploadBtn').addEventListener('click', function() {
+        document.getElementById('bgImageInput').click();
+    });
+
+    document.getElementById('bgImageInput').addEventListener('change', function(e) {
+        var file = e.target.files[0];
+        if (!file || !file.type.startsWith('image/')) return;
+        var settings = App.getActiveSettings();
+        if (!settings) return;
+
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+            var img = new Image();
+            img.onload = function() {
+                settings.bgImage = ev.target.result;
+                settings.bgImageObj = img;
+                App.updateBgImageUI(settings);
+                App.renderAndSave();
+                App.Undo.scheduleCapture();
+            };
+            img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+        // Reset input so the same file can be re-selected
+        this.value = '';
+    });
+
+    document.getElementById('bgImageRemoveBtn').addEventListener('click', function() {
+        var settings = App.getActiveSettings();
+        if (!settings) return;
+        settings.bgImage = null;
+        settings.bgImageObj = null;
+        App.updateBgImageUI(settings);
+        App.renderAndSave();
+        App.Undo.scheduleCapture();
+    });
+
     // Text alignment
     document.querySelectorAll('.align-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {

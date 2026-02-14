@@ -19,11 +19,14 @@ App.Undo = {
         return {
             activeIndex: platform.activeIndex,
             screenshots: platform.screenshots.map(function(s) {
+                // Strip bgImageObj (non-serializable Image object) before cloning
+                var settingsCopy = Object.assign({}, s.settings);
+                delete settingsCopy.bgImageObj;
                 return {
                     src: s.src,
                     width: s.width,
                     height: s.height,
-                    settings: JSON.parse(JSON.stringify(s.settings))
+                    settings: JSON.parse(JSON.stringify(settingsCopy))
                 };
             })
         };
@@ -43,12 +46,22 @@ App.Undo = {
                     break;
                 }
             }
+            var restoredSettings = JSON.parse(JSON.stringify(snap.settings));
+            // Restore bgImageObj from bgImage base64 (lost during JSON serialization)
+            if (restoredSettings.bgImage) {
+                var bgImg = new Image();
+                bgImg.onload = function() {
+                    restoredSettings.bgImageObj = bgImg;
+                    App.renderAllPreviews();
+                };
+                bgImg.src = restoredSettings.bgImage;
+            }
             var screenshot = {
                 src: snap.src,
                 image: existingImg,
                 width: snap.width,
                 height: snap.height,
-                settings: JSON.parse(JSON.stringify(snap.settings))
+                settings: restoredSettings
             };
             if (!screenshot.image) {
                 var img = new Image();

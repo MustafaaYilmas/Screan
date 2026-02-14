@@ -177,16 +177,19 @@ App.DEFAULT_SETTINGS = {
     bgGradient: true,
     bgGradientColor: '#DEDEDE',
     bgGradientAngle: 180,
+    bgImage: null,
+    bgImageOpacity: 100,
     // Device frame settings
     addDeviceFrame: true,
     deviceFrameColor: '#000000',
     // Other settings
     addShadow: true,
     hideScreenshot: false,
-    preset: 'bottom',
+    preset: 'top',
     textAlign: 'center',
     textGap: 0,
-    screenshotOffsetY: 70
+    screenshotOffsetY: 70,
+    screenshotZoom: 87
 };
 
 App.FONT_WEIGHTS = {

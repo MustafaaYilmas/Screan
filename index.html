@@ -54,7 +54,7 @@
                 <a href="https://github.com/cassardp/Screan#readme" target="_blank" rel="noopener" class="mini-sidebar-btn" title="View on GitHub">
                     <i data-lucide="github"></i>
                 </a>
-                <span class="version-number">0.96</span>
+                <span class="version-number">0.97</span>
             </div>
         </aside>
 
@@ -347,6 +347,15 @@
                                     <span class="slider-value" id="screenshotRotationValue">0</span>
                                 </div>
                             </div>
+                            <div class="setting-row" id="screenshotZoomRow">
+                                <span class="setting-label">Scale</span>
+                                <div class="slider-row">
+                                    <div class="slider-track-wrap">
+                                        <input type="range" id="screenshotZoomSlider" class="range-slider" min="50" max="150" value="87" step="1">
+                                    </div>
+                                    <span class="slider-value" id="screenshotZoomValue">87</span>
+                                </div>
+                            </div>
                             <div class="setting-row" id="showBorderRow">
                                 <label class="setting-label">Border</label>
                                 <label class="toggle">
@@ -416,6 +425,28 @@
                                         <input type="range" id="bgGradientAngleSlider" class="range-slider" min="0" max="360" value="180" step="1">
                                     </div>
                                     <span class="slider-value" id="bgGradientAngleValue">180</span>
+                                </div>
+                            </div>
+                            <div class="setting-row" id="bgImageRow">
+                                <label class="setting-label">Image</label>
+                                <div class="bg-image-controls">
+                                    <input type="file" id="bgImageInput" accept="image/*" style="display: none;">
+                                    <button class="btn-bg-image-upload" id="bgImageUploadBtn" title="Upload background image">
+                                        <i data-lucide="image-plus"></i>
+                                        <span id="bgImageLabel">Add</span>
+                                    </button>
+                                    <button class="btn-bg-image-remove" id="bgImageRemoveBtn" title="Remove background image" style="display: none;">
+                                        <i data-lucide="trash-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="setting-row" id="bgImageOpacityRow" style="display: none;">
+                                <label class="setting-label">Opacity</label>
+                                <div class="slider-row">
+                                    <div class="slider-track-wrap">
+                                        <input type="range" id="bgImageOpacitySlider" class="range-slider" min="0" max="100" value="100" step="1">
+                                    </div>
+                                    <span class="slider-value" id="bgImageOpacityValue">100</span>
                                 </div>
                             </div>
                         </div>

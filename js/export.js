@@ -108,6 +108,28 @@ App.renderCanvasForExport = function(canvas, ctx, screenshot, format, formatKey,
     }
     ctx.fillRect(0, 0, w, h);
 
+    // Draw background image if present (superposed over color/gradient)
+    if (exportSettings.bgImage && exportSettings.bgImageObj instanceof Image && exportSettings.bgImageObj.complete) {
+        ctx.save();
+        ctx.globalAlpha = (exportSettings.bgImageOpacity != null ? exportSettings.bgImageOpacity : 100) / 100;
+        var bgImgRatio = exportSettings.bgImageObj.width / exportSettings.bgImageObj.height;
+        var canvasRatio = w / h;
+        var drawW, drawH, drawX, drawY;
+        if (bgImgRatio > canvasRatio) {
+            drawH = h;
+            drawW = h * bgImgRatio;
+            drawX = (w - drawW) / 2;
+            drawY = 0;
+        } else {
+            drawW = w;
+            drawH = w / bgImgRatio;
+            drawX = 0;
+            drawY = (h - drawH) / 2;
+        }
+        ctx.drawImage(exportSettings.bgImageObj, drawX, drawY, drawW, drawH);
+        ctx.restore();
+    }
+
     // Pre-calculate text layout for dynamic screenshot positioning
     var textLayout = null;
     if (!preset.noText && (exportSettings.headline || exportSettings.subheadline)) {

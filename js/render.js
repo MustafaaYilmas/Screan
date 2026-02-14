@@ -151,6 +151,28 @@ App.renderCanvas = function(canvas, screenshot) {
     }
     ctx.fillRect(0, 0, w, h);
 
+    // Draw background image if present (superposed over color/gradient)
+    if (settings.bgImage && settings.bgImageObj instanceof Image && settings.bgImageObj.complete) {
+        ctx.save();
+        ctx.globalAlpha = (settings.bgImageOpacity != null ? settings.bgImageOpacity : 100) / 100;
+        var bgImgRatio = settings.bgImageObj.width / settings.bgImageObj.height;
+        var canvasRatio = w / h;
+        var drawW, drawH, drawX, drawY;
+        if (bgImgRatio > canvasRatio) {
+            drawH = h;
+            drawW = h * bgImgRatio;
+            drawX = (w - drawW) / 2;
+            drawY = 0;
+        } else {
+            drawW = w;
+            drawH = w / bgImgRatio;
+            drawX = 0;
+            drawY = (h - drawH) / 2;
+        }
+        ctx.drawImage(settings.bgImageObj, drawX, drawY, drawW, drawH);
+        ctx.restore();
+    }
+
     // Pre-calculate text layout for dynamic screenshot positioning
     var textLayout = null;
     if (!preset.noText && (settings.headline || settings.subheadline)) {
@@ -170,7 +192,8 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
         return { imgY: 0, imgH: 0 };
     }
 
-    var imgW = canvasW * 0.87;
+    var zoom = (settings.screenshotZoom != null ? settings.screenshotZoom : 87) / 100;
+    var imgW = canvasW * zoom;
 
     // Calculate height based on screenshot ratio
     var imgRatio = screenshot.width / screenshot.height;

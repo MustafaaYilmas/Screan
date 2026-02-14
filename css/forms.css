@@ -395,3 +395,80 @@
     border-color: var(--ring);
 }
 
+/* ============================================
+   Background Image Controls
+   ============================================ */
+
+.bg-image-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+}
+
+.btn-bg-image-upload {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 34px;
+    padding: 0 12px;
+    background: var(--input);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius);
+    color: var(--foreground-muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.btn-bg-image-upload:hover {
+    border-color: var(--ring);
+    background: var(--muted);
+    color: var(--foreground);
+}
+
+.btn-bg-image-upload svg {
+    width: 14px;
+    height: 14px;
+}
+
+.btn-bg-image-upload.has-image {
+    color: var(--foreground);
+}
+
+.btn-bg-image-upload.has-image span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100px;
+}
+
+.btn-bg-image-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    background: var(--input);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius);
+    color: var(--foreground-muted);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.btn-bg-image-remove:hover {
+    border-color: var(--ring);
+    background: var(--muted);
+    color: var(--foreground);
+}
+
+.btn-bg-image-remove svg {
+    width: 14px;
+    height: 14px;
+}
+
