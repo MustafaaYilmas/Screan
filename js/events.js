@@ -543,6 +543,19 @@ App.initEventListeners = function() {
         }
     });
 
+    // About modal
+    var aboutModal = document.getElementById('aboutModal');
+    document.getElementById('aboutBtn').addEventListener('click', function() {
+        aboutModal.classList.add('show');
+        lucide.createIcons({ nodes: [aboutModal] });
+    });
+    document.getElementById('aboutClose').addEventListener('click', function() {
+        aboutModal.classList.remove('show');
+    });
+    aboutModal.addEventListener('click', function(e) {
+        if (e.target === aboutModal) aboutModal.classList.remove('show');
+    });
+
     // Language management (defined in localize.js)
     App.initLanguageEvents();
 
