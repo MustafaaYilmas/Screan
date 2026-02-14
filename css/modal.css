@@ -111,17 +111,18 @@
     align-items: center;
     gap: 6px;
     font-size: 13px;
-    color: var(--foreground-muted);
+    color: var(--foreground);
     text-decoration: none;
     padding: 6px 12px;
     border-radius: var(--radius);
+    background: var(--muted);
     border: 1px solid var(--border);
     transition: background var(--transition-fast), color var(--transition-fast);
 }
 
 .about-links a:hover {
-    background: var(--muted);
-    color: var(--foreground);
+    background: transparent;
+    color: var(--foreground-muted);
 }
 
 .about-links a svg {
