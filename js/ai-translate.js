@@ -76,7 +76,7 @@ App.loadAvailableModels = function() {
             return /^claude-.*-4/.test(m.id);
         });
 
-        // Sort: haiku first, then sonnet, then opus
+        // Sort by family (haiku → sonnet → opus), then by version ascending
         var familyOrder = { haiku: 0, sonnet: 1, opus: 2 };
         models.sort(function(a, b) {
             var familyA = 2, familyB = 2;
@@ -84,7 +84,9 @@ App.loadAvailableModels = function() {
                 if (a.id.indexOf(f) !== -1) familyA = familyOrder[f];
                 if (b.id.indexOf(f) !== -1) familyB = familyOrder[f];
             });
-            return familyA - familyB;
+            if (familyA !== familyB) return familyA - familyB;
+            // Within same family, sort by id alphabetically (version ascending)
+            return a.id.localeCompare(b.id);
         });
 
         if (models.length === 0) return;
