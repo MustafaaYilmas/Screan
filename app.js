@@ -27,6 +27,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Theme toggle
     document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
+    // Undo button
+    document.getElementById('undoBtn').addEventListener('click', function() { App.Undo.undo(); });
+
     // Generate sidebar platforms from config
     App.initSidebarPlatforms();
 
@@ -50,6 +53,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     App.updateSettingsUI();
     App.renderAllPreviews();
+
+    // Capture initial state for undo
+    App.Undo.capture();
 
     // Scroll to active screenshot on load
     var container = document.getElementById('previewsContainer');

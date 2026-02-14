@@ -19,6 +19,7 @@ App.initSlider = function(config) {
     });
     slider.addEventListener('change', function() {
         App.Storage.scheduleSave();
+        App.Undo.scheduleCapture();
     });
 
     valueEl.addEventListener('click', function() {
@@ -44,6 +45,7 @@ App.initSlider = function(config) {
             input.replaceWith(valueEl);
             App.renderActivePreview();
             App.Storage.scheduleSave();
+            App.Undo.scheduleCapture();
         };
         input.addEventListener('blur', commit);
         input.addEventListener('keydown', function(e) {
@@ -58,6 +60,7 @@ App.renderAndSave = function() {
     App.renderActivePreview();
     App.updateSectionApplyButtons();
     App.Storage.scheduleSave();
+    App.Undo.scheduleCapture();
     // Re-render after fonts finish loading (Google Fonts may load weight on demand)
     document.fonts.ready.then(function() {
         App.renderActivePreview();
@@ -78,6 +81,11 @@ App.normalizeHex = function(value) {
         return '#' + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
     }
     return null;
+};
+
+App.updateUndoRedoButtons = function() {
+    var undoBtn = document.getElementById('undoBtn');
+    if (undoBtn) undoBtn.style.display = App.Undo.canUndo() ? '' : 'none';
 };
 
 App.initEventListeners = function() {
@@ -519,6 +527,18 @@ App.initEventListeners = function() {
 
     // Projects management
     App.initProjectEvents();
+
+    // Undo/Redo keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
+            e.preventDefault();
+            if (e.shiftKey) {
+                App.Undo.redo();
+            } else {
+                App.Undo.undo();
+            }
+        }
+    });
 };
 
 // ============================================

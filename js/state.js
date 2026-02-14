@@ -239,6 +239,8 @@ App.resetStateToDefaults = function() {
             exportFormats: family ? family.defaultExport.slice() : []
         };
     });
+
+    if (App.Undo) App.Undo.clear();
 };
 
 // Switch to another project

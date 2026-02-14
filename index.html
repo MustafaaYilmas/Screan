@@ -54,7 +54,7 @@
                 <a href="https://github.com/cassardp/Screan#readme" target="_blank" rel="noopener" class="mini-sidebar-btn" title="View on GitHub">
                     <i data-lucide="github"></i>
                 </a>
-                <span class="version-number">0.89</span>
+                <span class="version-number">0.90</span>
             </div>
         </aside>
 
@@ -121,6 +121,9 @@
                         <input type="file" id="screenshotInput" multiple accept="image/*" hidden>
                         <i data-lucide="plus"></i>
                         Add Screenshots
+                    </button>
+                    <button class="toolbar-icon-btn" id="undoBtn" title="Undo (Cmd+Z)" style="display:none">
+                        <i data-lucide="undo-2"></i>
                     </button>
                 </div>
                 <div class="toolbar-right">
@@ -501,6 +504,7 @@
     <script src="js/localize.js"></script>
     <script src="js/ai-translate.js"></script>
     <script src="js/events.js"></script>
+    <script src="js/undo.js"></script>
     <script src="app.js"></script>
 
     <!-- Vercel Analytics & Speed Insights -->

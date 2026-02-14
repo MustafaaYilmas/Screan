@@ -52,6 +52,7 @@ App.handleScreenshots = function(files) {
                 App.updateExportButton();
                 App.updateSidebarCounts();
                 App.Storage.scheduleSave();
+                App.Undo.scheduleCapture();
 
                 // Scroll to center the new preview
                 var container = document.getElementById('previewsContainer');
@@ -78,6 +79,7 @@ App.removeScreenshot = function(index) {
     App.updateExportButton();
     App.updateSidebarCounts();
     App.Storage.scheduleSave();
+    App.Undo.scheduleCapture();
 };
 
 App.selectScreenshot = function(index) {
@@ -323,6 +325,7 @@ App.applySectionToAll = function(section) {
     App.renderAllCanvases();
     App.updateSettingsUI();
     App.Storage.scheduleSave();
+    App.Undo.scheduleCapture();
     // Re-render after fonts finish loading (Google Fonts may load weight on demand)
     document.fonts.ready.then(function() {
         App.renderAllCanvases();
@@ -350,4 +353,5 @@ App.moveScreenshot = function(fromIndex, toIndex) {
 
     App.renderAllPreviews();
     App.Storage.scheduleSave();
+    App.Undo.scheduleCapture();
 };
