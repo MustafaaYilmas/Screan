@@ -153,29 +153,29 @@ App.DEFAULT_SETTINGS = {
     // Content per language (languages list is stored at platform level)
     content: {
         'en': {
-            headline: 'Hello!',
-            subheadline: 'Your story starts here'
+            headline: 'Keep it',
+            subheadline: 'Simple'
         }
     },
     // Active content fields (synced with active language)
-    headline: 'Hello!',
-    subheadline: 'Your story starts here',
+    headline: 'Keep it',
+    subheadline: 'Simple',
     // Title settings
     titleFont: 'sf-rounded',
-    titleSize: 120,
-    titleColor: '#ffffff',
-    titleWeight: 'bold',
-    titleUppercase: false,
+    titleSize: 65,
+    titleColor: '#FF4013',
+    titleWeight: 'semibold',
+    titleUppercase: true,
     // Body settings
     bodyFont: 'sf-rounded',
-    bodySize: 72,
-    bodyColor: '#ffffff',
-    bodyWeight: 'medium',
+    bodySize: 200,
+    bodyColor: '#000000',
+    bodyWeight: 'semibold',
     bodyUppercase: false,
     // Background settings
-    bgColor: '#75B7E7',
-    bgGradient: false,
-    bgGradientColor: '#ffffff',
+    bgColor: '#FFFFFF',
+    bgGradient: true,
+    bgGradientColor: '#DEDEDE',
     bgGradientAngle: 180,
     // Device frame settings
     addDeviceFrame: true,
@@ -183,10 +183,10 @@ App.DEFAULT_SETTINGS = {
     // Other settings
     addShadow: true,
     hideScreenshot: false,
-    preset: 'top',
+    preset: 'bottom',
     textAlign: 'center',
-    textGap: 35,
-    screenshotOffsetY: 33
+    textGap: 0,
+    screenshotOffsetY: 70
 };
 
 App.FONT_WEIGHTS = {
