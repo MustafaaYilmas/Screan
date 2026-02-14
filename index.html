@@ -54,7 +54,7 @@
                 <a href="https://github.com/cassardp/Screan#readme" target="_blank" rel="noopener" class="mini-sidebar-btn" title="View on GitHub">
                     <i data-lucide="github"></i>
                 </a>
-                <span class="version-number">0.87</span>
+                <span class="version-number">0.88</span>
             </div>
         </aside>
 
@@ -294,49 +294,6 @@
 
                 <!-- Style Tab -->
                 <div class="settings-tab-content" id="styleTab">
-                    <!-- Background -->
-                    <section class="settings-section" id="backgroundSection">
-                        <div class="section-header">
-                            <span class="section-title">Background</span>
-                            <span class="section-header-spacer"></span>
-                            <button class="btn-apply-section" data-section="background" title="Apply to all">
-                                <i data-lucide="arrow-right-left"></i>
-                            </button>
-                        </div>
-                        <div class="section-content">
-                            <div class="setting-row">
-                                <label class="setting-label">Gradient</label>
-                                <label class="toggle">
-                                    <input type="checkbox" id="bgGradient">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                            <div class="setting-row">
-                                <label class="setting-label" id="bgColorLabel">Color</label>
-                                <div class="color-input-wrap">
-                                    <input type="color" id="bgColor1" value="#75B7E7">
-                                    <input type="text" class="color-hex-input" id="bgColor1Hex" value="#75B7E7" maxlength="7">
-                                </div>
-                            </div>
-                            <div class="setting-row" id="gradientColorRow" style="display: none;">
-                                <label class="setting-label" id="bgGradientColorLabel">End</label>
-                                <div class="color-input-wrap">
-                                    <input type="color" id="bgGradientColor" value="#ffffff">
-                                    <input type="text" class="color-hex-input" id="bgGradientColorHex" value="#FFFFFF" maxlength="7">
-                                </div>
-                            </div>
-                            <div class="setting-row" id="gradientAngleRow" style="display: none;">
-                                <label class="setting-label">Angle</label>
-                                <div class="slider-row">
-                                    <div class="slider-track-wrap">
-                                        <input type="range" id="bgGradientAngleSlider" class="range-slider" min="0" max="360" value="180" step="1">
-                                    </div>
-                                    <span class="slider-value" id="bgGradientAngleValue">180</span>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
                     <!-- Screenshot -->
                     <section class="settings-section" id="deviceFrameSection">
                         <div class="section-header">
@@ -415,6 +372,49 @@
                                     <input type="checkbox" id="hideScreenshot" checked>
                                     <span class="toggle-slider"></span>
                                 </label>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Background -->
+                    <section class="settings-section" id="backgroundSection">
+                        <div class="section-header">
+                            <span class="section-title">Background</span>
+                            <span class="section-header-spacer"></span>
+                            <button class="btn-apply-section" data-section="background" title="Apply to all">
+                                <i data-lucide="arrow-right-left"></i>
+                            </button>
+                        </div>
+                        <div class="section-content">
+                            <div class="setting-row">
+                                <label class="setting-label">Gradient</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="bgGradient">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-row">
+                                <label class="setting-label" id="bgColorLabel">Color</label>
+                                <div class="color-input-wrap">
+                                    <input type="color" id="bgColor1" value="#75B7E7">
+                                    <input type="text" class="color-hex-input" id="bgColor1Hex" value="#75B7E7" maxlength="7">
+                                </div>
+                            </div>
+                            <div class="setting-row" id="gradientColorRow" style="display: none;">
+                                <label class="setting-label" id="bgGradientColorLabel">End</label>
+                                <div class="color-input-wrap">
+                                    <input type="color" id="bgGradientColor" value="#ffffff">
+                                    <input type="text" class="color-hex-input" id="bgGradientColorHex" value="#FFFFFF" maxlength="7">
+                                </div>
+                            </div>
+                            <div class="setting-row" id="gradientAngleRow" style="display: none;">
+                                <label class="setting-label">Angle</label>
+                                <div class="slider-row">
+                                    <div class="slider-track-wrap">
+                                        <input type="range" id="bgGradientAngleSlider" class="range-slider" min="0" max="360" value="180" step="1">
+                                    </div>
+                                    <span class="slider-value" id="bgGradientAngleValue">180</span>
+                                </div>
                             </div>
                         </div>
                     </section>
