@@ -5,7 +5,7 @@
 var App = window.App || {};
 
 App.FORMATS = {
-    'iphone': { width: 1290, height: 2796, name: 'iPhone 6.9"', cornerRadius: 0.10 },
+    'iphone': { width: 1242, height: 2688, name: 'iPhone 6.5"', cornerRadius: 0.10 },
     'ipad': { width: 2064, height: 2752, name: 'iPad 13"', cornerRadius: 0.04 },
     'mac': { width: 2880, height: 1800, name: 'Mac', cornerRadius: 0.02 },
     'android-phone': { width: 1080, height: 1920, name: 'Phone', cornerRadius: 0.06 },
