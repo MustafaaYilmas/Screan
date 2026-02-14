@@ -7,6 +7,12 @@ var App = window.App || {};
 // API Key storage key
 App.AI_API_KEY_STORAGE = 'screan-claude-api-key';
 
+// Model storage key
+App.AI_MODEL_STORAGE = 'screan-claude-model';
+
+// Default model
+App.AI_DEFAULT_MODEL = 'claude-haiku-4-5-20251001';
+
 // Get stored API key
 App.getApiKey = function() {
     return localStorage.getItem(App.AI_API_KEY_STORAGE) || '';
@@ -25,6 +31,95 @@ App.saveApiKey = function(key) {
     if (typeof App.updateLanguageSelect === 'function') {
         App.updateLanguageSelect();
     }
+    // Load available models when API key changes
+    App.loadAvailableModels();
+};
+
+// Get selected model
+App.getSelectedModel = function() {
+    return localStorage.getItem(App.AI_MODEL_STORAGE) || App.AI_DEFAULT_MODEL;
+};
+
+// Save selected model
+App.saveSelectedModel = function(modelId) {
+    localStorage.setItem(App.AI_MODEL_STORAGE, modelId);
+};
+
+// Load available models from the API
+App.loadAvailableModels = function() {
+    var select = document.getElementById('modelSelect');
+    if (!select) return;
+
+    var apiKey = App.getApiKey();
+    if (!apiKey) {
+        select.disabled = true;
+        // Reset to default option only
+        select.innerHTML = '<option value="' + App.AI_DEFAULT_MODEL + '">Claude Haiku 4.5</option>';
+        return;
+    }
+
+    fetch('https://api.anthropic.com/v1/models?limit=100', {
+        method: 'GET',
+        headers: {
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true'
+        }
+    })
+    .then(function(response) {
+        if (!response.ok) throw new Error('Failed to fetch models');
+        return response.json();
+    })
+    .then(function(data) {
+        var models = (data.data || []).filter(function(m) {
+            // Keep only Claude 4+ models (claude-sonnet-4, claude-haiku-4, claude-opus-4, etc.)
+            return /^claude-.*-4/.test(m.id);
+        });
+
+        // Sort: haiku first, then sonnet, then opus
+        var familyOrder = { haiku: 0, sonnet: 1, opus: 2 };
+        models.sort(function(a, b) {
+            var familyA = 2, familyB = 2;
+            Object.keys(familyOrder).forEach(function(f) {
+                if (a.id.indexOf(f) !== -1) familyA = familyOrder[f];
+                if (b.id.indexOf(f) !== -1) familyB = familyOrder[f];
+            });
+            return familyA - familyB;
+        });
+
+        if (models.length === 0) return;
+
+        var savedModel = App.getSelectedModel();
+        var savedModelExists = false;
+
+        select.innerHTML = '';
+        models.forEach(function(m) {
+            var option = document.createElement('option');
+            option.value = m.id;
+            option.textContent = m.display_name;
+            select.appendChild(option);
+            if (m.id === savedModel) savedModelExists = true;
+        });
+
+        // Restore saved selection or fall back to default
+        if (savedModelExists) {
+            select.value = savedModel;
+        } else {
+            // Try to select the default model, otherwise keep first option
+            var defaultExists = models.some(function(m) { return m.id === App.AI_DEFAULT_MODEL; });
+            if (defaultExists) {
+                select.value = App.AI_DEFAULT_MODEL;
+            }
+            App.saveSelectedModel(select.value);
+        }
+
+        select.disabled = false;
+    })
+    .catch(function(error) {
+        console.error('Failed to load models:', error);
+        // Keep whatever options are already there, enable if we have a key
+        select.disabled = false;
+    });
 };
 
 // Check if API key is configured
@@ -169,6 +264,14 @@ App.initAITranslateEvents = function() {
         }
     }
 
+    // Model select change event
+    var modelSelect = document.getElementById('modelSelect');
+    if (modelSelect) {
+        modelSelect.addEventListener('change', function() {
+            App.saveSelectedModel(modelSelect.value);
+        });
+    }
+
     // API key section toggle
     if (apiKeyHeader) {
         apiKeyHeader.addEventListener('click', function() {
@@ -221,6 +324,9 @@ App.initAITranslateEvents = function() {
     // Initial state update
     App.updateApiKeyRowVisibility();
     App.updateTranslateButtonState();
+
+    // Load available models if API key exists
+    App.loadAvailableModels();
 };
 
 // Translate all screenshots from active language to all other languages
@@ -418,31 +524,47 @@ App.performBatchTranslation = function(contentList, sourceLang, targetLangs, api
         'Input (JSON):\n' + JSON.stringify(textsToTranslate, null, 2) + '\n\n' +
         'Return ONLY a valid JSON object with this exact structure (no markdown, no explanation):\n' + jsonExample;
 
-    return fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': apiKey,
-            'anthropic-version': '2023-06-01',
-            'anthropic-dangerous-direct-browser-access': 'true'
-        },
-        body: JSON.stringify({
-            model: 'claude-haiku-4-5-20251001',
-            max_tokens: 4096,
-            messages: [{
-                role: 'user',
-                content: prompt
-            }]
-        })
-    })
-    .then(function(response) {
-        if (!response.ok) {
-            return response.json().then(function(err) {
-                throw new Error(err.error ? err.error.message : 'API request failed');
-            });
-        }
-        return response.json();
-    })
+    var requestBody = JSON.stringify({
+        model: App.getSelectedModel(),
+        max_tokens: 4096,
+        messages: [{
+            role: 'user',
+            content: prompt
+        }]
+    });
+
+    var requestHeaders = {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+    };
+
+    // Fetch with retry on 429/529 (rate limit / overloaded)
+    function fetchWithRetry(attempt) {
+        return fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: requestHeaders,
+            body: requestBody
+        }).then(function(response) {
+            if ((response.status === 429 || response.status === 529) && attempt < 3) {
+                var delay = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
+                return new Promise(function(resolve) {
+                    setTimeout(resolve, delay);
+                }).then(function() {
+                    return fetchWithRetry(attempt + 1);
+                });
+            }
+            if (!response.ok) {
+                return response.json().then(function(err) {
+                    throw new Error(err.error ? err.error.message : 'API request failed');
+                });
+            }
+            return response.json();
+        });
+    }
+
+    return fetchWithRetry(0)
     .then(function(data) {
         // Extract text from Claude's response
         var responseText = data.content[0].text;
