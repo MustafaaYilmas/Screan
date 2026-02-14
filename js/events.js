@@ -457,6 +457,12 @@ App.initEventListeners = function() {
         document.getElementById('platformsSection').classList.toggle('open');
     });
 
+    // Clicking active platform preview opens the accordion
+    document.getElementById('activePlatformPreview').addEventListener('click', function() {
+        document.getElementById('platformsToggle').classList.add('open');
+        document.getElementById('platformsSection').classList.add('open');
+    });
+
     // Platform selection
     document.querySelectorAll('.platform-header').forEach(function(header) {
         header.addEventListener('click', function() {

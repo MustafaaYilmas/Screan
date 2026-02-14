@@ -7,6 +7,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 6px;
+    min-height: 32px;
     margin-bottom: 12px;
 }
 

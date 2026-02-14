@@ -8,12 +8,17 @@
     overflow-y: hidden;
     background: var(--background-subtle);
     position: relative;
+    scrollbar-width: none;
+}
+
+.previews-wrapper::-webkit-scrollbar {
+    display: none;
 }
 
 .previews-container {
     display: flex;
     gap: 16px;
-    padding: 32px;
+    padding: 16px 32px;
     min-height: 100%;
     align-items: center;
     width: fit-content;
@@ -40,19 +45,18 @@
     background: transparent;
 }
 
-.preview-item.active {
-    background: transparent;
+.preview-item.active canvas {
     outline: 2px solid color-mix(in srgb, var(--ring) 70%, transparent);
-    outline-offset: 4px;
+    outline-offset: 12px;
     border-radius: var(--radius-lg);
 }
 
-:root.light .preview-item.active {
+:root.light .preview-item.active canvas {
     outline-color: color-mix(in srgb, var(--ring) 30%, transparent);
 }
 
 /* Hide selection outline when panels are hidden */
-.panels-hidden .preview-item.active {
+.panels-hidden .preview-item.active canvas {
     outline: none;
 }
 
@@ -61,39 +65,34 @@
     border-radius: var(--radius-lg);
 }
 
-/* Delete button on preview */
+/* Delete button below preview */
 .preview-delete-btn {
-    position: absolute;
-    bottom: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 36px;
-    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--background);
-    border: 1px solid var(--border);
-    border-radius: 50%;
+    margin: 20px auto 0;
+    padding: 4px;
+    background: none;
+    border: none;
     color: var(--foreground-muted);
     cursor: pointer;
     opacity: 0;
-    transition: opacity var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+    pointer-events: none;
+    transition: opacity var(--transition-fast), color var(--transition-fast);
 }
 
-.preview-item:hover .preview-delete-btn {
-    opacity: 1;
+.preview-item.active .preview-delete-btn {
+    opacity: 0.4;
+    pointer-events: auto;
 }
 
 .preview-delete-btn:hover {
-    background: var(--destructive);
-    border-color: var(--destructive);
-    color: var(--destructive-foreground);
-    transform: translateX(-50%) scale(1.1);
+    opacity: 1;
+    color: var(--destructive);
 }
 
 .preview-delete-btn:active {
-    transform: translateX(-50%) scale(0.95);
+    opacity: 0.8;
 }
 
 /* Empty State */
