@@ -182,7 +182,6 @@ App.switchLanguage = function(langCode) {
 // Update the language chips UI and preview select
 App.updateLanguageSelect = function() {
     var activeContainer = document.getElementById('activeLanguages');
-    var availableContainer = document.getElementById('availableLanguages');
     var previewSelect = document.getElementById('previewLanguageSelect');
     var hiddenSelect = document.getElementById('languageSelect');
 

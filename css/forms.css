@@ -280,34 +280,6 @@
     box-shadow: var(--ring-shadow);
 }
 
-.color-presets {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-}
-
-.color-preset-btn {
-    width: 28px;
-    height: 28px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    cursor: pointer;
-    transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.color-preset-btn:hover {
-    transform: scale(1.05);
-    border-color: var(--ring);
-}
-
-.color-preset-btn:active {
-    transform: scale(0.95);
-}
-
-.color-preset-btn:focus-visible {
-    box-shadow: var(--ring-shadow);
-}
-
 /* ============================================
    Toggle
    ============================================ */
@@ -422,7 +394,3 @@
     border-color: var(--ring);
 }
 
-.size-unit {
-    font-size: 12px;
-    color: var(--foreground-muted);
-}

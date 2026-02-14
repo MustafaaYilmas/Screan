@@ -111,10 +111,8 @@ App.updateTranslateFooterVisibility = function() {
 // Update translate button state based on API key and languages
 App.updateTranslateButtonState = function() {
     var translateBtn = document.getElementById('translateAllBtn');
-    var removeBtn = document.getElementById('removeLanguageBtn');
 
     var activeLang = App.state.activeLanguage || 'en';
-    var isNotEnglish = activeLang !== 'en';
     var languages = App.state.languages || ['en'];
     var hasMultipleLanguages = languages.length > 1;
     var hasScreenshots = App.getActiveScreenshots().length > 0;
@@ -135,11 +133,6 @@ App.updateTranslateButtonState = function() {
         } else {
             translateBtn.title = 'Translate from ' + sourceLangName + ' to all languages';
         }
-    }
-
-    // Enable/disable remove button based on language (can't remove English)
-    if (removeBtn) {
-        removeBtn.disabled = !isNotEnglish;
     }
 
     // Update API key row visibility
@@ -165,7 +158,6 @@ App.toggleApiKeySection = function(forceOpen) {
 App.initAITranslateEvents = function() {
     var translateBtn = document.getElementById('translateAllBtn');
     var apiKeyInput = document.getElementById('apiKeyInput');
-    var apiKeyRow = document.getElementById('apiKeyRow');
     var apiKeyToggle = document.getElementById('apiKeyToggle');
     var apiKeyHeader = document.getElementById('apiKeyHeader');
 
@@ -495,20 +487,3 @@ App.performBatchTranslation = function(contentList, sourceLang, targetLangs, api
     });
 };
 
-// Show progress modal
-App.showProgressModal = function(message) {
-    var modal = document.getElementById('progressModal');
-    var text = document.getElementById('progressText');
-    if (modal && text) {
-        text.textContent = message || 'Processing...';
-        modal.classList.add('visible');
-    }
-};
-
-// Hide progress modal
-App.hideProgressModal = function() {
-    var modal = document.getElementById('progressModal');
-    if (modal) {
-        modal.classList.remove('visible');
-    }
-};

@@ -138,23 +138,23 @@
 }
 
 /* Add language button overrides */
-.add-lang-btn:hover:not(.disabled) {
+.add-lang-btn:hover:not(:disabled) {
     background: var(--muted);
     color: var(--foreground);
     border-color: var(--ring);
 }
 
-.add-lang-btn:hover.disabled {
+.add-lang-btn:hover:disabled {
     background: var(--input);
     color: var(--foreground-muted);
     border-color: var(--input-border);
 }
 
-.add-lang-btn:active:not(.disabled) {
+.add-lang-btn:active:not(:disabled) {
     transform: scale(0.92);
 }
 
-.add-lang-btn.disabled {
+.add-lang-btn:disabled {
     opacity: 0.4;
     cursor: not-allowed;
 }
@@ -172,43 +172,3 @@
     display: block;
 }
 
-/* ============================================
-   Button Row
-   ============================================ */
-
-.button-row {
-    display: flex;
-    gap: 6px;
-}
-
-.option-btn {
-    flex: 1;
-    padding: 8px 10px;
-    background: var(--input);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--foreground-muted);
-    font-size: 13px;
-    cursor: pointer;
-    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
-}
-
-.option-btn:hover {
-    background: var(--muted);
-    color: var(--foreground);
-    border-color: var(--ring);
-}
-
-.option-btn:active {
-    transform: scale(0.97);
-}
-
-.option-btn:focus-visible {
-    box-shadow: var(--ring-shadow);
-}
-
-.option-btn.active {
-    background: var(--primary);
-    color: var(--primary-foreground);
-    border-color: var(--primary);
-}

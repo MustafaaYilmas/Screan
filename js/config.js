@@ -208,12 +208,6 @@ App.FONT_WEIGHTS = {
     'bold': { name: 'Bold', value: 700 }
 };
 
-App.SIZE_MULTIPLIERS = {
-    small: 0.8,
-    medium: 1.0,
-    large: 1.2
-};
-
 // Spacing margins (percentage of canvas height) applied above and below the text block
 App.SPACING_MARGINS = {
     small: 0.03,

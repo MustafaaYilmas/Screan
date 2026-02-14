@@ -511,29 +511,6 @@ App.Storage = {
         if (typeof App.updateProjectsList === 'function') {
             App.updateProjectsList();
         }
-    },
-
-    // Clear all stored data
-    clear: function() {
-        var self = this;
-        if (!self.db) return Promise.resolve(false);
-
-        return new Promise(function(resolve, reject) {
-            try {
-                var transaction = self.db.transaction([self.STORE_NAME], 'readwrite');
-                var store = transaction.objectStore(self.STORE_NAME);
-                var request = store.clear();
-
-                request.onsuccess = function() { resolve(true); };
-                request.onerror = function(event) {
-                    console.warn('Error clearing IndexedDB:', event.target.error);
-                    resolve(false);
-                };
-            } catch (e) {
-                console.warn('Error clearing IndexedDB:', e);
-                resolve(false);
-            }
-        });
     }
 };
 

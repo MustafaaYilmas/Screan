@@ -170,9 +170,7 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
         return { imgY: 0, imgH: 0 };
     }
 
-    // Fixed horizontal margin (4% on each side = 92% width)
-    var horizontalMargin = format.horizontalMargin || 0.87;
-    var imgW = canvasW * horizontalMargin;
+    var imgW = canvasW * 0.87;
 
     // Calculate height based on screenshot ratio
     var imgRatio = screenshot.width / screenshot.height;
