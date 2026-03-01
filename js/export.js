@@ -12,7 +12,7 @@ App.exportAll = async function() {
 
     var files = [];
     var tempCanvas = document.createElement('canvas');
-    var tempCtx = tempCanvas.getContext('2d');
+    var tempCtx = tempCanvas.getContext('2d', { alpha: false });
 
     // Get languages to export
     var languages = App.state.languages || ['en'];
