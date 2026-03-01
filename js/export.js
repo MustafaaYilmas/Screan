@@ -4,6 +4,95 @@
 
 var App = window.App || {};
 
+// --- RGB PNG encoder (no alpha channel, guaranteed App Store compatible) ---
+
+App._crc32Table = null;
+
+App._crc32 = function(buf) {
+    if (!App._crc32Table) {
+        var t = new Uint32Array(256);
+        for (var n = 0; n < 256; n++) {
+            var c = n;
+            for (var k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
+            t[n] = c;
+        }
+        App._crc32Table = t;
+    }
+    var crc = 0xFFFFFFFF;
+    for (var i = 0; i < buf.length; i++) crc = App._crc32Table[(crc ^ buf[i]) & 0xFF] ^ (crc >>> 8);
+    return (crc ^ 0xFFFFFFFF) >>> 0;
+};
+
+App._pngChunk = function(type, data) {
+    var chunk = new Uint8Array(12 + data.length);
+    new DataView(chunk.buffer).setUint32(0, data.length);
+    for (var i = 0; i < 4; i++) chunk[4 + i] = type.charCodeAt(i);
+    if (data.length) chunk.set(data, 8);
+    new DataView(chunk.buffer).setUint32(8 + data.length, App._crc32(chunk.subarray(4, 8 + data.length)));
+    return chunk;
+};
+
+App.canvasToRgbPngBlob = async function(canvas, ctx) {
+    if (typeof CompressionStream === 'undefined') {
+        return new Promise(function(resolve) { canvas.toBlob(resolve, 'image/png'); });
+    }
+
+    var w = canvas.width, h = canvas.height;
+    var rgba = ctx.getImageData(0, 0, w, h).data;
+
+    var raw = new Uint8Array(h * (1 + w * 3));
+    var off = 0;
+    for (var y = 0; y < h; y++) {
+        raw[off++] = 1; // Sub filter for better compression
+        var row = y * w * 4;
+        raw[off++] = rgba[row];
+        raw[off++] = rgba[row + 1];
+        raw[off++] = rgba[row + 2];
+        for (var x = 1; x < w; x++) {
+            var i = row + x * 4, p = i - 4;
+            raw[off++] = (rgba[i] - rgba[p]) & 0xFF;
+            raw[off++] = (rgba[i + 1] - rgba[p + 1]) & 0xFF;
+            raw[off++] = (rgba[i + 2] - rgba[p + 2]) & 0xFF;
+        }
+    }
+
+    var cs = new CompressionStream('deflate');
+    var writer = cs.writable.getWriter();
+    writer.write(raw);
+    writer.close();
+    var chunks = [], reader = cs.readable.getReader();
+    for (;;) {
+        var r = await reader.read();
+        if (r.done) break;
+        chunks.push(r.value);
+    }
+    var len = 0;
+    for (var i = 0; i < chunks.length; i++) len += chunks[i].length;
+    var compressed = new Uint8Array(len);
+    var pos = 0;
+    for (var i = 0; i < chunks.length; i++) { compressed.set(chunks[i], pos); pos += chunks[i].length; }
+
+    var ihdr = new Uint8Array(13);
+    new DataView(ihdr.buffer).setUint32(0, w);
+    new DataView(ihdr.buffer).setUint32(4, h);
+    ihdr[8] = 8; ihdr[9] = 2; // 8-bit RGB, no alpha
+
+    var sig = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]);
+    var ihdrC = App._pngChunk('IHDR', ihdr);
+    var idatC = App._pngChunk('IDAT', compressed);
+    var iendC = App._pngChunk('IEND', new Uint8Array(0));
+    var png = new Uint8Array(sig.length + ihdrC.length + idatC.length + iendC.length);
+    var o = 0;
+    png.set(sig, o); o += sig.length;
+    png.set(ihdrC, o); o += ihdrC.length;
+    png.set(idatC, o); o += idatC.length;
+    png.set(iendC, o);
+
+    return new Blob([png], { type: 'image/png' });
+};
+
+// --- End RGB PNG encoder ---
+
 App.exportAll = async function() {
     var modal = document.getElementById('progressModal');
     var progressText = document.getElementById('progressText');
@@ -48,7 +137,7 @@ App.exportAll = async function() {
 
                 await new Promise(function(r) { setTimeout(r, 50); });
 
-                var blob = await new Promise(function(resolve) { tempCanvas.toBlob(resolve, 'image/png'); });
+                var blob = await App.canvasToRgbPngBlob(tempCanvas, tempCtx);
 
                 // Build file path based on number of languages
                 var filename = platformKey + '_' + (j + 1) + '.png';
