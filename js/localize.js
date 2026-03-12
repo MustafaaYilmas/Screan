@@ -46,6 +46,21 @@ App.initLanguageEvents = function() {
         });
     }
 
+    // Add all languages button
+    var addAllLangsBtn = document.getElementById('addAllLangsBtn');
+    if (addAllLangsBtn) {
+        addAllLangsBtn.addEventListener('click', function() {
+            if (!App.hasApiKey()) {
+                App.toggleApiKeySection(true);
+                var apiKeyInput = document.getElementById('apiKeyInput');
+                if (apiKeyInput) apiKeyInput.focus();
+                return;
+            }
+
+            App.addAllLanguages();
+        });
+    }
+
     // Preview language select change - switch language (synced)
     if (previewLanguageSelect) {
         previewLanguageSelect.addEventListener('change', function(e) {
@@ -103,6 +118,104 @@ App.addLanguage = function(langCode) {
     if (App.hasApiKey && App.hasApiKey()) {
         App.autoTranslateNewLanguage(langCode);
     }
+};
+
+// Add all remaining languages and translate them sequentially
+App.addAllLanguages = function() {
+    var languages = App.state.languages || ['en'];
+    var allLangCodes = Object.keys(App.LANGUAGES);
+    var remaining = allLangCodes.filter(function(code) {
+        return languages.indexOf(code) === -1;
+    });
+
+    if (remaining.length === 0) return;
+
+    // Add all languages to state first (without triggering auto-translate)
+    var sourceLang = 'en';
+    if (languages.indexOf('en') === -1) {
+        sourceLang = languages[0];
+    }
+    var activeLang = App.state.activeLanguage || 'en';
+
+    remaining.forEach(function(langCode) {
+        if (App.state.languages.indexOf(langCode) !== -1) return;
+        App.state.languages.push(langCode);
+
+        // Initialize content for this language in all screenshots
+        Object.keys(App.state.platforms).forEach(function(platformKey) {
+            var screenshots = App.state.platforms[platformKey].screenshots;
+            screenshots.forEach(function(screenshot) {
+                if (!screenshot.settings.content) {
+                    screenshot.settings.content = {
+                        'en': {
+                            headline: screenshot.settings.headline || App.DEFAULT_SETTINGS.content.en.headline,
+                            subheadline: screenshot.settings.subheadline || App.DEFAULT_SETTINGS.content.en.subheadline
+                        }
+                    };
+                }
+                var sourceContent = screenshot.settings.content[activeLang] || screenshot.settings.content['en'] || {
+                    headline: screenshot.settings.headline,
+                    subheadline: screenshot.settings.subheadline
+                };
+                screenshot.settings.content[langCode] = {
+                    headline: sourceContent.headline,
+                    subheadline: sourceContent.subheadline
+                };
+            });
+        });
+    });
+
+    App.updateLanguageSelect();
+    App.Storage.scheduleSave();
+
+    // Now translate sequentially if API key exists
+    if (!App.hasApiKey()) return;
+
+    // Collect content to translate (once)
+    var contentToTranslate = [];
+    Object.keys(App.state.platforms).forEach(function(platformKey) {
+        var screenshots = App.state.platforms[platformKey].screenshots;
+        screenshots.forEach(function(screenshot, index) {
+            var content = screenshot.settings.content && screenshot.settings.content[sourceLang];
+            var headline = content ? content.headline : screenshot.settings.headline;
+            var subheadline = content ? content.subheadline : screenshot.settings.subheadline;
+            if (headline || subheadline) {
+                contentToTranslate.push({
+                    platform: platformKey,
+                    index: index,
+                    headline: headline || '',
+                    subheadline: subheadline || ''
+                });
+            }
+        });
+    });
+
+    if (contentToTranslate.length === 0) return;
+
+    var translateBtn = document.getElementById('translateAllBtn');
+    var addAllBtn = document.getElementById('addAllLangsBtn');
+    if (translateBtn) translateBtn.classList.add('loading');
+    if (addAllBtn) addAllBtn.disabled = true;
+
+    // Translate all remaining languages in one batch call
+    var apiKey = App.getApiKey();
+    App.performBatchTranslation(contentToTranslate, sourceLang, remaining, apiKey)
+        .then(function() {
+            if (translateBtn) translateBtn.classList.remove('loading');
+            if (addAllBtn) addAllBtn.disabled = false;
+            App.state._translationDirty = false;
+            App.updateSettingsUI();
+            App.renderAllCanvases();
+            App.Storage.scheduleSave();
+            App.updateTranslateFooterVisibility();
+            App.updateLanguageSelect();
+        })
+        .catch(function(error) {
+            if (translateBtn) translateBtn.classList.remove('loading');
+            if (addAllBtn) addAllBtn.disabled = false;
+            console.error('Batch translation error:', error);
+            alert('Translation failed: ' + (error.message || 'Unknown error'));
+        });
 };
 
 // Remove a language (global, affects all screenshots across all platforms)
