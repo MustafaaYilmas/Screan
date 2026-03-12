@@ -79,7 +79,7 @@ App._onCanvasDragEnd = function() {
     var d = App._canvasDrag;
     if (!d.active) return;
     d.active = false;
-    App.updateSectionApplyButtons();
+    App.updateSettingsUI();
     App.Storage.scheduleSave();
     App.Undo.scheduleCapture();
 };

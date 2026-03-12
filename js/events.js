@@ -60,6 +60,7 @@ App.renderAndSave = function() {
     App.renderActivePreview();
     App.updateSectionApplyButtons();
     App.updateResetEffectsButton();
+    App.updateResetPositionButton();
     App.Storage.scheduleSave();
     App.Undo.scheduleCapture();
     // Re-render after fonts finish loading (Google Fonts may load weight on demand)
@@ -74,6 +75,17 @@ App.updateResetEffectsButton = function() {
     if (!settings || !btn) return;
     var hasEffects = settings.textShadow || settings.textOutline || settings.textHighlight;
     btn.classList.toggle('visible', !!hasEffects);
+};
+
+App.updateResetPositionButton = function() {
+    var settings = App.getActiveSettings();
+    var btn = document.getElementById('resetPositionBtn');
+    if (!settings || !btn) return;
+    var moved = (settings.screenshotOffsetX && settings.screenshotOffsetX !== 0)
+        || (settings.screenshotOffsetY && settings.screenshotOffsetY !== 0)
+        || (settings.screenshotRotation && settings.screenshotRotation !== 0)
+        || (settings.screenshotZoom != null && settings.screenshotZoom !== 87);
+    btn.classList.toggle('visible', !!moved);
 };
 
 App.normalizeHex = function(value) {
@@ -569,6 +581,18 @@ App.initEventListeners = function() {
         settings.textHighlight = d.textHighlight;
         settings.textHighlightColor = d.textHighlightColor;
         settings.textHighlightOpacity = d.textHighlightOpacity;
+        App.updateSettingsUI();
+        App.renderAndSave();
+    });
+
+    // Reset screenshot position (offsets, rotation, zoom)
+    document.getElementById('resetPositionBtn').addEventListener('click', function() {
+        var settings = App.getActiveSettings();
+        if (!settings) return;
+        settings.screenshotOffsetX = 0;
+        settings.screenshotOffsetY = 0;
+        settings.screenshotRotation = 0;
+        settings.screenshotZoom = 87;
         App.updateSettingsUI();
         App.renderAndSave();
     });

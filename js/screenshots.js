@@ -304,6 +304,11 @@ App.updateSettingsUI = function() {
     var hasEffects = settings.textShadow || settings.textOutline || settings.textHighlight;
     document.getElementById('resetEffectsBtn').classList.toggle('visible', !!hasEffects);
 
+    // Show reset position button if position was changed
+    if (typeof App.updateResetPositionButton === 'function') {
+        App.updateResetPositionButton();
+    }
+
     // Device frame settings
     var frameStyle = settings.deviceFrameStyle || (settings.addDeviceFrame === false ? 'none' : 'border');
     document.getElementById('deviceFrameStyle').value = frameStyle;
