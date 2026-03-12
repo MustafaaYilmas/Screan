@@ -59,12 +59,21 @@ App.initSlider = function(config) {
 App.renderAndSave = function() {
     App.renderActivePreview();
     App.updateSectionApplyButtons();
+    App.updateResetEffectsButton();
     App.Storage.scheduleSave();
     App.Undo.scheduleCapture();
     // Re-render after fonts finish loading (Google Fonts may load weight on demand)
     document.fonts.ready.then(function() {
         App.renderActivePreview();
     });
+};
+
+App.updateResetEffectsButton = function() {
+    var settings = App.getActiveSettings();
+    var btn = document.getElementById('resetEffectsBtn');
+    if (!settings || !btn) return;
+    var hasEffects = settings.textShadow || settings.textOutline || settings.textHighlight;
+    btn.classList.toggle('visible', !!hasEffects);
 };
 
 App.normalizeHex = function(value) {
@@ -391,12 +400,12 @@ App.initEventListeners = function() {
         }
     });
 
-    // Device frame toggle
-    document.getElementById('addDeviceFrame').addEventListener('change', function(e) {
+    // Device frame style select
+    document.getElementById('deviceFrameStyle').addEventListener('change', function(e) {
         var settings = App.getActiveSettings();
         if (settings) {
-            settings.addDeviceFrame = e.target.checked;
-            document.getElementById('deviceFrameColorRow').style.display = e.target.checked ? 'flex' : 'none';
+            settings.deviceFrameStyle = e.target.value;
+            document.getElementById('deviceFrameColorRow').style.display = e.target.value !== 'none' ? 'flex' : 'none';
             App.renderAndSave();
         }
     });
@@ -482,6 +491,45 @@ App.initEventListeners = function() {
         App.Undo.scheduleCapture();
     });
 
+    // Background pattern select
+    document.getElementById('bgPattern').addEventListener('change', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            settings.bgPattern = e.target.value;
+            App.updateBgPatternUI(settings);
+            App.renderAndSave();
+        }
+    });
+
+    // Pattern color - color picker
+    document.getElementById('bgPatternColor').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            settings.bgPatternColor = e.target.value;
+            document.getElementById('bgPatternColorHex').value = e.target.value.toUpperCase();
+            App.renderAndSave();
+        }
+    });
+
+    // Pattern color - hex input
+    document.getElementById('bgPatternColorHex').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            var hex = App.normalizeHex(e.target.value);
+            if (hex) {
+                settings.bgPatternColor = hex;
+                document.getElementById('bgPatternColor').value = hex;
+                App.renderAndSave();
+            }
+        }
+    });
+
+    // Pattern size slider
+    App.initSlider({ id: 'bgPatternSize', settingsKey: 'bgPatternSize', defaultValue: 30 });
+
+    // Pattern opacity slider
+    App.initSlider({ id: 'bgPatternOpacity', settingsKey: 'bgPatternOpacity', defaultValue: 20 });
+
     // Text alignment
     document.querySelectorAll('.align-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
@@ -494,6 +542,129 @@ App.initEventListeners = function() {
             }
         });
     });
+
+    // Reset text effects to defaults
+    document.getElementById('resetEffectsBtn').addEventListener('click', function() {
+        var settings = App.getActiveSettings();
+        if (!settings) return;
+        var d = App.DEFAULT_SETTINGS;
+        settings.textShadow = d.textShadow;
+        settings.textShadowColor = d.textShadowColor;
+        settings.textShadowBlur = d.textShadowBlur;
+        settings.textShadowOffsetY = d.textShadowOffsetY;
+        settings.textOutline = d.textOutline;
+        settings.textOutlineColor = d.textOutlineColor;
+        settings.textOutlineWidth = d.textOutlineWidth;
+        settings.textHighlight = d.textHighlight;
+        settings.textHighlightColor = d.textHighlightColor;
+        settings.textHighlightOpacity = d.textHighlightOpacity;
+        App.updateSettingsUI();
+        App.renderAndSave();
+    });
+
+    // Text shadow toggle
+    document.getElementById('textShadow').addEventListener('change', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            settings.textShadow = e.target.checked;
+            var display = e.target.checked ? 'flex' : 'none';
+            document.getElementById('textShadowColorRow').style.display = display;
+            document.getElementById('textShadowBlurRow').style.display = display;
+            document.getElementById('textShadowOffsetYRow').style.display = display;
+            App.renderAndSave();
+        }
+    });
+
+    document.getElementById('textShadowColor').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            settings.textShadowColor = e.target.value;
+            document.getElementById('textShadowColorHex').value = e.target.value.toUpperCase();
+            App.renderAndSave();
+        }
+    });
+    document.getElementById('textShadowColorHex').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            var hex = App.normalizeHex(e.target.value);
+            if (hex) {
+                settings.textShadowColor = hex;
+                document.getElementById('textShadowColor').value = hex;
+                App.renderAndSave();
+            }
+        }
+    });
+
+    App.initSlider({ id: 'textShadowBlur', settingsKey: 'textShadowBlur', defaultValue: 10 });
+    App.initSlider({ id: 'textShadowOffsetY', settingsKey: 'textShadowOffsetY', defaultValue: 5 });
+
+    // Text outline toggle
+    document.getElementById('textOutline').addEventListener('change', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            settings.textOutline = e.target.checked;
+            var display = e.target.checked ? 'flex' : 'none';
+            document.getElementById('textOutlineColorRow').style.display = display;
+            document.getElementById('textOutlineWidthRow').style.display = display;
+            App.renderAndSave();
+        }
+    });
+
+    document.getElementById('textOutlineColor').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            settings.textOutlineColor = e.target.value;
+            document.getElementById('textOutlineColorHex').value = e.target.value.toUpperCase();
+            App.renderAndSave();
+        }
+    });
+    document.getElementById('textOutlineColorHex').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            var hex = App.normalizeHex(e.target.value);
+            if (hex) {
+                settings.textOutlineColor = hex;
+                document.getElementById('textOutlineColor').value = hex;
+                App.renderAndSave();
+            }
+        }
+    });
+
+    App.initSlider({ id: 'textOutlineWidth', settingsKey: 'textOutlineWidth', defaultValue: 3 });
+
+    // Text highlight toggle
+    document.getElementById('textHighlight').addEventListener('change', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            settings.textHighlight = e.target.checked;
+            var display = e.target.checked ? 'flex' : 'none';
+            document.getElementById('textHighlightColorRow').style.display = display;
+            document.getElementById('textHighlightOpacityRow').style.display = display;
+            App.renderAndSave();
+        }
+    });
+
+    document.getElementById('textHighlightColor').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            settings.textHighlightColor = e.target.value;
+            document.getElementById('textHighlightColorHex').value = e.target.value.toUpperCase();
+            App.renderAndSave();
+        }
+    });
+    document.getElementById('textHighlightColorHex').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            var hex = App.normalizeHex(e.target.value);
+            if (hex) {
+                settings.textHighlightColor = hex;
+                document.getElementById('textHighlightColor').value = hex;
+                App.renderAndSave();
+            }
+        }
+    });
+
+    App.initSlider({ id: 'textHighlightOpacity', settingsKey: 'textHighlightOpacity', defaultValue: 30 });
 
     // Platforms accordion toggle
     document.getElementById('platformsToggle').addEventListener('click', function() {

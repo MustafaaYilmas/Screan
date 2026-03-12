@@ -173,20 +173,25 @@ App.renderCanvas = function(canvas, screenshot) {
         ctx.restore();
     }
 
+    // Draw pattern overlay if enabled
+    if (settings.bgPattern && settings.bgPattern !== 'none') {
+        App.drawBgPattern(ctx, w, h, settings);
+    }
+
     // Pre-calculate text layout for dynamic screenshot positioning
     var textLayout = null;
     if (!preset.noText && (settings.headline || settings.subheadline)) {
         textLayout = App.calculateTextLayout(ctx, w, h, settings, format, App.state.activePlatform);
     }
 
-    var screenshotInfo = App.drawScreenshot(ctx, screenshot, w, h, preset, settings, format, textLayout);
+    var screenshotInfo = App.drawScreenshot(ctx, screenshot, w, h, preset, settings, format, textLayout, App.state.activePlatform);
 
     if (textLayout) {
         App.drawText(ctx, w, h, preset, settings, format, App.state.activePlatform, screenshotInfo, textLayout);
     }
 };
 
-App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, settings, format, textLayout) {
+App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, settings, format, textLayout, platformKey) {
     // Hide screenshot if toggled
     if (settings.hideScreenshot) {
         return { imgY: 0, imgH: 0 };
@@ -244,43 +249,84 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
         ctx.translate(-centerX, -centerY);
     }
 
-    if (settings.addShadow) {
-        ctx.save();
-        var shadowIntensity = settings.addDeviceFrame ? 0.5 : 0.4;
-        var shadowBlur = settings.addDeviceFrame ? 80 : 60;
-        var shadowOffset = settings.addDeviceFrame ? 35 : 25;
-        ctx.shadowColor = 'rgba(0, 0, 0, ' + shadowIntensity + ')';
-        ctx.shadowBlur = shadowBlur;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = shadowOffset;
-
-        ctx.beginPath();
-        ctx.roundRect(imgX, imgY, imgW, imgH, radius);
-        ctx.fillStyle = '#000';
-        ctx.fill();
-        ctx.restore();
+    // Determine frame style (backward compat with addDeviceFrame boolean)
+    var frameStyle = settings.deviceFrameStyle;
+    if (!frameStyle) {
+        frameStyle = settings.addDeviceFrame === false ? 'none' : 'border';
     }
 
-    // Clip and draw screenshot image
-    ctx.save();
-    ctx.beginPath();
-    ctx.roundRect(imgX, imgY, imgW, imgH, radius);
-    ctx.clip();
-    ctx.drawImage(screenshot.image, imgX, imgY, imgW, imgH);
-    ctx.restore();
+    if (frameStyle === 'mockup') {
+        var mockupKey = App.getMockupForPlatform(platformKey || App.state.activePlatform);
+        var deviceBounds = App.getDeviceBounds(imgX, imgY, imgW, imgH, mockupKey);
 
-    // Device frame (completely outside the image)
-    if (settings.addDeviceFrame) {
-        var frameWidth = Math.max(8, imgW * 0.02);
-        var frameOffset = frameWidth / 2;
-        var frameRadius = radius + frameOffset;
+        // Shadow on device body
+        if (settings.addShadow) {
+            ctx.save();
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+            ctx.shadowBlur = 80;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 35;
+            ctx.beginPath();
+            ctx.roundRect(deviceBounds.x, deviceBounds.y, deviceBounds.w, deviceBounds.h, deviceBounds.radius);
+            ctx.fillStyle = '#000';
+            ctx.fill();
+            ctx.restore();
+        }
 
-        ctx.strokeStyle = settings.deviceFrameColor;
-        ctx.lineWidth = frameWidth;
+        // Draw device mockup frame
+        App.drawDeviceMockupFrame(ctx, imgX, imgY, imgW, imgH, mockupKey, settings.deviceFrameColor || '#000000');
 
+        // Draw screenshot clipped to screen area
+        ctx.save();
         ctx.beginPath();
-        ctx.roundRect(imgX - frameOffset, imgY - frameOffset, imgW + frameWidth, imgH + frameWidth, frameRadius);
-        ctx.stroke();
+        ctx.roundRect(imgX, imgY, imgW, imgH, deviceBounds.screenRadius);
+        ctx.clip();
+        ctx.drawImage(screenshot.image, imgX, imgY, imgW, imgH);
+        ctx.restore();
+
+        // Draw device overlays (Dynamic Island, punch hole, etc.)
+        App.drawDeviceOverlays(ctx, imgX, imgY, imgW, imgH, mockupKey);
+
+    } else {
+        // 'none' or 'border' mode
+        if (settings.addShadow) {
+            ctx.save();
+            var shadowIntensity = frameStyle === 'border' ? 0.5 : 0.4;
+            var shadowBlur = frameStyle === 'border' ? 80 : 60;
+            var shadowOffset = frameStyle === 'border' ? 35 : 25;
+            ctx.shadowColor = 'rgba(0, 0, 0, ' + shadowIntensity + ')';
+            ctx.shadowBlur = shadowBlur;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = shadowOffset;
+
+            ctx.beginPath();
+            ctx.roundRect(imgX, imgY, imgW, imgH, radius);
+            ctx.fillStyle = '#000';
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // Clip and draw screenshot image
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(imgX, imgY, imgW, imgH, radius);
+        ctx.clip();
+        ctx.drawImage(screenshot.image, imgX, imgY, imgW, imgH);
+        ctx.restore();
+
+        // Device frame border
+        if (frameStyle === 'border') {
+            var frameWidth = Math.max(8, imgW * 0.02);
+            var frameOffset = frameWidth / 2;
+            var frameRadius = radius + frameOffset;
+
+            ctx.strokeStyle = settings.deviceFrameColor;
+            ctx.lineWidth = frameWidth;
+
+            ctx.beginPath();
+            ctx.roundRect(imgX - frameOffset, imgY - frameOffset, imgW + frameWidth, imgH + frameWidth, frameRadius);
+            ctx.stroke();
+        }
     }
 
     ctx.restore();
@@ -417,31 +463,24 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatK
     var tl = textLayout;
 
     // Determine text start position using margin-based layout
-    // Text is vertically centered within the text zone, respecting min margins
     var startY;
     if (settings.hideScreenshot) {
-        // No screenshot: center text vertically on entire canvas
         startY = (canvasH - tl.totalTextHeight) / 2;
     } else if (preset.cropBottom) {
-        // Preset "top": text zone is [0, imgY], center text with margins
         var zoneHeight = screenshotInfo.imgY;
         startY = tl.margin + (zoneHeight - 2 * tl.margin - tl.totalTextHeight) / 2;
     } else if (preset.cropTop) {
-        // Preset "bottom": text zone is [screenshotEnd, canvasH], center text with margins
         var screenshotEndY = screenshotInfo.imgY + screenshotInfo.imgH;
         var zoneHeight = canvasH - screenshotEndY;
         startY = screenshotEndY + tl.margin + (zoneHeight - 2 * tl.margin - tl.totalTextHeight) / 2;
     } else {
-        // Fallback (center preset)
         startY = canvasH * preset.textY;
     }
 
-    // Text alignment
     var textAlign = settings.textAlign || 'center';
     ctx.textAlign = textAlign;
     ctx.textBaseline = 'top';
 
-    // Calculate X position based on alignment
     var textX;
     if (textAlign === 'left') {
         textX = tl.horizontalPadding;
@@ -451,31 +490,390 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatK
         textX = canvasW / 2;
     }
 
-    // Draw headline (multiline)
+    // Pre-calculate all line positions for multi-pass rendering (effects)
+    var allLines = [];
+    var y = startY;
+
     if (tl.headlineLines.length > 0) {
-        ctx.fillStyle = settings.titleColor || '#ffffff';
-        ctx.font = tl.titleWeightValue + ' ' + tl.headlineFontSize + 'px ' + tl.titleFontFamily;
-        ctx.letterSpacing = (settings.titleUppercase ? tl.headlineFontSize * 0.05 : 0) + 'px';
+        var titleFont = tl.titleWeightValue + ' ' + tl.headlineFontSize + 'px ' + tl.titleFontFamily;
+        var titleLS = (settings.titleUppercase ? tl.headlineFontSize * 0.05 : 0) + 'px';
         for (var i = 0; i < tl.headlineLines.length; i++) {
-            ctx.fillText(tl.headlineLines[i], textX, startY);
-            startY += tl.headlineFontSize + (i < tl.headlineLines.length - 1 ? tl.titleLineSpacing : 0);
+            allLines.push({
+                text: tl.headlineLines[i], x: textX, y: y,
+                fontSize: tl.headlineFontSize, color: settings.titleColor || '#ffffff',
+                font: titleFont, letterSpacing: titleLS, alpha: 1
+            });
+            y += tl.headlineFontSize + (i < tl.headlineLines.length - 1 ? tl.titleLineSpacing : 0);
         }
-        if (tl.subheadlineLines.length > 0) {
-            startY += tl.lineSpacing;
+        if (tl.subheadlineLines.length > 0) y += tl.lineSpacing;
+    }
+
+    if (tl.subheadlineLines.length > 0) {
+        var bodyFont = tl.bodyWeightValue + ' ' + tl.subheadlineFontSize + 'px ' + tl.bodyFontFamily;
+        var bodyLS = (settings.bodyUppercase ? tl.subheadlineFontSize * 0.05 : 0) + 'px';
+        for (var i = 0; i < tl.subheadlineLines.length; i++) {
+            allLines.push({
+                text: tl.subheadlineLines[i], x: textX, y: y,
+                fontSize: tl.subheadlineFontSize, color: settings.bodyColor || '#ffffff',
+                font: bodyFont, letterSpacing: bodyLS, alpha: 0.9
+            });
+            y += tl.subheadlineFontSize + tl.bodyLineSpacing;
         }
     }
 
-    // Draw subheadline (multiline)
-    if (tl.subheadlineLines.length > 0) {
-        ctx.globalAlpha = 0.9;
-        ctx.fillStyle = settings.bodyColor || '#ffffff';
-        ctx.font = tl.bodyWeightValue + ' ' + tl.subheadlineFontSize + 'px ' + tl.bodyFontFamily;
-        ctx.letterSpacing = (settings.bodyUppercase ? tl.subheadlineFontSize * 0.05 : 0) + 'px';
-        for (var i = 0; i < tl.subheadlineLines.length; i++) {
-            ctx.fillText(tl.subheadlineLines[i], textX, startY);
-            startY += tl.subheadlineFontSize + tl.bodyLineSpacing;
+    // Pass 1: Draw highlight backgrounds
+    if (settings.textHighlight && allLines.length > 0) {
+        var hlHex = settings.textHighlightColor || '#000000';
+        var hlOpacity = (settings.textHighlightOpacity != null ? settings.textHighlightOpacity : 30) / 100;
+        var r = parseInt(hlHex.slice(1, 3), 16);
+        var g = parseInt(hlHex.slice(3, 5), 16);
+        var b = parseInt(hlHex.slice(5, 7), 16);
+
+        for (var i = 0; i < allLines.length; i++) {
+            var line = allLines[i];
+            if (!line.text) continue;
+            ctx.font = line.font;
+            ctx.letterSpacing = line.letterSpacing;
+            ctx.globalAlpha = line.alpha;
+            var tw = ctx.measureText(line.text).width;
+            var hPad = line.fontSize * 0.25;
+            var vPad = line.fontSize * 0.12;
+            var hlW = tw + hPad * 2;
+            var hlH = line.fontSize + vPad * 2;
+            var hlR = line.fontSize * 0.12;
+            var hlX;
+            if (textAlign === 'center') {
+                hlX = line.x - tw / 2 - hPad;
+            } else if (textAlign === 'right') {
+                hlX = line.x - tw - hPad;
+            } else {
+                hlX = line.x - hPad;
+            }
+            ctx.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + hlOpacity + ')';
+            ctx.beginPath();
+            ctx.roundRect(hlX, line.y - vPad, hlW, hlH, hlR);
+            ctx.fill();
         }
         ctx.globalAlpha = 1;
-        ctx.letterSpacing = '0px';
+    }
+
+    // Pass 2: Draw text with shadow and outline effects
+    var hasShadow = settings.textShadow;
+    var hasOutline = settings.textOutline;
+    var shadowColor, shadowBlur, shadowOffsetY, outlineColor, outlineWidth;
+
+    if (hasShadow) {
+        shadowColor = settings.textShadowColor || '#000000';
+        shadowBlur = settings.textShadowBlur != null ? settings.textShadowBlur : 10;
+        shadowOffsetY = settings.textShadowOffsetY != null ? settings.textShadowOffsetY : 5;
+    }
+    if (hasOutline) {
+        outlineColor = settings.textOutlineColor || '#000000';
+        outlineWidth = settings.textOutlineWidth != null ? settings.textOutlineWidth : 3;
+        ctx.lineJoin = 'round';
+        ctx.miterLimit = 2;
+    }
+
+    for (var i = 0; i < allLines.length; i++) {
+        var line = allLines[i];
+        ctx.font = line.font;
+        ctx.letterSpacing = line.letterSpacing;
+        ctx.globalAlpha = line.alpha;
+
+        if (hasOutline) {
+            if (hasShadow) {
+                ctx.shadowColor = shadowColor;
+                ctx.shadowBlur = shadowBlur;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = shadowOffsetY;
+            }
+            ctx.strokeStyle = outlineColor;
+            ctx.lineWidth = outlineWidth;
+            ctx.strokeText(line.text, line.x, line.y);
+            ctx.shadowColor = 'transparent';
+            ctx.fillStyle = line.color;
+            ctx.fillText(line.text, line.x, line.y);
+        } else {
+            if (hasShadow) {
+                ctx.shadowColor = shadowColor;
+                ctx.shadowBlur = shadowBlur;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = shadowOffsetY;
+            }
+            ctx.fillStyle = line.color;
+            ctx.fillText(line.text, line.x, line.y);
+            if (hasShadow) ctx.shadowColor = 'transparent';
+        }
+    }
+
+    ctx.globalAlpha = 1;
+    ctx.letterSpacing = '0px';
+    ctx.shadowColor = 'transparent';
+};
+
+// ============================================
+// Background Pattern Drawing
+// ============================================
+
+App.drawBgPattern = function(ctx, w, h, settings) {
+    var pattern = settings.bgPattern;
+    var color = settings.bgPatternColor || '#000000';
+    var size = settings.bgPatternSize != null ? settings.bgPatternSize : 30;
+    var opacity = (settings.bgPatternOpacity != null ? settings.bgPatternOpacity : 20) / 100;
+
+    // Scale size relative to canvas (base: 1242px width)
+    var scale = w / 1242;
+    var s = size * scale;
+
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+
+    switch (pattern) {
+        case 'dots':
+            App._drawPatternDots(ctx, w, h, s);
+            break;
+        case 'lines-h':
+            App._drawPatternLinesH(ctx, w, h, s);
+            break;
+        case 'lines-v':
+            App._drawPatternLinesV(ctx, w, h, s);
+            break;
+        case 'lines-d':
+            App._drawPatternLinesD(ctx, w, h, s);
+            break;
+        case 'grid':
+            App._drawPatternGrid(ctx, w, h, s);
+            break;
+        case 'cross-hatch':
+            App._drawPatternCrossHatch(ctx, w, h, s);
+            break;
+        case 'diamonds':
+            App._drawPatternDiamonds(ctx, w, h, s);
+            break;
+        case 'triangles':
+            App._drawPatternTriangles(ctx, w, h, s);
+            break;
+        case 'hexagons':
+            App._drawPatternHexagons(ctx, w, h, s);
+            break;
+        case 'waves':
+            App._drawPatternWaves(ctx, w, h, s);
+            break;
+        case 'circles':
+            App._drawPatternCircles(ctx, w, h, s);
+            break;
+        case 'chevron':
+            App._drawPatternChevron(ctx, w, h, s);
+            break;
+    }
+
+    ctx.restore();
+};
+
+// --- Pattern implementations ---
+
+App._drawPatternDots = function(ctx, w, h, s) {
+    var spacing = s * 1.5;
+    var radius = Math.max(1, s * 0.12);
+    for (var y = spacing / 2; y < h; y += spacing) {
+        for (var x = spacing / 2; x < w; x += spacing) {
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+};
+
+App._drawPatternLinesH = function(ctx, w, h, s) {
+    var spacing = s * 1.2;
+    var lw = Math.max(1, s * 0.06);
+    ctx.lineWidth = lw;
+    for (var y = spacing / 2; y < h; y += spacing) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+    }
+};
+
+App._drawPatternLinesV = function(ctx, w, h, s) {
+    var spacing = s * 1.2;
+    var lw = Math.max(1, s * 0.06);
+    ctx.lineWidth = lw;
+    for (var x = spacing / 2; x < w; x += spacing) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, h);
+        ctx.stroke();
+    }
+};
+
+App._drawPatternLinesD = function(ctx, w, h, s) {
+    var spacing = s * 1.5;
+    var lw = Math.max(1, s * 0.06);
+    ctx.lineWidth = lw;
+    var diag = w + h;
+    for (var d = -diag; d < diag; d += spacing) {
+        ctx.beginPath();
+        ctx.moveTo(d, 0);
+        ctx.lineTo(d + h, h);
+        ctx.stroke();
+    }
+};
+
+App._drawPatternGrid = function(ctx, w, h, s) {
+    var spacing = s * 1.5;
+    var lw = Math.max(1, s * 0.04);
+    ctx.lineWidth = lw;
+    for (var y = spacing / 2; y < h; y += spacing) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+    }
+    for (var x = spacing / 2; x < w; x += spacing) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, h);
+        ctx.stroke();
+    }
+};
+
+App._drawPatternCrossHatch = function(ctx, w, h, s) {
+    var spacing = s * 1.5;
+    var lw = Math.max(1, s * 0.04);
+    ctx.lineWidth = lw;
+    var diag = w + h;
+    // 45° lines
+    for (var d = -diag; d < diag; d += spacing) {
+        ctx.beginPath();
+        ctx.moveTo(d, 0);
+        ctx.lineTo(d + h, h);
+        ctx.stroke();
+    }
+    // -45° lines
+    for (d = -diag; d < diag; d += spacing) {
+        ctx.beginPath();
+        ctx.moveTo(d, h);
+        ctx.lineTo(d + h, 0);
+        ctx.stroke();
+    }
+};
+
+App._drawPatternDiamonds = function(ctx, w, h, s) {
+    var spacing = s * 2;
+    var half = spacing / 2;
+    var lw = Math.max(1, s * 0.05);
+    ctx.lineWidth = lw;
+    for (var row = 0; row * half < h + spacing; row++) {
+        for (var col = 0; col * spacing < w + spacing; col++) {
+            var cx = col * spacing + (row % 2 ? half : 0);
+            var cy = row * half;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - half);
+            ctx.lineTo(cx + half, cy);
+            ctx.lineTo(cx, cy + half);
+            ctx.lineTo(cx - half, cy);
+            ctx.closePath();
+            ctx.stroke();
+        }
+    }
+};
+
+App._drawPatternTriangles = function(ctx, w, h, s) {
+    var spacing = s * 2;
+    var triH = spacing * 0.866; // sqrt(3)/2
+    var lw = Math.max(1, s * 0.05);
+    ctx.lineWidth = lw;
+    for (var row = 0; row * triH < h + triH; row++) {
+        var offsetX = (row % 2) ? spacing / 2 : 0;
+        for (var col = -1; col * spacing < w + spacing; col++) {
+            var x = col * spacing + offsetX;
+            var y = row * triH;
+            // Upward triangle
+            ctx.beginPath();
+            ctx.moveTo(x, y + triH);
+            ctx.lineTo(x + spacing / 2, y);
+            ctx.lineTo(x + spacing, y + triH);
+            ctx.closePath();
+            ctx.stroke();
+        }
+    }
+};
+
+App._drawPatternHexagons = function(ctx, w, h, s) {
+    var r = s * 0.8;
+    var hexW = r * 2;
+    var hexH = r * Math.sqrt(3);
+    var lw = Math.max(1, s * 0.05);
+    ctx.lineWidth = lw;
+    for (var row = -1; row * hexH * 0.75 < h + hexH; row++) {
+        var offsetX = (row % 2) ? r * 1.5 : 0;
+        for (var col = -1; col * (r * 3) < w + hexW; col++) {
+            var cx = col * (r * 3) + offsetX;
+            var cy = row * hexH * 0.75;
+            ctx.beginPath();
+            for (var i = 0; i < 6; i++) {
+                var angle = Math.PI / 3 * i - Math.PI / 6;
+                var px = cx + r * Math.cos(angle);
+                var py = cy + r * Math.sin(angle);
+                if (i === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.closePath();
+            ctx.stroke();
+        }
+    }
+};
+
+App._drawPatternWaves = function(ctx, w, h, s) {
+    var spacing = s * 1.5;
+    var amplitude = s * 0.4;
+    var wavelength = s * 3;
+    var lw = Math.max(1, s * 0.06);
+    ctx.lineWidth = lw;
+    for (var y = spacing / 2; y < h + amplitude; y += spacing) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        for (var x = 0; x <= w; x += 2) {
+            ctx.lineTo(x, y + Math.sin((x / wavelength) * Math.PI * 2) * amplitude);
+        }
+        ctx.stroke();
+    }
+};
+
+App._drawPatternCircles = function(ctx, w, h, s) {
+    var spacing = s * 2.5;
+    var maxRadius = spacing * 0.45;
+    var lw = Math.max(1, s * 0.05);
+    ctx.lineWidth = lw;
+    for (var y = spacing / 2; y < h; y += spacing) {
+        for (var x = spacing / 2; x < w; x += spacing) {
+            var rings = 3;
+            for (var r = 1; r <= rings; r++) {
+                ctx.beginPath();
+                ctx.arc(x, y, maxRadius * (r / rings), 0, Math.PI * 2);
+                ctx.stroke();
+            }
+        }
+    }
+};
+
+App._drawPatternChevron = function(ctx, w, h, s) {
+    var spacing = s * 1.5;
+    var chevH = s * 0.8;
+    var lw = Math.max(1, s * 0.06);
+    ctx.lineWidth = lw;
+    for (var row = 0; row * chevH < h + chevH; row++) {
+        var y = row * chevH;
+        for (var x = -spacing; x < w + spacing; x += spacing) {
+            ctx.beginPath();
+            ctx.moveTo(x, y + chevH / 2);
+            ctx.lineTo(x + spacing / 2, y);
+            ctx.lineTo(x + spacing, y + chevH / 2);
+            ctx.stroke();
+        }
     }
 };

@@ -183,11 +183,48 @@ App.updateSettingsUI = function() {
     App.updateBgImageUI(settings);
     App.syncSlider('bgImageOpacity', settings.bgImageOpacity != null ? settings.bgImageOpacity : 100);
 
+    // Pattern settings
+    document.getElementById('bgPattern').value = settings.bgPattern || 'none';
+    App.updateBgPatternUI(settings);
+    document.getElementById('bgPatternColor').value = settings.bgPatternColor || '#000000';
+    document.getElementById('bgPatternColorHex').value = (settings.bgPatternColor || '#000000').toUpperCase();
+    App.syncSlider('bgPatternSize', settings.bgPatternSize != null ? settings.bgPatternSize : 30);
+    App.syncSlider('bgPatternOpacity', settings.bgPatternOpacity != null ? settings.bgPatternOpacity : 20);
+
+    // Text effects
+    document.getElementById('textShadow').checked = settings.textShadow || false;
+    document.getElementById('textShadowColorRow').style.display = settings.textShadow ? 'flex' : 'none';
+    document.getElementById('textShadowBlurRow').style.display = settings.textShadow ? 'flex' : 'none';
+    document.getElementById('textShadowOffsetYRow').style.display = settings.textShadow ? 'flex' : 'none';
+    document.getElementById('textShadowColor').value = settings.textShadowColor || '#000000';
+    document.getElementById('textShadowColorHex').value = (settings.textShadowColor || '#000000').toUpperCase();
+    App.syncSlider('textShadowBlur', settings.textShadowBlur != null ? settings.textShadowBlur : 10);
+    App.syncSlider('textShadowOffsetY', settings.textShadowOffsetY != null ? settings.textShadowOffsetY : 5);
+
+    document.getElementById('textOutline').checked = settings.textOutline || false;
+    document.getElementById('textOutlineColorRow').style.display = settings.textOutline ? 'flex' : 'none';
+    document.getElementById('textOutlineWidthRow').style.display = settings.textOutline ? 'flex' : 'none';
+    document.getElementById('textOutlineColor').value = settings.textOutlineColor || '#000000';
+    document.getElementById('textOutlineColorHex').value = (settings.textOutlineColor || '#000000').toUpperCase();
+    App.syncSlider('textOutlineWidth', settings.textOutlineWidth != null ? settings.textOutlineWidth : 3);
+
+    document.getElementById('textHighlight').checked = settings.textHighlight || false;
+    document.getElementById('textHighlightColorRow').style.display = settings.textHighlight ? 'flex' : 'none';
+    document.getElementById('textHighlightOpacityRow').style.display = settings.textHighlight ? 'flex' : 'none';
+    document.getElementById('textHighlightColor').value = settings.textHighlightColor || '#000000';
+    document.getElementById('textHighlightColorHex').value = (settings.textHighlightColor || '#000000').toUpperCase();
+    App.syncSlider('textHighlightOpacity', settings.textHighlightOpacity != null ? settings.textHighlightOpacity : 30);
+
+    // Show reset button if any effect is active
+    var hasEffects = settings.textShadow || settings.textOutline || settings.textHighlight;
+    document.getElementById('resetEffectsBtn').classList.toggle('visible', !!hasEffects);
+
     // Device frame settings
-    document.getElementById('addDeviceFrame').checked = settings.addDeviceFrame;
-    document.getElementById('deviceFrameColorRow').style.display = settings.addDeviceFrame ? 'flex' : 'none';
-    document.getElementById('deviceFrameColor').value = settings.deviceFrameColor;
-    document.getElementById('deviceFrameColorHex').value = settings.deviceFrameColor.toUpperCase();
+    var frameStyle = settings.deviceFrameStyle || (settings.addDeviceFrame === false ? 'none' : 'border');
+    document.getElementById('deviceFrameStyle').value = frameStyle;
+    document.getElementById('deviceFrameColorRow').style.display = frameStyle !== 'none' ? 'flex' : 'none';
+    document.getElementById('deviceFrameColor').value = settings.deviceFrameColor || '#000000';
+    document.getElementById('deviceFrameColorHex').value = (settings.deviceFrameColor || '#000000').toUpperCase();
 
     // Other settings
     document.getElementById('addShadow').checked = settings.addShadow;
@@ -223,6 +260,7 @@ App.updateTextFieldsState = function() {
     document.getElementById('languageSection').style.display = hideText ? 'none' : 'block';
     document.getElementById('titleSection').style.display = hideText ? 'none' : 'block';
     document.getElementById('bodySection').style.display = hideText ? 'none' : 'block';
+    document.getElementById('textEffectsSection').style.display = hideText ? 'none' : 'block';
     document.getElementById('textGapRow').style.display = hideText ? 'none' : 'flex';
     document.getElementById('alignRow').style.display = hideText ? 'none' : 'flex';
 };
@@ -231,8 +269,9 @@ App.updateTextFieldsState = function() {
 App.updateScreenshotOptionsVisibility = function(hidden) {
     var display = hidden ? 'none' : 'flex';
     document.getElementById('positionRow').style.display = display;
-    document.getElementById('showBorderRow').style.display = display;
-    document.getElementById('deviceFrameColorRow').style.display = hidden ? 'none' : (document.getElementById('addDeviceFrame').checked ? 'flex' : 'none');
+    document.getElementById('deviceFrameStyleRow').style.display = display;
+    var frameStyle = document.getElementById('deviceFrameStyle').value;
+    document.getElementById('deviceFrameColorRow').style.display = hidden ? 'none' : (frameStyle !== 'none' ? 'flex' : 'none');
     document.getElementById('displayShadowRow').style.display = display;
     document.getElementById('screenshotOffsetXRow').style.display = display;
     document.getElementById('screenshotOffsetYRow').style.display = display;
@@ -261,13 +300,22 @@ App.updateBgImageUI = function(settings) {
     }
 };
 
+// Update pattern controls visibility
+App.updateBgPatternUI = function(settings) {
+    var hasPattern = settings && settings.bgPattern && settings.bgPattern !== 'none';
+    document.getElementById('bgPatternColorRow').style.display = hasPattern ? 'flex' : 'none';
+    document.getElementById('bgPatternSizeRow').style.display = hasPattern ? 'flex' : 'none';
+    document.getElementById('bgPatternOpacityRow').style.display = hasPattern ? 'flex' : 'none';
+};
+
 // Keys for each section
 App.SECTION_KEYS = {
     layout: ['textGap', 'textAlign'],
     title: ['titleFont', 'titleSize', 'titleColor', 'titleWeight', 'titleUppercase'],
     body: ['bodyFont', 'bodySize', 'bodyColor', 'bodyWeight', 'bodyUppercase'],
-    background: ['bgColor', 'bgGradient', 'bgGradientColor', 'bgGradientAngle', 'bgImage', 'bgImageOpacity'],
-    device: ['preset', 'hideScreenshot', 'addDeviceFrame', 'deviceFrameColor', 'addShadow', 'screenshotOffsetX', 'screenshotOffsetY', 'screenshotRotation', 'screenshotZoom']
+    effects: ['textShadow', 'textShadowColor', 'textShadowBlur', 'textShadowOffsetY', 'textOutline', 'textOutlineColor', 'textOutlineWidth', 'textHighlight', 'textHighlightColor', 'textHighlightOpacity'],
+    background: ['bgColor', 'bgGradient', 'bgGradientColor', 'bgGradientAngle', 'bgImage', 'bgImageOpacity', 'bgPattern', 'bgPatternColor', 'bgPatternSize', 'bgPatternOpacity'],
+    device: ['preset', 'hideScreenshot', 'deviceFrameStyle', 'deviceFrameColor', 'addShadow', 'screenshotOffsetX', 'screenshotOffsetY', 'screenshotRotation', 'screenshotZoom']
 };
 
 // Check if a section's settings match across all screenshots
@@ -308,7 +356,7 @@ App.applySectionToAll = function(section) {
         settingsToApply = {
             preset: currentSettings.preset,
             hideScreenshot: currentSettings.hideScreenshot,
-            addDeviceFrame: currentSettings.addDeviceFrame,
+            deviceFrameStyle: currentSettings.deviceFrameStyle,
             deviceFrameColor: currentSettings.deviceFrameColor,
             addShadow: currentSettings.addShadow,
             screenshotOffsetX: currentSettings.screenshotOffsetX,
@@ -324,7 +372,11 @@ App.applySectionToAll = function(section) {
             bgGradientAngle: currentSettings.bgGradientAngle,
             bgImage: currentSettings.bgImage,
             bgImageObj: currentSettings.bgImageObj,
-            bgImageOpacity: currentSettings.bgImageOpacity
+            bgImageOpacity: currentSettings.bgImageOpacity,
+            bgPattern: currentSettings.bgPattern,
+            bgPatternColor: currentSettings.bgPatternColor,
+            bgPatternSize: currentSettings.bgPatternSize,
+            bgPatternOpacity: currentSettings.bgPatternOpacity
         };
     } else if (section === 'layout') {
         settingsToApply = {
@@ -338,6 +390,19 @@ App.applySectionToAll = function(section) {
             titleColor: currentSettings.titleColor,
             titleWeight: currentSettings.titleWeight,
             titleUppercase: currentSettings.titleUppercase
+        };
+    } else if (section === 'effects') {
+        settingsToApply = {
+            textShadow: currentSettings.textShadow,
+            textShadowColor: currentSettings.textShadowColor,
+            textShadowBlur: currentSettings.textShadowBlur,
+            textShadowOffsetY: currentSettings.textShadowOffsetY,
+            textOutline: currentSettings.textOutline,
+            textOutlineColor: currentSettings.textOutlineColor,
+            textOutlineWidth: currentSettings.textOutlineWidth,
+            textHighlight: currentSettings.textHighlight,
+            textHighlightColor: currentSettings.textHighlightColor,
+            textHighlightOpacity: currentSettings.textHighlightOpacity
         };
     } else if (section === 'body') {
         settingsToApply = {

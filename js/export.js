@@ -219,13 +219,18 @@ App.renderCanvasForExport = function(canvas, ctx, screenshot, format, formatKey,
         ctx.restore();
     }
 
+    // Draw pattern overlay if enabled
+    if (exportSettings.bgPattern && exportSettings.bgPattern !== 'none') {
+        App.drawBgPattern(ctx, w, h, exportSettings);
+    }
+
     // Pre-calculate text layout for dynamic screenshot positioning
     var textLayout = null;
     if (!preset.noText && (exportSettings.headline || exportSettings.subheadline)) {
         textLayout = App.calculateTextLayout(ctx, w, h, exportSettings, format, formatKey);
     }
 
-    var screenshotInfo = App.drawScreenshot(ctx, screenshot, w, h, preset, exportSettings, format, textLayout);
+    var screenshotInfo = App.drawScreenshot(ctx, screenshot, w, h, preset, exportSettings, format, textLayout, formatKey);
 
     if (textLayout) {
         App.drawText(ctx, w, h, preset, exportSettings, format, formatKey, screenshotInfo, textLayout);

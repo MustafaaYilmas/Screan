@@ -207,8 +207,20 @@ App.DEFAULT_SETTINGS = {
     bgPatternSize: 30,
     bgPatternOpacity: 20,
     // Device frame settings
-    addDeviceFrame: true,
+    deviceFrameStyle: 'mockup',
+    deviceModel: 'auto',
     deviceFrameColor: '#000000',
+    // Text effects
+    textShadow: false,
+    textShadowColor: '#000000',
+    textShadowBlur: 10,
+    textShadowOffsetY: 5,
+    textOutline: false,
+    textOutlineColor: '#000000',
+    textOutlineWidth: 3,
+    textHighlight: false,
+    textHighlightColor: '#000000',
+    textHighlightOpacity: 30,
     // Other settings
     addShadow: true,
     hideScreenshot: false,

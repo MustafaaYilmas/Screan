@@ -295,6 +295,100 @@
                             </div>
                         </div>
                     </section>
+
+                    <!-- Text Effects -->
+                    <section class="settings-section" id="textEffectsSection">
+                        <div class="section-header">
+                            <span class="section-title">Effects</span>
+                            <span class="section-header-spacer"></span>
+                            <button class="btn-reset-section" id="resetEffectsBtn" title="Reset to default">
+                                <i data-lucide="rotate-ccw"></i>
+                            </button>
+                            <button class="btn-apply-section" data-section="effects" title="Apply to all">
+                                <i data-lucide="arrow-right-left"></i>
+                            </button>
+                        </div>
+                        <div class="section-content">
+                            <div class="setting-row">
+                                <label class="setting-label">Shadow</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="textShadow">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-row" id="textShadowColorRow" style="display: none;">
+                                <label class="setting-label">Color</label>
+                                <div class="color-input-wrap">
+                                    <input type="color" id="textShadowColor" value="#000000">
+                                    <input type="text" class="color-hex-input" id="textShadowColorHex" value="#000000" maxlength="7">
+                                </div>
+                            </div>
+                            <div class="setting-row" id="textShadowBlurRow" style="display: none;">
+                                <label class="setting-label">Blur</label>
+                                <div class="slider-row">
+                                    <div class="slider-track-wrap">
+                                        <input type="range" id="textShadowBlurSlider" class="range-slider" min="0" max="50" value="10" step="1">
+                                    </div>
+                                    <span class="slider-value" id="textShadowBlurValue">10</span>
+                                </div>
+                            </div>
+                            <div class="setting-row" id="textShadowOffsetYRow" style="display: none;">
+                                <label class="setting-label">Offset</label>
+                                <div class="slider-row">
+                                    <div class="slider-track-wrap">
+                                        <input type="range" id="textShadowOffsetYSlider" class="range-slider" min="-30" max="30" value="5" step="1">
+                                    </div>
+                                    <span class="slider-value" id="textShadowOffsetYValue">5</span>
+                                </div>
+                            </div>
+                            <div class="setting-row">
+                                <label class="setting-label">Outline</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="textOutline">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-row" id="textOutlineColorRow" style="display: none;">
+                                <label class="setting-label">Color</label>
+                                <div class="color-input-wrap">
+                                    <input type="color" id="textOutlineColor" value="#000000">
+                                    <input type="text" class="color-hex-input" id="textOutlineColorHex" value="#000000" maxlength="7">
+                                </div>
+                            </div>
+                            <div class="setting-row" id="textOutlineWidthRow" style="display: none;">
+                                <label class="setting-label">Width</label>
+                                <div class="slider-row">
+                                    <div class="slider-track-wrap">
+                                        <input type="range" id="textOutlineWidthSlider" class="range-slider" min="1" max="20" value="3" step="1">
+                                    </div>
+                                    <span class="slider-value" id="textOutlineWidthValue">3</span>
+                                </div>
+                            </div>
+                            <div class="setting-row">
+                                <label class="setting-label">Highlight</label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="textHighlight">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-row" id="textHighlightColorRow" style="display: none;">
+                                <label class="setting-label">Color</label>
+                                <div class="color-input-wrap">
+                                    <input type="color" id="textHighlightColor" value="#000000">
+                                    <input type="text" class="color-hex-input" id="textHighlightColorHex" value="#000000" maxlength="7">
+                                </div>
+                            </div>
+                            <div class="setting-row" id="textHighlightOpacityRow" style="display: none;">
+                                <label class="setting-label">Opacity</label>
+                                <div class="slider-row">
+                                    <div class="slider-track-wrap">
+                                        <input type="range" id="textHighlightOpacitySlider" class="range-slider" min="0" max="100" value="30" step="1">
+                                    </div>
+                                    <span class="slider-value" id="textHighlightOpacityValue">30</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
                 </div>
 
                 <!-- Style Tab -->
@@ -359,12 +453,13 @@
                                     <span class="slider-value" id="screenshotZoomValue">87</span>
                                 </div>
                             </div>
-                            <div class="setting-row" id="showBorderRow">
-                                <label class="setting-label">Border</label>
-                                <label class="toggle">
-                                    <input type="checkbox" id="addDeviceFrame" checked>
-                                    <span class="toggle-slider"></span>
-                                </label>
+                            <div class="setting-row" id="deviceFrameStyleRow">
+                                <label class="setting-label">Frame</label>
+                                <select class="font-select" id="deviceFrameStyle">
+                                    <option value="none">None</option>
+                                    <option value="border">Border</option>
+                                    <option value="mockup">Device</option>
+                                </select>
                             </div>
                             <div class="setting-row" id="deviceFrameColorRow">
                                 <label class="setting-label">Color</label>
@@ -450,6 +545,55 @@
                                         <input type="range" id="bgImageOpacitySlider" class="range-slider" min="0" max="100" value="100" step="1">
                                     </div>
                                     <span class="slider-value" id="bgImageOpacityValue">100</span>
+                                </div>
+                            </div>
+                            <div class="setting-row">
+                                <label class="setting-label">Pattern</label>
+                                <select class="font-select" id="bgPattern">
+                                    <option value="none">None</option>
+                                    <optgroup label="Lines">
+                                        <option value="lines-h">Horizontal</option>
+                                        <option value="lines-v">Vertical</option>
+                                        <option value="lines-d">Diagonal</option>
+                                        <option value="grid">Grid</option>
+                                        <option value="cross-hatch">Cross Hatch</option>
+                                    </optgroup>
+                                    <optgroup label="Shapes">
+                                        <option value="dots">Dots</option>
+                                        <option value="diamonds">Diamonds</option>
+                                        <option value="triangles">Triangles</option>
+                                        <option value="hexagons">Hexagons</option>
+                                        <option value="circles">Circles</option>
+                                    </optgroup>
+                                    <optgroup label="Other">
+                                        <option value="chevron">Chevron</option>
+                                        <option value="waves">Waves</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <div class="setting-row" id="bgPatternColorRow" style="display: none;">
+                                <label class="setting-label">Pat. Color</label>
+                                <div class="color-input-wrap">
+                                    <input type="color" id="bgPatternColor" value="#000000">
+                                    <input type="text" class="color-hex-input" id="bgPatternColorHex" value="#000000" maxlength="7">
+                                </div>
+                            </div>
+                            <div class="setting-row" id="bgPatternSizeRow" style="display: none;">
+                                <label class="setting-label">Pat. Size</label>
+                                <div class="slider-row">
+                                    <div class="slider-track-wrap">
+                                        <input type="range" id="bgPatternSizeSlider" class="range-slider" min="10" max="100" value="30" step="1">
+                                    </div>
+                                    <span class="slider-value" id="bgPatternSizeValue">30</span>
+                                </div>
+                            </div>
+                            <div class="setting-row" id="bgPatternOpacityRow" style="display: none;">
+                                <label class="setting-label">Pat. Opacity</label>
+                                <div class="slider-row">
+                                    <div class="slider-track-wrap">
+                                        <input type="range" id="bgPatternOpacitySlider" class="range-slider" min="0" max="100" value="20" step="1">
+                                    </div>
+                                    <span class="slider-value" id="bgPatternOpacityValue">20</span>
                                 </div>
                             </div>
                         </div>
@@ -554,6 +698,7 @@
     <script src="js/config.js"></script>
     <script src="js/state.js"></script>
     <script src="js/storage.js"></script>
+    <script src="js/mockups.js"></script>
     <script src="js/render.js"></script>
     <script src="js/screenshots.js"></script>
     <script src="js/reorder.js"></script>

@@ -208,6 +208,42 @@
     height: 14px;
 }
 
+.btn-reset-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius);
+    color: var(--foreground-muted);
+    cursor: pointer;
+    transition: opacity var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.btn-reset-section.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.btn-reset-section:hover {
+    background: var(--muted);
+    color: var(--foreground);
+}
+
+.btn-reset-section:active {
+    transform: scale(0.9);
+}
+
+.btn-reset-section svg {
+    width: 14px;
+    height: 14px;
+}
+
 .section-content {
     padding: 0 20px 20px;
 }
