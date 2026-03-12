@@ -4,6 +4,96 @@
 
 var App = window.App || {};
 
+// ============================================
+// Canvas Image Drag
+// ============================================
+
+App._canvasDrag = { active: false, startX: 0, startY: 0, startOffsetX: 0, startOffsetY: 0, zoom: 1 };
+
+App.initCanvasDrag = function(canvas, idx, zoom) {
+    // Prevent native drag so reorder doesn't fire when dragging on canvas
+    canvas.addEventListener('dragstart', function(e) { e.preventDefault(); e.stopPropagation(); });
+
+    canvas.addEventListener('mousedown', function(e) {
+        if (e.button !== 0) return;
+        App.selectScreenshot(idx);
+        var settings = App.getActiveSettings();
+        if (!settings) return;
+
+        var d = App._canvasDrag;
+        d.active = true;
+        d.startX = e.clientX;
+        d.startY = e.clientY;
+        d.startOffsetX = settings.screenshotOffsetX || 0;
+        d.startOffsetY = settings.screenshotOffsetY || 0;
+        d.zoom = zoom;
+        d.format = App.getActiveFormat();
+        e.preventDefault();
+        e.stopPropagation();
+    });
+
+    canvas.addEventListener('touchstart', function(e) {
+        if (e.touches.length !== 1) return;
+        App.selectScreenshot(idx);
+        var settings = App.getActiveSettings();
+        if (!settings) return;
+
+        var d = App._canvasDrag;
+        d.active = true;
+        d.startX = e.touches[0].clientX;
+        d.startY = e.touches[0].clientY;
+        d.startOffsetX = settings.screenshotOffsetX || 0;
+        d.startOffsetY = settings.screenshotOffsetY || 0;
+        d.zoom = zoom;
+        d.format = App.getActiveFormat();
+    }, { passive: true });
+};
+
+App._onCanvasDragMove = function(clientX, clientY) {
+    var d = App._canvasDrag;
+    if (!d.active) return;
+
+    var settings = App.getActiveSettings();
+    if (!settings) return;
+
+    var deltaX = clientX - d.startX;
+    var deltaY = clientY - d.startY;
+
+    // Convert screen pixels to canvas pixels, then to percentage offset
+    var canvasW = d.format.width * d.zoom;
+    var canvasH = d.format.height * d.zoom;
+
+    settings.screenshotOffsetX = d.startOffsetX + (deltaX / canvasW) * 100;
+    settings.screenshotOffsetY = d.startOffsetY + (deltaY / canvasH) * 100;
+
+    // Clamp
+    settings.screenshotOffsetX = Math.max(-50, Math.min(50, settings.screenshotOffsetX));
+    settings.screenshotOffsetY = Math.max(-50, Math.min(50, settings.screenshotOffsetY));
+
+    App.syncSlider('screenshotOffsetX', Math.round(settings.screenshotOffsetX));
+    App.syncSlider('screenshotOffsetY', Math.round(settings.screenshotOffsetY));
+    App.renderActivePreview();
+};
+
+App._onCanvasDragEnd = function() {
+    var d = App._canvasDrag;
+    if (!d.active) return;
+    d.active = false;
+    App.updateSectionApplyButtons();
+    App.Storage.scheduleSave();
+    App.Undo.scheduleCapture();
+};
+
+// Global mouse/touch move and up handlers
+document.addEventListener('mousemove', function(e) { App._onCanvasDragMove(e.clientX, e.clientY); });
+document.addEventListener('mouseup', function() { App._onCanvasDragEnd(); });
+document.addEventListener('touchmove', function(e) {
+    if (App._canvasDrag.active && e.touches.length === 1) {
+        App._onCanvasDragMove(e.touches[0].clientX, e.touches[0].clientY);
+    }
+}, { passive: true });
+document.addEventListener('touchend', function() { App._onCanvasDragEnd(); });
+
 App.renderAllPreviews = function() {
     var container = document.getElementById('previewsContainer');
     var wrapper = document.querySelector('.previews-wrapper');
@@ -72,6 +162,9 @@ App.renderAllPreviews = function() {
             // Setup drag & drop reordering
             App.setupReorderItem(item, idx, container);
         })(index);
+
+        // Canvas image drag
+        App.initCanvasDrag(canvas, index, zoom);
 
         item.appendChild(canvas);
         item.appendChild(deleteBtn);
@@ -223,11 +316,20 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
             imgY = canvasH - textLayout.totalZoneHeight - imgH;
         }
     } else {
-        var offsetY = settings.screenshotOffsetY != null ? settings.screenshotOffsetY : (settings.textSpacing != null ? settings.textSpacing : 33);
-        var spacingValue = App.spacingToSliderValue(offsetY);
-        var screenshotY = App.getSpacingScreenshotY(preset.screenshotY, spacingValue);
-        imgY = canvasH * screenshotY;
+        // No text: base position from preset (medium spacing)
+        var baseScreenshotY = App.getSpacingScreenshotY(preset.screenshotY, 33);
+        imgY = canvasH * baseScreenshotY;
     }
+
+    // Save base position for text layout (before user offsets)
+    var baseImgY = imgY;
+
+    // Apply direct offsets (drag / sliders)
+    if (settings.screenshotOffsetX) {
+        // Already applied above for X
+    }
+    var directOffsetY = settings.screenshotOffsetY != null ? settings.screenshotOffsetY : 0;
+    imgY += canvasH * (directOffsetY / 100);
 
     // Apply rotation around screenshot center
     var rotation = settings.screenshotRotation || 0;
@@ -331,7 +433,7 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
 
     ctx.restore();
 
-    return { imgY: imgY, imgH: imgH };
+    return { imgY: baseImgY, imgH: imgH };
 };
 
 
@@ -432,10 +534,8 @@ App.calculateTextLayout = function(ctx, canvasW, canvasH, settings, format, form
         totalTextHeight += bodyLineSpacing * (subheadlineLines.length - 1);
     }
 
-    // Spacing margin (uses screenshotOffsetY, migrated from textSpacing)
-    var offsetY = settings.screenshotOffsetY != null ? settings.screenshotOffsetY : (settings.textSpacing != null ? settings.textSpacing : 33);
-    var spacingValue = App.spacingToSliderValue(offsetY);
-    var marginRatio = App.getSpacingMargin(spacingValue);
+    // Fixed text margin (medium spacing)
+    var marginRatio = App.getSpacingMargin(33);
     var margin = canvasH * marginRatio;
 
     return {

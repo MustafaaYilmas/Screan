@@ -227,7 +227,7 @@ App.DEFAULT_SETTINGS = {
     preset: 'top',
     textAlign: 'center',
     textGap: 0,
-    screenshotOffsetY: 70,
+    screenshotOffsetY: 0,
     screenshotZoom: 87
 };
 

@@ -63,6 +63,11 @@
 .preview-item canvas {
     display: block;
     border-radius: var(--radius-lg);
+    cursor: grab;
+}
+
+.preview-item canvas:active {
+    cursor: grabbing;
 }
 
 /* Delete button below preview */

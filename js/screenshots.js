@@ -332,7 +332,7 @@ App.updateSettingsUI = function() {
     // Sliders
     App.syncSlider('textGap', settings.textGap != null ? settings.textGap : 35);
     App.syncSlider('screenshotOffsetX', settings.screenshotOffsetX || 0);
-    App.syncSlider('screenshotOffsetY', settings.screenshotOffsetY != null ? settings.screenshotOffsetY : (settings.textSpacing != null ? App.spacingToSliderValue(settings.textSpacing) : 33));
+    App.syncSlider('screenshotOffsetY', settings.screenshotOffsetY != null ? settings.screenshotOffsetY : 0);
     App.syncSlider('screenshotRotation', settings.screenshotRotation || 0);
     App.syncSlider('screenshotZoom', settings.screenshotZoom != null ? settings.screenshotZoom : 87);
 

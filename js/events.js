@@ -453,7 +453,7 @@ App.initEventListeners = function() {
     App.initSlider({ id: 'screenshotOffsetX', settingsKey: 'screenshotOffsetX', defaultValue: 0 });
 
     // Screenshot vertical offset slider
-    App.initSlider({ id: 'screenshotOffsetY', settingsKey: 'screenshotOffsetY', defaultValue: 33 });
+    App.initSlider({ id: 'screenshotOffsetY', settingsKey: 'screenshotOffsetY', defaultValue: 0 });
 
     // Screenshot rotation slider
     App.initSlider({ id: 'screenshotRotation', settingsKey: 'screenshotRotation', defaultValue: 0 });
