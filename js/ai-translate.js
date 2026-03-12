@@ -1,17 +1,17 @@
 // ============================================
-// AI Translation Management
+// AI Translation Management (OpenRouter)
 // ============================================
 
 var App = window.App || {};
 
 // API Key storage key
-App.AI_API_KEY_STORAGE = 'screan-claude-api-key';
+App.AI_API_KEY_STORAGE = 'screan-openrouter-api-key';
 
 // Model storage key
-App.AI_MODEL_STORAGE = 'screan-claude-model';
+App.AI_MODEL_STORAGE = 'screan-openrouter-model';
 
 // Default model
-App.AI_DEFAULT_MODEL = 'claude-haiku-4-5-20251001';
+App.AI_DEFAULT_MODEL = 'google/gemini-2.5-flash-preview';
 
 // Get stored API key
 App.getApiKey = function() {
@@ -45,48 +45,27 @@ App.saveSelectedModel = function(modelId) {
     localStorage.setItem(App.AI_MODEL_STORAGE, modelId);
 };
 
-// Load available models from the API
+// Load available models from OpenRouter API (public endpoint, no auth needed)
 App.loadAvailableModels = function() {
     var select = document.getElementById('modelSelect');
     if (!select) return;
 
-    var apiKey = App.getApiKey();
-    if (!apiKey) {
-        select.disabled = true;
-        // Reset to default option only
-        select.innerHTML = '<option value="' + App.AI_DEFAULT_MODEL + '">Claude Haiku 4.5</option>';
-        return;
-    }
-
-    fetch('https://api.anthropic.com/v1/models?limit=100', {
-        method: 'GET',
-        headers: {
-            'x-api-key': apiKey,
-            'anthropic-version': '2023-06-01',
-            'anthropic-dangerous-direct-browser-access': 'true'
-        }
-    })
+    fetch('https://openrouter.ai/api/v1/models')
     .then(function(response) {
         if (!response.ok) throw new Error('Failed to fetch models');
         return response.json();
     })
     .then(function(data) {
         var models = (data.data || []).filter(function(m) {
-            // Keep only Claude 4+ models (claude-sonnet-4, claude-haiku-4, claude-opus-4, etc.)
-            return /^claude-.*-4/.test(m.id);
+            // Keep only Google Gemini models
+            return m.id.indexOf('google/gemini') === 0;
         });
 
-        // Sort by family (haiku → sonnet → opus), then by version ascending
-        var familyOrder = { haiku: 0, sonnet: 1, opus: 2 };
+        // Sort by name
         models.sort(function(a, b) {
-            var familyA = 2, familyB = 2;
-            Object.keys(familyOrder).forEach(function(f) {
-                if (a.id.indexOf(f) !== -1) familyA = familyOrder[f];
-                if (b.id.indexOf(f) !== -1) familyB = familyOrder[f];
-            });
-            if (familyA !== familyB) return familyA - familyB;
-            // Within same family, sort by id alphabetically (version ascending)
-            return a.id.localeCompare(b.id);
+            var nameA = a.name || a.id;
+            var nameB = b.name || b.id;
+            return nameA.localeCompare(nameB);
         });
 
         if (models.length === 0) return;
@@ -98,7 +77,7 @@ App.loadAvailableModels = function() {
         models.forEach(function(m) {
             var option = document.createElement('option');
             option.value = m.id;
-            option.textContent = m.display_name;
+            option.textContent = m.name || m.id;
             select.appendChild(option);
             if (m.id === savedModel) savedModelExists = true;
         });
@@ -107,20 +86,15 @@ App.loadAvailableModels = function() {
         if (savedModelExists) {
             select.value = savedModel;
         } else {
-            // Try to select the default model, otherwise keep first option
             var defaultExists = models.some(function(m) { return m.id === App.AI_DEFAULT_MODEL; });
             if (defaultExists) {
                 select.value = App.AI_DEFAULT_MODEL;
             }
             App.saveSelectedModel(select.value);
         }
-
-        select.disabled = false;
     })
     .catch(function(error) {
         console.error('Failed to load models:', error);
-        // Keep whatever options are already there, enable if we have a key
-        select.disabled = false;
     });
 };
 
@@ -327,7 +301,7 @@ App.initAITranslateEvents = function() {
     App.updateApiKeyRowVisibility();
     App.updateTranslateButtonState();
 
-    // Load available models if API key exists
+    // Load available models
     App.loadAvailableModels();
 };
 
@@ -492,7 +466,7 @@ App.autoTranslateNewLanguage = function(newLangCode) {
         });
 };
 
-// Perform batch translation via Claude API
+// Perform batch translation via OpenRouter API
 App.performBatchTranslation = function(contentList, sourceLang, targetLangs, apiKey) {
     // Build the prompt for translation
     var sourceLangName = App.LANGUAGES[sourceLang] ? App.LANGUAGES[sourceLang].name : sourceLang;
@@ -528,7 +502,6 @@ App.performBatchTranslation = function(contentList, sourceLang, targetLangs, api
 
     var requestBody = JSON.stringify({
         model: App.getSelectedModel(),
-        max_tokens: 4096,
         messages: [{
             role: 'user',
             content: prompt
@@ -537,19 +510,17 @@ App.performBatchTranslation = function(contentList, sourceLang, targetLangs, api
 
     var requestHeaders = {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
+        'Authorization': 'Bearer ' + apiKey
     };
 
-    // Fetch with retry on 429/529 (rate limit / overloaded)
+    // Fetch with retry on 429 (rate limit)
     function fetchWithRetry(attempt) {
-        return fetch('https://api.anthropic.com/v1/messages', {
+        return fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: requestHeaders,
             body: requestBody
         }).then(function(response) {
-            if ((response.status === 429 || response.status === 529) && attempt < 3) {
+            if (response.status === 429 && attempt < 3) {
                 var delay = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
                 return new Promise(function(resolve) {
                     setTimeout(resolve, delay);
@@ -559,7 +530,7 @@ App.performBatchTranslation = function(contentList, sourceLang, targetLangs, api
             }
             if (!response.ok) {
                 return response.json().then(function(err) {
-                    throw new Error(err.error ? err.error.message : 'API request failed');
+                    throw new Error(err.error ? (err.error.message || JSON.stringify(err.error)) : 'API request failed');
                 });
             }
             return response.json();
@@ -568,8 +539,8 @@ App.performBatchTranslation = function(contentList, sourceLang, targetLangs, api
 
     return fetchWithRetry(0)
     .then(function(data) {
-        // Extract text from Claude's response
-        var responseText = data.content[0].text;
+        // Extract text from OpenRouter response (OpenAI-compatible format)
+        var responseText = data.choices[0].message.content;
 
         // Parse JSON response (handle potential markdown code blocks)
         var jsonStr = responseText;
@@ -610,4 +581,3 @@ App.performBatchTranslation = function(contentList, sourceLang, targetLangs, api
         return true;
     });
 };
-

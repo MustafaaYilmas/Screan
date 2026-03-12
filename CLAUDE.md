@@ -34,7 +34,7 @@ The app is also deployed at https://screan.app
 - `js/screenshots.js` — Screenshot upload, management, thumbnail creation
 - `js/events.js` — All UI event handlers and DOM interactions
 - `js/localize.js` — Multi-language content management per screenshot
-- `js/ai-translate.js` — Claude API (Haiku 4.5) integration for batch translation
+- `js/ai-translate.js` — OpenRouter API integration for batch translation (default: Gemini Flash)
 - `js/reorder.js` — Drag-and-drop reordering with FLIP animation
 - `js/dragdrop.js` — File upload drag-and-drop
 - `css/` — Modular CSS with custom properties for dark/light theme
@@ -45,7 +45,7 @@ The app is also deployed at https://screan.app
 - **Rendering**: Canvas-based with dual mode (live preview at reduced scale, export at full resolution). Layout presets (Top/Center/Bottom) control text and screenshot positioning.
 - **Persistence**: IndexedDB stores full app state including base64 image data. LocalStorage for API key and theme preference.
 - **Localization**: Per-screenshot content object keyed by language code. Global language list shared across platforms.
-- **AI Translation**: Direct browser-to-Anthropic API calls (no proxy). API key stored in LocalStorage.
+- **AI Translation**: Direct browser-to-OpenRouter API calls (no proxy). API key stored in LocalStorage.
 
 ### External Dependencies (CDN)
 
