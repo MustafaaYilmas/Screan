@@ -135,18 +135,40 @@ App.PRESETS = {
 
 // Available languages for content translation
 App.LANGUAGES = {
-    'en': { name: 'English', flag: '🇺🇸' },
-    'fr': { name: 'Français', flag: '🇫🇷' },
-    'es': { name: 'Español', flag: '🇪🇸' },
+    'ar': { name: 'العربية', flag: '🇸🇦' },
+    'bg': { name: 'Български', flag: '🇧🇬' },
+    'ca': { name: 'Català', flag: '🇪🇸' },
+    'cs': { name: 'Čeština', flag: '🇨🇿' },
+    'da': { name: 'Dansk', flag: '🇩🇰' },
     'de': { name: 'Deutsch', flag: '🇩🇪' },
+    'el': { name: 'Ελληνικά', flag: '🇬🇷' },
+    'en': { name: 'English', flag: '🇺🇸' },
+    'es': { name: 'Español', flag: '🇪🇸' },
+    'fi': { name: 'Suomi', flag: '🇫🇮' },
+    'fr': { name: 'Français', flag: '🇫🇷' },
+    'he': { name: 'עברית', flag: '🇮🇱' },
+    'hi': { name: 'हिन्दी', flag: '🇮🇳' },
+    'hr': { name: 'Hrvatski', flag: '🇭🇷' },
+    'hu': { name: 'Magyar', flag: '🇭🇺' },
+    'id': { name: 'Bahasa Indonesia', flag: '🇮🇩' },
     'it': { name: 'Italiano', flag: '🇮🇹' },
-    'pt': { name: 'Português', flag: '🇵🇹' },
     'ja': { name: '日本語', flag: '🇯🇵' },
     'ko': { name: '한국어', flag: '🇰🇷' },
-    'zh': { name: '中文', flag: '🇨🇳' },
-    'ar': { name: 'العربية', flag: '🇸🇦' },
+    'ms': { name: 'Bahasa Melayu', flag: '🇲🇾' },
     'nl': { name: 'Nederlands', flag: '🇳🇱' },
-    'ru': { name: 'Русский', flag: '🇷🇺' }
+    'no': { name: 'Norsk', flag: '🇳🇴' },
+    'pl': { name: 'Polski', flag: '🇵🇱' },
+    'pt-BR': { name: 'Português (Brasil)', flag: '🇧🇷' },
+    'ro': { name: 'Română', flag: '🇷🇴' },
+    'ru': { name: 'Русский', flag: '🇷🇺' },
+    'sk': { name: 'Slovenčina', flag: '🇸🇰' },
+    'sv': { name: 'Svenska', flag: '🇸🇪' },
+    'th': { name: 'ไทย', flag: '🇹🇭' },
+    'tr': { name: 'Türkçe', flag: '🇹🇷' },
+    'uk': { name: 'Українська', flag: '🇺🇦' },
+    'vi': { name: 'Tiếng Việt', flag: '🇻🇳' },
+    'zh-Hans': { name: '中文 (简体)', flag: '🇨🇳' },
+    'zh-Hant': { name: '中文 (繁體)', flag: '🇹🇼' }
 };
 
 App.DEFAULT_SETTINGS = {
@@ -179,6 +201,11 @@ App.DEFAULT_SETTINGS = {
     bgGradientAngle: 180,
     bgImage: null,
     bgImageOpacity: 100,
+    // Pattern settings
+    bgPattern: 'none',
+    bgPatternColor: '#000000',
+    bgPatternSize: 30,
+    bgPatternOpacity: 20,
     // Device frame settings
     addDeviceFrame: true,
     deviceFrameColor: '#000000',
