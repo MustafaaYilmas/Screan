@@ -677,28 +677,20 @@ App.initEventListeners = function() {
 
     App.initSlider({ id: 'textHighlightOpacity', settingsKey: 'textHighlightOpacity', defaultValue: 30 });
 
-    // Preview context menu
-    var previewContextMenu = document.getElementById('previewContextMenu');
-    previewContextMenu.addEventListener('click', function(e) {
-        var action = e.target.closest('button');
-        if (!action) return;
-        var actionName = action.getAttribute('data-action');
-        var index = parseInt(previewContextMenu.getAttribute('data-index'), 10);
-        App.hidePreviewContextMenu();
-
-        if (actionName === 'replace') {
-            App.replaceScreenshot(index);
-        } else if (actionName === 'duplicate') {
-            App.duplicateScreenshot(index);
-        } else if (actionName === 'delete') {
-            App.removeScreenshot(index);
-        }
+    // Screenshot action buttons (Replace, Duplicate, Delete)
+    document.getElementById('replaceScreenshotBtn').addEventListener('click', function() {
+        var index = App.getActiveIndex();
+        if (index >= 0) App.replaceScreenshot(index);
     });
 
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.preview-context-menu')) {
-            App.hidePreviewContextMenu();
-        }
+    document.getElementById('duplicateScreenshotBtn').addEventListener('click', function() {
+        var index = App.getActiveIndex();
+        if (index >= 0) App.duplicateScreenshot(index);
+    });
+
+    document.getElementById('removeImageBtn').addEventListener('click', function() {
+        var index = App.getActiveIndex();
+        if (index >= 0) App.clearScreenshotImage(index);
     });
 
     // Platforms accordion toggle

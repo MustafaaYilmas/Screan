@@ -279,3 +279,44 @@
 .section-collapsible.expanded {
     display: block;
 }
+
+/* Screenshot action buttons (Replace, Duplicate, Delete) */
+.screenshot-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.btn-screenshot-action {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 6px 4px;
+    background: var(--muted);
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--foreground-muted);
+    font-size: 11px;
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.btn-screenshot-action:hover {
+    background: var(--border);
+    color: var(--foreground);
+}
+
+.btn-screenshot-action.danger:hover {
+    background: color-mix(in srgb, var(--destructive) 15%, transparent);
+    color: var(--destructive);
+}
+
+.btn-screenshot-action svg {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+}

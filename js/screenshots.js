@@ -114,6 +114,20 @@ App.replaceScreenshot = function(index) {
     input.click();
 };
 
+App.clearScreenshotImage = function(index) {
+    var platformData = App.getActivePlatformData();
+    var screenshot = platformData.screenshots[index];
+    if (!screenshot) return;
+    screenshot.src = null;
+    screenshot.image = null;
+    screenshot.width = 0;
+    screenshot.height = 0;
+    App.renderAllPreviews();
+    App.updateSettingsUI();
+    App.Storage.scheduleSave();
+    App.Undo.scheduleCapture();
+};
+
 App.duplicateScreenshot = function(index) {
     var platformData = App.getActivePlatformData();
     var original = platformData.screenshots[index];
@@ -203,6 +217,18 @@ App.updateSettingsUI = function() {
     var screenshots = App.getActiveScreenshots();
 
     App.updateSectionApplyButtons();
+
+    // Screenshot actions visibility
+    var actionsEl = document.getElementById('screenshotActions');
+    if (actionsEl) {
+        actionsEl.style.display = screenshots.length > 0 ? 'flex' : 'none';
+    }
+    var removeImgBtn = document.getElementById('removeImageBtn');
+    if (removeImgBtn) {
+        var activeScreenshot = screenshots[App.getActiveIndex()];
+        var hasImage = activeScreenshot && activeScreenshot.image;
+        removeImgBtn.style.display = hasImage ? 'flex' : 'none';
+    }
 
     // Update language tabs
     if (typeof App.updateLanguageTabs === 'function') {

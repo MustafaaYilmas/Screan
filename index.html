@@ -486,6 +486,20 @@
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>
+                            <div class="screenshot-actions" id="screenshotActions">
+                                <button class="btn-screenshot-action" id="replaceScreenshotBtn" title="Replace image">
+                                    <i data-lucide="image"></i>
+                                    <span>Replace</span>
+                                </button>
+                                <button class="btn-screenshot-action" id="duplicateScreenshotBtn" title="Duplicate">
+                                    <i data-lucide="copy"></i>
+                                    <span>Duplicate</span>
+                                </button>
+                                <button class="btn-screenshot-action danger" id="removeImageBtn" title="Remove image">
+                                    <i data-lucide="x"></i>
+                                    <span>Remove</span>
+                                </button>
+                            </div>
                         </div>
                     </section>
 
@@ -669,14 +683,6 @@
                 </button>
             </div>
         </aside>
-    </div>
-
-    <!-- Preview Context Menu -->
-    <div class="preview-context-menu" id="previewContextMenu" style="display: none;">
-        <button data-action="replace"><i data-lucide="image"></i> Replace Image</button>
-        <button data-action="duplicate"><i data-lucide="copy"></i> Duplicate</button>
-        <div class="context-menu-divider"></div>
-        <button data-action="delete" class="danger"><i data-lucide="trash-2"></i> Delete</button>
     </div>
 
     <!-- Progress Modal -->
