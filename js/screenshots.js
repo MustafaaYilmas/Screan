@@ -162,6 +162,9 @@ App.selectScreenshot = function(index) {
     var currentSettings = App.getActiveSettings();
     App.saveContentToActiveLanguage(currentSettings);
 
+    if (App.getActiveIndex() !== index) {
+        App._activeCustomTextIndex = -1;
+    }
     App.setActiveIndex(index);
 
     // Load content for active language in new screenshot
@@ -342,6 +345,69 @@ App.updateSettingsUI = function() {
     App.syncSlider('screenshotZoom', settings.screenshotZoom != null ? settings.screenshotZoom : 87);
 
     App.updateTextFieldsState();
+    App.updateCustomTextsUI();
+};
+
+// Custom text list + editor UI
+App.updateCustomTextsUI = function() {
+    var settings = App.getActiveSettings();
+    var texts = (settings && settings.customTexts) || [];
+    var activeIdx = App._activeCustomTextIndex;
+
+    var list = document.getElementById('customTextsList');
+    var editor = document.getElementById('customTextEditor');
+    list.innerHTML = '';
+
+    for (var i = 0; i < texts.length; i++) {
+        var item = document.createElement('div');
+        item.className = 'custom-text-item' + (i === activeIdx ? ' active' : '');
+
+        var label = document.createElement('span');
+        label.className = 'custom-text-item-label';
+        label.textContent = texts[i].text || '(empty)';
+
+        var delBtn = document.createElement('button');
+        delBtn.className = 'custom-text-delete-btn';
+        delBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>';
+        delBtn.title = 'Delete';
+
+        (function(idx) {
+            item.addEventListener('click', function(e) {
+                if (e.target.closest('.custom-text-delete-btn')) return;
+                App._activeCustomTextIndex = idx;
+                App.updateCustomTextsUI();
+                App.renderActivePreview();
+            });
+            delBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                settings.customTexts.splice(idx, 1);
+                if (App._activeCustomTextIndex >= settings.customTexts.length) {
+                    App._activeCustomTextIndex = settings.customTexts.length - 1;
+                }
+                App.updateCustomTextsUI();
+                App.renderAndSave();
+            });
+        })(i);
+
+        item.appendChild(label);
+        item.appendChild(delBtn);
+        list.appendChild(item);
+    }
+
+    // Show/hide editor
+    if (activeIdx >= 0 && activeIdx < texts.length) {
+        var ct = texts[activeIdx];
+        editor.style.display = 'block';
+        document.getElementById('customTextInput').value = ct.text || '';
+        document.getElementById('customTextFont').value = ct.font || 'sf-pro';
+        document.getElementById('customTextWeight').value = ct.weight || 'bold';
+        document.getElementById('customTextSize').value = ct.size || 80;
+        document.getElementById('customTextColor').value = ct.color || '#ffffff';
+        document.getElementById('customTextColorHex').value = (ct.color || '#ffffff').toUpperCase();
+        document.getElementById('customTextUppercase').classList.toggle('active', !!ct.uppercase);
+    } else {
+        editor.style.display = 'none';
+    }
 };
 
 App.updateTextFieldsState = function() {

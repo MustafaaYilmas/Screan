@@ -296,6 +296,46 @@
                         </div>
                     </section>
 
+                    <!-- Custom Text -->
+                    <section class="settings-section" id="customTextSection">
+                        <div class="section-header">
+                            <span class="section-title">Custom Text</span>
+                            <span class="section-header-spacer"></span>
+                            <button class="btn-add-custom-text" id="addCustomTextBtn" title="Add text">
+                                <i data-lucide="plus"></i>
+                            </button>
+                        </div>
+                        <div class="section-content">
+                            <div id="customTextsList" class="custom-texts-list"></div>
+                            <div id="customTextEditor" class="custom-text-editor" style="display:none">
+                                <textarea id="customTextInput" class="text-input title-area" placeholder="Enter text..." rows="2"></textarea>
+                                <div class="text-options-row">
+                                    <select id="customTextFont" class="font-select"></select>
+                                    <select id="customTextWeight" class="font-select">
+                                        <option value="thin">Thin</option>
+                                        <option value="regular">Regular</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="semibold">Semi-bold</option>
+                                        <option value="bold" selected>Bold</option>
+                                    </select>
+                                    <button class="uppercase-btn" id="customTextUppercase" title="Uppercase">
+                                        <i data-lucide="case-sensitive" class="icon-mixed"></i>
+                                        <i data-lucide="case-upper" class="icon-uppercase"></i>
+                                    </button>
+                                </div>
+                                <div class="text-options-row">
+                                    <div class="size-input-wrap">
+                                        <input type="number" id="customTextSize" class="size-input" value="80" min="1" step="1" style="width:100%">
+                                    </div>
+                                    <div class="color-input-wrap">
+                                        <input type="color" id="customTextColor" value="#ffffff">
+                                        <input type="text" class="color-hex-input" id="customTextColorHex" value="#FFFFFF" maxlength="7">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     <!-- Text Effects -->
                     <section class="settings-section" id="textEffectsSection">
                         <div class="section-header">

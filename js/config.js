@@ -58,7 +58,7 @@ App.IS_WINDOWS = navigator.platform ? /Win/.test(navigator.platform) : /Win/.tes
 
 // Populate font <select> elements dynamically, filtering system fonts by OS
 App.populateFontSelects = function() {
-    var selects = [document.getElementById('titleFont'), document.getElementById('bodyFont')];
+    var selects = [document.getElementById('titleFont'), document.getElementById('bodyFont'), document.getElementById('customTextFont')];
     var systemLabel = App.IS_WINDOWS ? 'Windows' : (App.IS_MAC ? 'macOS' : 'System');
     var osFilter = App.IS_WINDOWS ? 'windows' : 'mac';
 
@@ -228,7 +228,9 @@ App.DEFAULT_SETTINGS = {
     textAlign: 'center',
     textGap: 0,
     screenshotOffsetY: 0,
-    screenshotZoom: 87
+    screenshotZoom: 87,
+    // Custom text elements (free-form positioned)
+    customTexts: []
 };
 
 App.FONT_WEIGHTS = {

@@ -320,3 +320,104 @@
     height: 13px;
     flex-shrink: 0;
 }
+
+/* Custom Text */
+.btn-add-custom-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius);
+    color: var(--foreground-muted);
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.btn-add-custom-text:hover {
+    background: var(--muted);
+    color: var(--foreground);
+}
+
+.btn-add-custom-text svg {
+    width: 14px;
+    height: 14px;
+}
+
+.custom-texts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.custom-text-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.custom-text-item:hover {
+    background: var(--muted);
+}
+
+.custom-text-item.active {
+    background: var(--muted);
+    outline: 1px solid var(--border);
+}
+
+.custom-text-item-label {
+    flex: 1;
+    font-size: 12px;
+    color: var(--foreground-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.custom-text-item.active .custom-text-item-label {
+    color: var(--foreground);
+}
+
+.custom-text-delete-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--foreground-muted);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
+}
+
+.custom-text-item:hover .custom-text-delete-btn,
+.custom-text-item.active .custom-text-delete-btn {
+    opacity: 1;
+}
+
+.custom-text-delete-btn:hover {
+    background: color-mix(in srgb, var(--destructive) 15%, transparent);
+    color: var(--destructive);
+}
+
+.custom-text-delete-btn svg {
+    width: 12px;
+    height: 12px;
+}
+
+.custom-text-editor {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-subtle);
+}

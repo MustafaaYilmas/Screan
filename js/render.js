@@ -8,44 +8,66 @@ var App = window.App || {};
 // Canvas Image Drag
 // ============================================
 
-App._canvasDrag = { active: false, startX: 0, startY: 0, startOffsetX: 0, startOffsetY: 0, zoom: 1 };
+App._canvasDrag = { active: false, startX: 0, startY: 0, startOffsetX: 0, startOffsetY: 0, zoom: 1, mode: 'screenshot' };
+App._activeCustomTextIndex = -1;
 
 App.initCanvasDrag = function(canvas, idx, zoom) {
     // Prevent native drag so reorder doesn't fire when dragging on canvas
     canvas.addEventListener('dragstart', function(e) { e.preventDefault(); e.stopPropagation(); });
 
-    canvas.addEventListener('mousedown', function(e) {
-        if (e.button !== 0) return;
+    var startDrag = function(clientX, clientY) {
         App.selectScreenshot(idx);
         var settings = App.getActiveSettings();
         if (!settings) return;
 
         var d = App._canvasDrag;
-        d.active = true;
-        d.startX = e.clientX;
-        d.startY = e.clientY;
-        d.startOffsetX = settings.screenshotOffsetX || 0;
-        d.startOffsetY = settings.screenshotOffsetY || 0;
         d.zoom = zoom;
         d.format = App.getActiveFormat();
+
+        // Hit test custom texts
+        var rect = canvas.getBoundingClientRect();
+        var canvasX = (clientX - rect.left) / zoom;
+        var canvasY = (clientY - rect.top) / zoom;
+        var hitIdx = App.hitTestCustomText(canvas, settings, canvasX, canvasY);
+
+        if (hitIdx >= 0) {
+            // Drag custom text
+            d.active = true;
+            d.mode = 'customText';
+            d.startX = clientX;
+            d.startY = clientY;
+            d.customTextIndex = hitIdx;
+            d.startOffsetX = settings.customTexts[hitIdx].x;
+            d.startOffsetY = settings.customTexts[hitIdx].y;
+            App._activeCustomTextIndex = hitIdx;
+            App.updateCustomTextsUI();
+            App.renderActivePreview();
+        } else {
+            // Drag screenshot (existing behavior)
+            d.active = true;
+            d.mode = 'screenshot';
+            d.startX = clientX;
+            d.startY = clientY;
+            d.startOffsetX = settings.screenshotOffsetX || 0;
+            d.startOffsetY = settings.screenshotOffsetY || 0;
+            if (App._activeCustomTextIndex >= 0) {
+                App._activeCustomTextIndex = -1;
+                App.updateCustomTextsUI();
+                App.renderActivePreview();
+            }
+        }
+    };
+
+    canvas.addEventListener('mousedown', function(e) {
+        if (e.button !== 0) return;
+        startDrag(e.clientX, e.clientY);
         e.preventDefault();
         e.stopPropagation();
     });
 
     canvas.addEventListener('touchstart', function(e) {
         if (e.touches.length !== 1) return;
-        App.selectScreenshot(idx);
-        var settings = App.getActiveSettings();
-        if (!settings) return;
-
-        var d = App._canvasDrag;
-        d.active = true;
-        d.startX = e.touches[0].clientX;
-        d.startY = e.touches[0].clientY;
-        d.startOffsetX = settings.screenshotOffsetX || 0;
-        d.startOffsetY = settings.screenshotOffsetY || 0;
-        d.zoom = zoom;
-        d.format = App.getActiveFormat();
+        startDrag(e.touches[0].clientX, e.touches[0].clientY);
     }, { passive: true });
 };
 
@@ -63,23 +85,34 @@ App._onCanvasDragMove = function(clientX, clientY) {
     var canvasW = d.format.width * d.zoom;
     var canvasH = d.format.height * d.zoom;
 
-    settings.screenshotOffsetX = d.startOffsetX + (deltaX / canvasW) * 100;
-    settings.screenshotOffsetY = d.startOffsetY + (deltaY / canvasH) * 100;
-
-    // Clamp
-    settings.screenshotOffsetX = Math.max(-50, Math.min(50, settings.screenshotOffsetX));
-    settings.screenshotOffsetY = Math.max(-50, Math.min(50, settings.screenshotOffsetY));
-
-    App.syncSlider('screenshotOffsetX', Math.round(settings.screenshotOffsetX));
-    App.syncSlider('screenshotOffsetY', Math.round(settings.screenshotOffsetY));
-    App.renderActivePreview();
+    if (d.mode === 'customText') {
+        var ct = settings.customTexts[d.customTextIndex];
+        if (!ct) return;
+        ct.x = d.startOffsetX + (deltaX / canvasW) * 100;
+        ct.y = d.startOffsetY + (deltaY / canvasH) * 100;
+        ct.x = Math.max(0, Math.min(100, ct.x));
+        ct.y = Math.max(0, Math.min(100, ct.y));
+        App.renderActivePreview();
+    } else {
+        settings.screenshotOffsetX = d.startOffsetX + (deltaX / canvasW) * 100;
+        settings.screenshotOffsetY = d.startOffsetY + (deltaY / canvasH) * 100;
+        settings.screenshotOffsetX = Math.max(-50, Math.min(50, settings.screenshotOffsetX));
+        settings.screenshotOffsetY = Math.max(-50, Math.min(50, settings.screenshotOffsetY));
+        App.syncSlider('screenshotOffsetX', Math.round(settings.screenshotOffsetX));
+        App.syncSlider('screenshotOffsetY', Math.round(settings.screenshotOffsetY));
+        App.renderActivePreview();
+    }
 };
 
 App._onCanvasDragEnd = function() {
     var d = App._canvasDrag;
     if (!d.active) return;
     d.active = false;
-    App.updateSettingsUI();
+    if (d.mode === 'customText') {
+        App.updateCustomTextsUI();
+    } else {
+        App.updateSettingsUI();
+    }
     App.Storage.scheduleSave();
     App.Undo.scheduleCapture();
 };
@@ -281,6 +314,11 @@ App.renderCanvas = function(canvas, screenshot) {
 
     if (textLayout) {
         App.drawText(ctx, w, h, preset, settings, format, App.state.activePlatform, screenshotInfo, textLayout);
+    }
+
+    // Draw custom text elements
+    if (settings.customTexts && settings.customTexts.length > 0) {
+        App.drawCustomTexts(ctx, w, h, settings);
     }
 };
 
@@ -709,6 +747,121 @@ App.drawText = function(ctx, canvasW, canvasH, preset, settings, format, formatK
     ctx.globalAlpha = 1;
     ctx.letterSpacing = '0px';
     ctx.shadowColor = 'transparent';
+};
+
+// ============================================
+// Custom Text Elements
+// ============================================
+
+App.drawCustomTexts = function(ctx, canvasW, canvasH, settings) {
+    var texts = settings.customTexts || [];
+    var activeIdx = App._activeCustomTextIndex;
+
+    for (var i = 0; i < texts.length; i++) {
+        var t = texts[i];
+        if (!t.text) continue;
+
+        var fontConfig = App.FONTS[t.font || 'sf-pro'] || App.FONTS['sf-pro'];
+        var weightValue = App.FONT_WEIGHTS[t.weight || 'bold'] ? App.FONT_WEIGHTS[t.weight || 'bold'].value : 700;
+        var fontSize = t.size || 80;
+        var displayText = t.uppercase ? t.text.toUpperCase() : t.text;
+
+        ctx.font = weightValue + ' ' + fontSize + 'px ' + fontConfig.family;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.letterSpacing = (t.uppercase ? fontSize * 0.05 : 0) + 'px';
+
+        var x = canvasW * (t.x / 100);
+        var y = canvasH * (t.y / 100);
+
+        // Wrap text into lines
+        var maxWidth = canvasW * 0.9;
+        var lines = App.wrapText(ctx, displayText, maxWidth);
+        var lineHeight = fontSize * 1.2;
+        var totalHeight = lines.length * lineHeight;
+        var startY = y - totalHeight / 2 + lineHeight / 2;
+
+        // Draw each line
+        for (var j = 0; j < lines.length; j++) {
+            var ly = startY + j * lineHeight;
+            ctx.fillStyle = t.color || '#ffffff';
+            ctx.fillText(lines[j], x, ly);
+        }
+
+        // Draw selection indicator
+        if (i === activeIdx) {
+            var maxLineWidth = 0;
+            for (var j = 0; j < lines.length; j++) {
+                var lw = ctx.measureText(lines[j]).width;
+                if (lw > maxLineWidth) maxLineWidth = lw;
+            }
+            var pad = fontSize * 0.2;
+            ctx.save();
+            ctx.strokeStyle = 'rgba(100, 149, 237, 0.8)';
+            ctx.lineWidth = Math.max(2, fontSize * 0.03);
+            ctx.setLineDash([fontSize * 0.15, fontSize * 0.1]);
+            ctx.strokeRect(
+                x - maxLineWidth / 2 - pad,
+                y - totalHeight / 2 - pad,
+                maxLineWidth + pad * 2,
+                totalHeight + pad * 2
+            );
+            ctx.restore();
+        }
+
+        ctx.letterSpacing = '0px';
+    }
+};
+
+App.hitTestCustomText = function(canvas, settings, canvasX, canvasY) {
+    var texts = settings.customTexts || [];
+    if (texts.length === 0) return -1;
+
+    var ctx = canvas.getContext('2d');
+    var format = App.getActiveFormat();
+    var canvasW = format.width;
+    var canvasH = format.height;
+
+    // Check in reverse order (top-most first)
+    for (var i = texts.length - 1; i >= 0; i--) {
+        var t = texts[i];
+        if (!t.text) continue;
+
+        var fontConfig = App.FONTS[t.font || 'sf-pro'] || App.FONTS['sf-pro'];
+        var weightValue = App.FONT_WEIGHTS[t.weight || 'bold'] ? App.FONT_WEIGHTS[t.weight || 'bold'].value : 700;
+        var fontSize = t.size || 80;
+        var displayText = t.uppercase ? t.text.toUpperCase() : t.text;
+
+        ctx.font = weightValue + ' ' + fontSize + 'px ' + fontConfig.family;
+        ctx.letterSpacing = (t.uppercase ? fontSize * 0.05 : 0) + 'px';
+
+        var x = canvasW * (t.x / 100);
+        var y = canvasH * (t.y / 100);
+
+        var maxWidth = canvasW * 0.9;
+        var lines = App.wrapText(ctx, displayText, maxWidth);
+        var lineHeight = fontSize * 1.2;
+        var totalHeight = lines.length * lineHeight;
+
+        var maxLineWidth = 0;
+        for (var j = 0; j < lines.length; j++) {
+            var lw = ctx.measureText(lines[j]).width;
+            if (lw > maxLineWidth) maxLineWidth = lw;
+        }
+
+        ctx.letterSpacing = '0px';
+
+        var pad = fontSize * 0.3;
+        var bx = x - maxLineWidth / 2 - pad;
+        var by = y - totalHeight / 2 - pad;
+        var bw = maxLineWidth + pad * 2;
+        var bh = totalHeight + pad * 2;
+
+        if (canvasX >= bx && canvasX <= bx + bw && canvasY >= by && canvasY <= by + bh) {
+            return i;
+        }
+    }
+    return -1;
 };
 
 // ============================================

@@ -701,6 +701,99 @@ App.initEventListeners = function() {
 
     App.initSlider({ id: 'textHighlightOpacity', settingsKey: 'textHighlightOpacity', defaultValue: 30 });
 
+    // Custom text: Add button
+    document.getElementById('addCustomTextBtn').addEventListener('click', function() {
+        var settings = App.getActiveSettings();
+        if (!settings) return;
+        if (!settings.customTexts) settings.customTexts = [];
+        settings.customTexts.push({
+            text: 'Text',
+            x: 50,
+            y: 50,
+            font: 'sf-pro',
+            size: 80,
+            color: '#ffffff',
+            weight: 'bold',
+            uppercase: false
+        });
+        App._activeCustomTextIndex = settings.customTexts.length - 1;
+        App.updateCustomTextsUI();
+        App.renderAndSave();
+    });
+
+    // Custom text: text input
+    document.getElementById('customTextInput').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        var idx = App._activeCustomTextIndex;
+        if (!settings || idx < 0 || !settings.customTexts || !settings.customTexts[idx]) return;
+        settings.customTexts[idx].text = e.target.value;
+        App.updateCustomTextsUI();
+        App.renderAndSave();
+    });
+
+    // Custom text: font
+    document.getElementById('customTextFont').addEventListener('change', function(e) {
+        var settings = App.getActiveSettings();
+        var idx = App._activeCustomTextIndex;
+        if (!settings || idx < 0 || !settings.customTexts || !settings.customTexts[idx]) return;
+        settings.customTexts[idx].font = e.target.value;
+        App.renderAndSave();
+    });
+
+    // Custom text: weight
+    document.getElementById('customTextWeight').addEventListener('change', function(e) {
+        var settings = App.getActiveSettings();
+        var idx = App._activeCustomTextIndex;
+        if (!settings || idx < 0 || !settings.customTexts || !settings.customTexts[idx]) return;
+        settings.customTexts[idx].weight = e.target.value;
+        App.renderAndSave();
+    });
+
+    // Custom text: size
+    document.getElementById('customTextSize').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        var idx = App._activeCustomTextIndex;
+        if (!settings || idx < 0 || !settings.customTexts || !settings.customTexts[idx]) return;
+        var val = parseInt(e.target.value, 10);
+        if (val > 0) {
+            settings.customTexts[idx].size = val;
+            App.renderAndSave();
+        }
+    });
+
+    // Custom text: color picker
+    document.getElementById('customTextColor').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        var idx = App._activeCustomTextIndex;
+        if (!settings || idx < 0 || !settings.customTexts || !settings.customTexts[idx]) return;
+        settings.customTexts[idx].color = e.target.value;
+        document.getElementById('customTextColorHex').value = e.target.value.toUpperCase();
+        App.renderAndSave();
+    });
+
+    // Custom text: color hex
+    document.getElementById('customTextColorHex').addEventListener('input', function(e) {
+        var settings = App.getActiveSettings();
+        var idx = App._activeCustomTextIndex;
+        if (!settings || idx < 0 || !settings.customTexts || !settings.customTexts[idx]) return;
+        var hex = App.normalizeHex(e.target.value);
+        if (hex) {
+            settings.customTexts[idx].color = hex;
+            document.getElementById('customTextColor').value = hex;
+            App.renderAndSave();
+        }
+    });
+
+    // Custom text: uppercase toggle
+    document.getElementById('customTextUppercase').addEventListener('click', function() {
+        var settings = App.getActiveSettings();
+        var idx = App._activeCustomTextIndex;
+        if (!settings || idx < 0 || !settings.customTexts || !settings.customTexts[idx]) return;
+        settings.customTexts[idx].uppercase = !settings.customTexts[idx].uppercase;
+        this.classList.toggle('active', settings.customTexts[idx].uppercase);
+        App.renderAndSave();
+    });
+
     // Screenshot action buttons (Replace, Duplicate, Delete)
     document.getElementById('replaceScreenshotBtn').addEventListener('click', function() {
         var index = App.getActiveIndex();
@@ -784,7 +877,7 @@ App.initEventListeners = function() {
     // Projects management
     App.initProjectEvents();
 
-    // Undo/Redo keyboard shortcuts
+    // Undo/Redo keyboard shortcuts + custom text delete
     document.addEventListener('keydown', function(e) {
         if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
             e.preventDefault();
@@ -792,6 +885,21 @@ App.initEventListeners = function() {
                 App.Undo.redo();
             } else {
                 App.Undo.undo();
+            }
+        }
+        // Delete/Backspace removes selected custom text (when not in an input)
+        if ((e.key === 'Delete' || e.key === 'Backspace') && App._activeCustomTextIndex >= 0) {
+            var tag = document.activeElement.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            e.preventDefault();
+            var settings = App.getActiveSettings();
+            if (settings && settings.customTexts) {
+                settings.customTexts.splice(App._activeCustomTextIndex, 1);
+                if (App._activeCustomTextIndex >= settings.customTexts.length) {
+                    App._activeCustomTextIndex = settings.customTexts.length - 1;
+                }
+                App.updateCustomTextsUI();
+                App.renderAndSave();
             }
         }
     });

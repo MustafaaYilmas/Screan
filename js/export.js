@@ -235,4 +235,12 @@ App.renderCanvasForExport = function(canvas, ctx, screenshot, format, formatKey,
     if (textLayout) {
         App.drawText(ctx, w, h, preset, exportSettings, format, formatKey, screenshotInfo, textLayout);
     }
+
+    // Draw custom text elements (without selection indicator)
+    if (exportSettings.customTexts && exportSettings.customTexts.length > 0) {
+        var savedIdx = App._activeCustomTextIndex;
+        App._activeCustomTextIndex = -1;
+        App.drawCustomTexts(ctx, w, h, exportSettings);
+        App._activeCustomTextIndex = savedIdx;
+    }
 };
