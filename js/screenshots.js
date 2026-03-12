@@ -84,6 +84,65 @@ App.removeScreenshot = function(index) {
     App.Undo.scheduleCapture();
 };
 
+App.replaceScreenshot = function(index) {
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.addEventListener('change', function(e) {
+        var file = e.target.files[0];
+        if (!file || !file.type.startsWith('image/')) return;
+        var platformData = App.getActivePlatformData();
+        var screenshot = platformData.screenshots[index];
+        if (!screenshot) return;
+
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+            var img = new Image();
+            img.onload = function() {
+                screenshot.src = ev.target.result;
+                screenshot.image = img;
+                screenshot.width = img.width;
+                screenshot.height = img.height;
+                App.renderAllPreviews();
+                App.Storage.scheduleSave();
+                App.Undo.scheduleCapture();
+            };
+            img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+    input.click();
+};
+
+App.duplicateScreenshot = function(index) {
+    var platformData = App.getActivePlatformData();
+    var original = platformData.screenshots[index];
+    if (!original) return;
+
+    var copy = {
+        src: original.src,
+        image: original.image,
+        width: original.width,
+        height: original.height,
+        settings: JSON.parse(JSON.stringify(original.settings))
+    };
+    // Restore image objects that can't be JSON-cloned
+    if (original.settings.bgImageObj) {
+        var img = new Image();
+        img.src = original.settings.bgImage;
+        copy.settings.bgImageObj = img;
+    }
+    platformData.screenshots.splice(index + 1, 0, copy);
+    platformData.activeIndex = index + 1;
+    App.updateSettingsUI();
+    App.renderAllPreviews();
+    App.updateExportButton();
+    App.updateSidebarCounts();
+    App.updatePlatformSelect();
+    App.Storage.scheduleSave();
+    App.Undo.scheduleCapture();
+};
+
 App.selectScreenshot = function(index) {
     // Save current content before switching
     var currentSettings = App.getActiveSettings();
@@ -223,6 +282,10 @@ App.updateSettingsUI = function() {
     var frameStyle = settings.deviceFrameStyle || (settings.addDeviceFrame === false ? 'none' : 'border');
     document.getElementById('deviceFrameStyle').value = frameStyle;
     document.getElementById('deviceFrameColorRow').style.display = frameStyle !== 'none' ? 'flex' : 'none';
+    document.getElementById('deviceModelRow').style.display = frameStyle === 'mockup' ? 'flex' : 'none';
+    if (frameStyle === 'mockup') {
+        App.populateDeviceModelSelect();
+    }
     document.getElementById('deviceFrameColor').value = settings.deviceFrameColor || '#000000';
     document.getElementById('deviceFrameColorHex').value = (settings.deviceFrameColor || '#000000').toUpperCase();
 
@@ -271,6 +334,7 @@ App.updateScreenshotOptionsVisibility = function(hidden) {
     document.getElementById('positionRow').style.display = display;
     document.getElementById('deviceFrameStyleRow').style.display = display;
     var frameStyle = document.getElementById('deviceFrameStyle').value;
+    document.getElementById('deviceModelRow').style.display = hidden ? 'none' : (frameStyle === 'mockup' ? 'flex' : 'none');
     document.getElementById('deviceFrameColorRow').style.display = hidden ? 'none' : (frameStyle !== 'none' ? 'flex' : 'none');
     document.getElementById('displayShadowRow').style.display = display;
     document.getElementById('screenshotOffsetXRow').style.display = display;
@@ -315,7 +379,7 @@ App.SECTION_KEYS = {
     body: ['bodyFont', 'bodySize', 'bodyColor', 'bodyWeight', 'bodyUppercase'],
     effects: ['textShadow', 'textShadowColor', 'textShadowBlur', 'textShadowOffsetY', 'textOutline', 'textOutlineColor', 'textOutlineWidth', 'textHighlight', 'textHighlightColor', 'textHighlightOpacity'],
     background: ['bgColor', 'bgGradient', 'bgGradientColor', 'bgGradientAngle', 'bgImage', 'bgImageOpacity', 'bgPattern', 'bgPatternColor', 'bgPatternSize', 'bgPatternOpacity'],
-    device: ['preset', 'hideScreenshot', 'deviceFrameStyle', 'deviceFrameColor', 'addShadow', 'screenshotOffsetX', 'screenshotOffsetY', 'screenshotRotation', 'screenshotZoom']
+    device: ['preset', 'hideScreenshot', 'deviceFrameStyle', 'deviceModel', 'deviceFrameColor', 'addShadow', 'screenshotOffsetX', 'screenshotOffsetY', 'screenshotRotation', 'screenshotZoom']
 };
 
 // Check if a section's settings match across all screenshots
@@ -357,6 +421,7 @@ App.applySectionToAll = function(section) {
             preset: currentSettings.preset,
             hideScreenshot: currentSettings.hideScreenshot,
             deviceFrameStyle: currentSettings.deviceFrameStyle,
+            deviceModel: currentSettings.deviceModel,
             deviceFrameColor: currentSettings.deviceFrameColor,
             addShadow: currentSettings.addShadow,
             screenshotOffsetX: currentSettings.screenshotOffsetX,

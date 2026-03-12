@@ -461,6 +461,10 @@
                                     <option value="mockup">Device</option>
                                 </select>
                             </div>
+                            <div class="setting-row" id="deviceModelRow" style="display:none">
+                                <label class="setting-label">Model</label>
+                                <select class="font-select" id="deviceModel"></select>
+                            </div>
                             <div class="setting-row" id="deviceFrameColorRow">
                                 <label class="setting-label">Color</label>
                                 <div class="color-input-wrap">
@@ -665,6 +669,14 @@
                 </button>
             </div>
         </aside>
+    </div>
+
+    <!-- Preview Context Menu -->
+    <div class="preview-context-menu" id="previewContextMenu" style="display: none;">
+        <button data-action="replace"><i data-lucide="image"></i> Replace Image</button>
+        <button data-action="duplicate"><i data-lucide="copy"></i> Duplicate</button>
+        <div class="context-menu-divider"></div>
+        <button data-action="delete" class="danger"><i data-lucide="trash-2"></i> Delete</button>
     </div>
 
     <!-- Progress Modal -->

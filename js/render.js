@@ -4,6 +4,32 @@
 
 var App = window.App || {};
 
+// Preview context menu
+App.showPreviewContextMenu = function(x, y, index) {
+    var menu = document.getElementById('previewContextMenu');
+    if (!menu) return;
+    menu.setAttribute('data-index', index);
+    menu.style.display = 'block';
+    menu.style.left = x + 'px';
+    menu.style.top = y + 'px';
+
+    // Adjust if menu goes off screen
+    requestAnimationFrame(function() {
+        var rect = menu.getBoundingClientRect();
+        if (rect.right > window.innerWidth) {
+            menu.style.left = (x - rect.width) + 'px';
+        }
+        if (rect.bottom > window.innerHeight) {
+            menu.style.top = (y - rect.height) + 'px';
+        }
+    });
+};
+
+App.hidePreviewContextMenu = function() {
+    var menu = document.getElementById('previewContextMenu');
+    if (menu) menu.style.display = 'none';
+};
+
 App.renderAllPreviews = function() {
     var container = document.getElementById('previewsContainer');
     var wrapper = document.querySelector('.previews-wrapper');
@@ -67,6 +93,13 @@ App.renderAllPreviews = function() {
             deleteBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 App.removeScreenshot(idx);
+            });
+
+            // Right-click context menu
+            item.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                App.selectScreenshot(idx);
+                App.showPreviewContextMenu(e.clientX, e.clientY, idx);
             });
 
             // Setup drag & drop reordering
@@ -256,7 +289,7 @@ App.drawScreenshot = function(ctx, screenshot, canvasW, canvasH, preset, setting
     }
 
     if (frameStyle === 'mockup') {
-        var mockupKey = App.getMockupForPlatform(platformKey || App.state.activePlatform);
+        var mockupKey = App.resolveMockupKey(settings, platformKey || App.state.activePlatform);
         var deviceBounds = App.getDeviceBounds(imgX, imgY, imgW, imgH, mockupKey);
 
         // Shadow on device body

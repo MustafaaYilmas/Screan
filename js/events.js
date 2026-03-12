@@ -406,6 +406,17 @@ App.initEventListeners = function() {
         if (settings) {
             settings.deviceFrameStyle = e.target.value;
             document.getElementById('deviceFrameColorRow').style.display = e.target.value !== 'none' ? 'flex' : 'none';
+            document.getElementById('deviceModelRow').style.display = e.target.value === 'mockup' ? 'flex' : 'none';
+            if (e.target.value === 'mockup') App.populateDeviceModelSelect();
+            App.renderAndSave();
+        }
+    });
+
+    // Device model select
+    document.getElementById('deviceModel').addEventListener('change', function(e) {
+        var settings = App.getActiveSettings();
+        if (settings) {
+            settings.deviceModel = e.target.value;
             App.renderAndSave();
         }
     });
@@ -665,6 +676,30 @@ App.initEventListeners = function() {
     });
 
     App.initSlider({ id: 'textHighlightOpacity', settingsKey: 'textHighlightOpacity', defaultValue: 30 });
+
+    // Preview context menu
+    var previewContextMenu = document.getElementById('previewContextMenu');
+    previewContextMenu.addEventListener('click', function(e) {
+        var action = e.target.closest('button');
+        if (!action) return;
+        var actionName = action.getAttribute('data-action');
+        var index = parseInt(previewContextMenu.getAttribute('data-index'), 10);
+        App.hidePreviewContextMenu();
+
+        if (actionName === 'replace') {
+            App.replaceScreenshot(index);
+        } else if (actionName === 'duplicate') {
+            App.duplicateScreenshot(index);
+        } else if (actionName === 'delete') {
+            App.removeScreenshot(index);
+        }
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.preview-context-menu')) {
+            App.hidePreviewContextMenu();
+        }
+    });
 
     // Platforms accordion toggle
     document.getElementById('platformsToggle').addEventListener('click', function() {

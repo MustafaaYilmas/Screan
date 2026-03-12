@@ -82,17 +82,73 @@
 }
 
 .preview-item.active .preview-delete-btn {
+    opacity: 0.6;
+    pointer-events: auto;
+}
+
+.preview-item:hover .preview-delete-btn {
     opacity: 0.4;
     pointer-events: auto;
 }
 
 .preview-delete-btn:hover {
-    opacity: 1;
+    opacity: 1 !important;
     color: var(--destructive);
 }
 
 .preview-delete-btn:active {
     opacity: 0.8;
+}
+
+/* Preview Context Menu */
+.preview-context-menu {
+    position: fixed;
+    z-index: 1000;
+    background: var(--popover);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 4px;
+    min-width: 160px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.preview-context-menu button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 7px 10px;
+    background: none;
+    border: none;
+    color: var(--foreground);
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: background var(--transition-fast);
+}
+
+.preview-context-menu button:hover {
+    background: var(--muted);
+}
+
+.preview-context-menu button.danger {
+    color: var(--destructive);
+}
+
+.preview-context-menu button.danger:hover {
+    background: color-mix(in srgb, var(--destructive) 12%, transparent);
+}
+
+.preview-context-menu button svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.context-menu-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 0;
 }
 
 /* Empty State */
