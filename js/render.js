@@ -11,9 +11,83 @@ var App = window.App || {};
 App._canvasDrag = { active: false, startX: 0, startY: 0, startOffsetX: 0, startOffsetY: 0, zoom: 1, mode: 'screenshot' };
 App._activeCustomTextIndex = -1;
 
+// Calculate screenshot bounds on canvas (without drawing)
+App.getScreenshotBounds = function(screenshot, settings) {
+    if (!screenshot || !screenshot.image || settings.hideScreenshot) return null;
+
+    var format = App.getActiveFormat();
+    var canvasW = format.width;
+    var canvasH = format.height;
+    var preset = App.PRESETS[settings.preset];
+
+    var zoomVal = (settings.screenshotZoom != null ? settings.screenshotZoom : 87) / 100;
+    var imgW = canvasW * zoomVal;
+    var imgRatio = screenshot.width / screenshot.height;
+    var imgH = imgW / imgRatio;
+
+    var imgX = (canvasW - imgW) / 2;
+    if (settings.screenshotOffsetX) {
+        imgX += canvasW * (settings.screenshotOffsetX / 100);
+    }
+
+    var imgY;
+    if (preset.centered) {
+        imgY = (canvasH - imgH) / 2;
+    } else {
+        var baseScreenshotY = App.getSpacingScreenshotY(preset.screenshotY, 33);
+        imgY = canvasH * baseScreenshotY;
+    }
+    var directOffsetY = settings.screenshotOffsetY != null ? settings.screenshotOffsetY : 0;
+    imgY += canvasH * (directOffsetY / 100);
+
+    return { x: imgX, y: imgY, w: imgW, h: imgH };
+};
+
+// Check if point is near a corner of the screenshot, returns corner name or null
+App.hitTestScreenshotCorner = function(bounds, canvasX, canvasY, threshold) {
+    if (!bounds) return null;
+    var corners = [
+        { name: 'nw', x: bounds.x, y: bounds.y },
+        { name: 'ne', x: bounds.x + bounds.w, y: bounds.y },
+        { name: 'sw', x: bounds.x, y: bounds.y + bounds.h },
+        { name: 'se', x: bounds.x + bounds.w, y: bounds.y + bounds.h }
+    ];
+    for (var i = 0; i < corners.length; i++) {
+        var dx = canvasX - corners[i].x;
+        var dy = canvasY - corners[i].y;
+        if (Math.sqrt(dx * dx + dy * dy) < threshold) {
+            return corners[i].name;
+        }
+    }
+    return null;
+};
+
 App.initCanvasDrag = function(canvas, idx, zoom) {
     // Prevent native drag so reorder doesn't fire when dragging on canvas
     canvas.addEventListener('dragstart', function(e) { e.preventDefault(); e.stopPropagation(); });
+
+    // Cursor update on hover
+    canvas.addEventListener('mousemove', function(e) {
+        if (App._canvasDrag.active) return;
+        var screenshots = App.getActiveScreenshots();
+        var screenshot = screenshots[idx];
+        var settings = screenshot && screenshot.settings;
+        if (!settings || !screenshot.image) { canvas.style.cursor = 'grab'; return; }
+
+        var rect = canvas.getBoundingClientRect();
+        var canvasX = (e.clientX - rect.left) / zoom;
+        var canvasY = (e.clientY - rect.top) / zoom;
+
+        var bounds = App.getScreenshotBounds(screenshot, settings);
+        var threshold = Math.max(30, (bounds ? bounds.w : 100) * 0.06);
+        var corner = App.hitTestScreenshotCorner(bounds, canvasX, canvasY, threshold);
+
+        if (corner) {
+            canvas.style.cursor = (corner === 'nw' || corner === 'se') ? 'nwse-resize' : 'nesw-resize';
+        } else {
+            canvas.style.cursor = 'grab';
+        }
+    });
 
     var startDrag = function(clientX, clientY) {
         App.selectScreenshot(idx);
@@ -24,14 +98,14 @@ App.initCanvasDrag = function(canvas, idx, zoom) {
         d.zoom = zoom;
         d.format = App.getActiveFormat();
 
-        // Hit test custom texts
         var rect = canvas.getBoundingClientRect();
         var canvasX = (clientX - rect.left) / zoom;
         var canvasY = (clientY - rect.top) / zoom;
+
+        // Hit test custom texts first
         var hitIdx = App.hitTestCustomText(canvas, settings, canvasX, canvasY);
 
         if (hitIdx >= 0) {
-            // Drag custom text
             d.active = true;
             d.mode = 'customText';
             d.startX = clientX;
@@ -42,19 +116,45 @@ App.initCanvasDrag = function(canvas, idx, zoom) {
             App._activeCustomTextIndex = hitIdx;
             App.updateCustomTextsUI();
             App.renderActivePreview();
+            return;
+        }
+
+        // Hit test screenshot corners for resize
+        var screenshots = App.getActiveScreenshots();
+        var screenshot = screenshots[idx];
+        var bounds = App.getScreenshotBounds(screenshot, settings);
+        var threshold = Math.max(30, (bounds ? bounds.w : 100) * 0.06);
+        var corner = App.hitTestScreenshotCorner(bounds, canvasX, canvasY, threshold);
+
+        if (corner && bounds) {
+            d.active = true;
+            d.mode = 'resize';
+            d.startX = clientX;
+            d.startY = clientY;
+            d.startZoom = settings.screenshotZoom != null ? settings.screenshotZoom : 87;
+            // Distance from center of screenshot to the clicked corner
+            var cx = bounds.x + bounds.w / 2;
+            var cy = bounds.y + bounds.h / 2;
+            d.startDist = Math.sqrt(Math.pow((canvasX - cx), 2) + Math.pow((canvasY - cy), 2));
+            d.centerX = cx;
+            d.centerY = cy;
+            d.canvas = canvas;
+            canvas.style.cursor = (corner === 'nw' || corner === 'se') ? 'nwse-resize' : 'nesw-resize';
         } else {
-            // Drag screenshot (existing behavior)
+            // Drag screenshot
             d.active = true;
             d.mode = 'screenshot';
             d.startX = clientX;
             d.startY = clientY;
             d.startOffsetX = settings.screenshotOffsetX || 0;
             d.startOffsetY = settings.screenshotOffsetY || 0;
-            if (App._activeCustomTextIndex >= 0) {
-                App._activeCustomTextIndex = -1;
-                App.updateCustomTextsUI();
-                App.renderActivePreview();
-            }
+            canvas.style.cursor = 'grabbing';
+        }
+
+        if (App._activeCustomTextIndex >= 0) {
+            App._activeCustomTextIndex = -1;
+            App.updateCustomTextsUI();
+            App.renderActivePreview();
         }
     };
 
@@ -93,6 +193,17 @@ App._onCanvasDragMove = function(clientX, clientY) {
         ct.x = Math.max(0, Math.min(100, ct.x));
         ct.y = Math.max(0, Math.min(100, ct.y));
         App.renderActivePreview();
+    } else if (d.mode === 'resize') {
+        // Calculate new distance from screenshot center to mouse
+        var rect = d.canvas.getBoundingClientRect();
+        var curCanvasX = (clientX - rect.left) / d.zoom;
+        var curCanvasY = (clientY - rect.top) / d.zoom;
+        var curDist = Math.sqrt(Math.pow(curCanvasX - d.centerX, 2) + Math.pow(curCanvasY - d.centerY, 2));
+        var scale = curDist / d.startDist;
+        var newZoom = Math.round(Math.max(20, Math.min(200, d.startZoom * scale)));
+        settings.screenshotZoom = newZoom;
+        App.syncSlider('screenshotZoom', newZoom);
+        App.renderActivePreview();
     } else {
         settings.screenshotOffsetX = d.startOffsetX + (deltaX / canvasW) * 100;
         settings.screenshotOffsetY = d.startOffsetY + (deltaY / canvasH) * 100;
@@ -112,6 +223,10 @@ App._onCanvasDragEnd = function() {
         App.updateCustomTextsUI();
     } else {
         App.updateSettingsUI();
+    }
+    if (d.canvas) {
+        d.canvas.style.cursor = 'grab';
+        d.canvas = null;
     }
     App.Storage.scheduleSave();
     App.Undo.scheduleCapture();

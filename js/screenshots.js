@@ -398,10 +398,17 @@ App.updateCustomTextsUI = function() {
     if (activeIdx >= 0 && activeIdx < texts.length) {
         var ct = texts[activeIdx];
         editor.style.display = 'block';
-        document.getElementById('customTextInput').value = ct.text || '';
+        var textInput = document.getElementById('customTextInput');
+        // Don't overwrite value if user is actively typing
+        if (document.activeElement !== textInput) {
+            textInput.value = ct.text || '';
+        }
         document.getElementById('customTextFont').value = ct.font || 'sf-pro';
         document.getElementById('customTextWeight').value = ct.weight || 'bold';
-        document.getElementById('customTextSize').value = ct.size || 80;
+        var sizeInput = document.getElementById('customTextSize');
+        if (document.activeElement !== sizeInput) {
+            sizeInput.value = ct.size || 80;
+        }
         document.getElementById('customTextColor').value = ct.color || '#ffffff';
         document.getElementById('customTextColorHex').value = (ct.color || '#ffffff').toUpperCase();
         document.getElementById('customTextUppercase').classList.toggle('active', !!ct.uppercase);

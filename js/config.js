@@ -78,7 +78,7 @@ App.populateFontSelects = function() {
         }
     });
 
-    selects.forEach(function(select) {
+    selects.filter(Boolean).forEach(function(select) {
         select.innerHTML = '';
 
         var systemGroup = document.createElement('optgroup');

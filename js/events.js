@@ -719,6 +719,9 @@ App.initEventListeners = function() {
         App._activeCustomTextIndex = settings.customTexts.length - 1;
         App.updateCustomTextsUI();
         App.renderAndSave();
+        // Focus the text input for immediate editing
+        var input = document.getElementById('customTextInput');
+        if (input) { input.focus(); input.select(); }
     });
 
     // Custom text: text input
@@ -727,8 +730,12 @@ App.initEventListeners = function() {
         var idx = App._activeCustomTextIndex;
         if (!settings || idx < 0 || !settings.customTexts || !settings.customTexts[idx]) return;
         settings.customTexts[idx].text = e.target.value;
-        App.updateCustomTextsUI();
-        App.renderAndSave();
+        // Update list label without full UI rebuild
+        var items = document.querySelectorAll('.custom-text-item-label');
+        if (items[idx]) items[idx].textContent = e.target.value || '(empty)';
+        App.renderActivePreview();
+        App.Storage.scheduleSave();
+        App.Undo.scheduleCapture();
     });
 
     // Custom text: font
